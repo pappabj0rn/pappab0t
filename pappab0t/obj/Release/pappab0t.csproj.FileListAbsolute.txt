@@ -1,0 +1,17 @@
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\pappab0t.exe.config
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\pappab0t.exe
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\pappab0t.pdb
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Bazam.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\MargieBot.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Newtonsoft.Json.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.Concurrent.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.Enlightenment.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\websocket-sharp.dll
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Newtonsoft.Json.xml
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.xml
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.Concurrent.xml
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\bin\Release\Nito.AsyncEx.Enlightenment.xml
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\obj\Release\pappab0t.exe
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\obj\Release\pappab0t.pdb
+C:\Users\Greger\Documents\GitHub\pappab0t\pappab0t\obj\Release\pappab0t.csprojResolveAssemblyReference.cache
