@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using pappab0t.Extensions;
 
 namespace pappab0t.Models
 {
@@ -16,7 +16,7 @@ namespace pappab0t.Models
                 "absolut"
             };
 
-            return affirmations[new Random().Next(affirmations.Length)];
+            return affirmations.Random();
         }
 
         public string GetExclamation()
@@ -32,7 +32,7 @@ namespace pappab0t.Models
                 "OMG"
             };
 
-            return exclamations[new Random().Next(exclamations.Length)];
+            return exclamations.Random();
         }
 
         public string GetQuery(string input)
@@ -108,7 +108,7 @@ namespace pappab0t.Models
                     break;
             }
 
-            return svar[new Random().Next(svar.Count)];
+            return svar.Random();
         }
 
         public string GetScoreboardHype()
@@ -120,7 +120,7 @@ namespace pappab0t.Models
                 "Ok, en liten uppdatering om ställningarna då.",
             };
 
-            return hypes[new Random().Next(hypes.Length)];
+            return hypes.Random();
         }
 
         public string GetYoureWelcome()
@@ -134,7 +134,7 @@ namespace pappab0t.Models
                 "Det var så lite så."
             };
 
-            return youreWelcomes[new Random().Next(youreWelcomes.Length)];
+            return youreWelcomes.Random();
         }
     }
 }
