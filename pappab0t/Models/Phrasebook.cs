@@ -35,8 +35,10 @@ namespace pappab0t.Models
             return exclamations[new Random().Next(exclamations.Length)];
         }
 
-        public string GetQuery(string text)
+        public string GetQuery(string input)
         {
+            var text = (input??"").Replace(" pb0t", "").Replace("pappab0t", "").Trim();
+
             var svar = new List<string>();
 
             switch (text)
@@ -49,16 +51,27 @@ namespace pappab0t.Models
                         "hej",
                         "tja",
                         "hallå",
-                        "ja?",
-                        "talar",
-                        "här"
+                        "yo",
+                        "tjabba",
+                        "tjena"
                     });
                     break;
+
+                case "yo":
+                    svar.AddRange(new[]
+                    {
+                        "yo!",
+                        "yo man",
+                        "läget?",
+
+                    });
+                    break;
+
                 case "hi":
                     svar.AddRange(new[]
                     {
                         "hi hi",
-                        "ha",
+                        "?",
                         "nåt som är kul?",
                         "har jag missat något?"
                     });

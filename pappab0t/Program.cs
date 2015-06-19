@@ -119,6 +119,7 @@ namespace pappab0t
                 new ScoreResponder(),
                 new ScoreboardRequestResponder(),
                 new WikipediaResponder(),
+                new WeekNumberResponder(),
 
                 _bot.CreateResponder(
                     context => context.Message.MentionsBot &&
