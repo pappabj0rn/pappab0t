@@ -24,11 +24,10 @@ namespace pappab0t.Models
             string[] exclamations =
             {
                 "Fuck YEAH!",
-                "In Yo Face",
                 "Whooo!",
                 "whoppi do!",
-                "wiiii",
-                "nej va kul!",
+                "Wiiii!",
+                "Satan va kul!",
                 "OMG"
             };
 

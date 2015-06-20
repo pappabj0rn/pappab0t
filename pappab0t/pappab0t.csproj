@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstractions\IExposedCapability.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Models\Scorebook.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Responders\CapabilitiesResponder.cs" />
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />
     <Compile Include="Responders\ScoreResponder.cs" />
     <Compile Include="Responders\WeekNumberResponder.cs" />

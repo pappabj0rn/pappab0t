@@ -3,24 +3,25 @@ using System.Text;
 using System.Text.RegularExpressions;
 using MargieBot.Models;
 using MargieBot.Responders;
+using pappab0t.Abstractions;
 using pappab0t.Models;
 
 namespace pappab0t.Responders
 {
-    public class ScoreboardRequestResponder : IResponder
+    public class ScoreboardRequestResponder : IResponder, IExposedCapability
     {
         public bool CanRespond(ResponseContext context)
         {
             return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
-                   Regex.IsMatch(context.Message.Text, @"\bscore\b", RegexOptions.IgnoreCase);
+                   Regex.IsMatch(context.Message.Text, @"\bpoäng\b", RegexOptions.IgnoreCase);
         }
 
         public BotMessage GetResponse(ResponseContext context)
         {
-            IReadOnlyDictionary<string, int> scores = context.Get<Scorebook>().GetScores();
+            var scores = context.Get<Scorebook>().GetScores();
 
             if (scores.Count <= 0)
-                return new BotMessage {Text = "Not a one-of-ya has scored yet. Come on, sleepyheads!"};
+                return new BotMessage {Text = "Ingen av er har en enda poäng ännu. Skärpning!"};
 
             var builder = new StringBuilder(context.Get<Phrasebook>().GetScoreboardHype());
             builder.Append("```");
@@ -59,6 +60,11 @@ namespace pappab0t.Responders
             {
                 Text = builder.ToString()
             };
+        }
+
+        public string Usage
+        {
+            get { return "poäng\n>Visar poängställning."; }
         }
     }
 }

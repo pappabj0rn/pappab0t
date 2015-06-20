@@ -4,6 +4,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using MargieBot.Models;
 using MargieBot.Responders;
+using pappab0t.Abstractions;
+using pappab0t.Extensions;
 using pappab0t.Models;
 
 namespace pappab0t.Responders
@@ -13,7 +15,7 @@ namespace pappab0t.Responders
     ///     mentioned user a point. The
     ///     accompanying ScoreboardRequestResponder displays the scoreboard to chat.
     /// </summary>
-    public class ScoreResponder : IResponder
+    public class ScoreResponder : IResponder, IExposedCapability
     {
         private const string ScoreRegex = @"((?<formattedUserID><@(?<userID>U[a-zA-Z0-9]+)>)[\s,:]*)+?\+\s*1";
 
@@ -44,8 +46,8 @@ namespace pappab0t.Responders
             var scoringResults = new List<ScoringResult>();
 
             // bet you anything there's a better way to do this
-            Match match = Regex.Match(context.Message.Text, ScoreRegex);
-            for (int i = 0; i < match.Groups["formattedUserID"].Captures.Count; i++)
+            var match = Regex.Match(context.Message.Text, ScoreRegex);
+            for (var i = 0; i < match.Groups["formattedUserID"].Captures.Count; i++)
             {
                 scoringResults.Add(new ScoringResult
                 {
@@ -68,17 +70,16 @@ namespace pappab0t.Responders
 
             if (allUsers.Contains(context.Message.User.ID))
             {
-                responseBuilder.Append(
-                    string.Format(
-                        "Bless your heart, {0}. You can't score yourself - what kinda game would that be?! Y'all, {0} is cute, but I think he/she might be dumb as a box o' rocks.\n\n",
-                        context.Message.User.FormattedUserID));
+                responseBuilder.Append( //TODO in i frasboken med knasiga utryck
+                    "@{0}. Du kan inte ge dig själv poäng - vad skulle det vara för ett spel?. Hörrni, {0} är ju för söt, men jag undrar om alla indianer ror åt samma håll.\n\n"
+                        .With(context.Message.User.FormattedUserID));
             }
 
             if (scoringUsers.Any())
             {
                 if (responseBuilder.Length > 0)
                 {
-                    responseBuilder.Append("Anyway... ");
+                    responseBuilder.Append("Hur som... ");
                 }
 
                 if (scoringUsers.Count() == 1)
@@ -87,45 +88,46 @@ namespace pappab0t.Responders
                     {
                         int margieScore = Scorebook.GetUserScore(context.BotUserID);
                         responseBuilder.Append(
-                            string.Format(
-                                "Awwww, aren't you a sweetie! *[blushes]* If you insist. Now I have {0} point{1}.\n\n",
-                                margieScore, margieScore == 1 ? string.Empty : "s"));
+                            "Åh vad du är go! Om du insisterar. Då har jag {0} poäng.\n\n"
+                                .With(margieScore));
                     }
                     else if (newScorers.Contains(scoringUsers[0]))
                     {
                         responseBuilder.Append(
-                            string.Format("A new challenger appears, y'all! {0} is on the board with a point. {1}",
-                                scoringResults.First(r => r.UserID == scoringUsers[0]).FormattedUserID,
-                                phrasebook.GetAffirmation()));
+                            "En ny deltagare! {0} är nu med på listan med en poäng. {1}"
+                                .With(
+                                        scoringResults.First(r => r.UserID == scoringUsers[0]).FormattedUserID,
+                                        phrasebook.GetAffirmation())
+                                    );
                     }
                     else
                     {
                         var scoredUser = scoringResults.First(r => r.UserID == scoringUsers[0]);
 
                         responseBuilder.Append(
-                            string.Format(
-                                "{0} {1} just scored a point. {2} {1}, your score is now {3}.",
-                                phrasebook.GetExclamation(),
-                                scoredUser.FormattedUserID,
-                                phrasebook.GetAffirmation(),
-                                Scorebook.GetUserScore(scoredUser.UserID)
+                            "{0} {1} fick just en poäng. {2} {1}, du har nu {3}."
+                            .With(
+                                    phrasebook.GetExclamation(),
+                                    scoredUser.FormattedUserID,
+                                    phrasebook.GetAffirmation(),
+                                    Scorebook.GetUserScore(scoredUser.UserID)
                                 )
                             );
                     }
                 }
                 else
                 {
-                    responseBuilder.Append("There's points all over this joint, y'all. ");
+                    responseBuilder.Append("Poäng lite här och var.");
                     IList<ScoringResult> scoringUserResults = scoringResults.Where(r => r.IsValidScorer).ToList();
 
                     if (scoringUserResults.Count == 2)
                     {
                         responseBuilder.Append(
-                            string.Format(
-                                "{0} and {1} each just scored a point. {2}",
-                                scoringUserResults[0].FormattedUserID,
-                                scoringUserResults[1].FormattedUserID,
-                                phrasebook.GetAffirmation()
+                            "{0} och {1} fick varsin poäng. {2}"
+                            .With(
+                                    scoringUserResults[0].FormattedUserID,
+                                    scoringUserResults[1].FormattedUserID,
+                                    phrasebook.GetAffirmation()
                                 )
                             );
                     }
@@ -141,11 +143,11 @@ namespace pappab0t.Responders
                             }
                             else if (i == scoringResults.Count - 2)
                             {
-                                responseBuilder.Append(", and ");
+                                responseBuilder.Append(", och ");
                             }
                         }
 
-                        responseBuilder.Append(" each just scored a point. " + phrasebook.GetExclamation());
+                        responseBuilder.Append(" fick just en poäng var. " + phrasebook.GetExclamation());
                     }
                 }
             }
@@ -159,6 +161,11 @@ namespace pappab0t.Responders
             public bool IsNewScorer { get; set; }
             public bool IsValidScorer { get; set; }
             public string UserID { get; set; }
+        }
+
+        public string Usage
+        {
+            get { return "@(nickname) +1\n>Ger en poäng till specifierad användare."; }
         }
     }
 }

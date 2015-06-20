@@ -4,10 +4,12 @@ using Bazam.NoobWebClient;
 using MargieBot.Models;
 using MargieBot.Responders;
 using Newtonsoft.Json.Linq;
+using pappab0t.Abstractions;
+using pappab0t.Extensions;
 
 namespace pappab0t.Responders
 {
-    public class WikipediaResponder : IResponder
+    public class WikipediaResponder : IResponder, IExposedCapability
     {
         private const string WikiSinglewordRegex = @"\b(wiki|wikipedia)\b\s+(?<term>\w+)";
         private const string WikiMultiwordRegex = @"\b(wiki|wikipedia)\b\s+""(?<term>[\s\S]+)""";
@@ -22,7 +24,7 @@ namespace pappab0t.Responders
         public BotMessage GetResponse(ResponseContext context)
         {
             var match = Regex.Match(context.Message.Text, WikiMultiwordRegex);
-            var searchTerm = string.Empty;
+            string searchTerm;
             if (match.Success)
             {
                 searchTerm = match.Groups["term"].Value;
@@ -63,10 +65,7 @@ namespace pappab0t.Responders
 
                         return new BotMessage
                         {
-                            Text =
-                                "Awwww yeah. I know all about that. Check it, y'all!: " +
-                                string.Format("http://en.wikipedia.org/wiki/{0}", articleTitle.Replace(" ", "_")) +
-                                " \n> " + summary
+                            Text = "http://en.wikipedia.org/wiki/{0}\n {1}".With(articleTitle.Replace(" ", "_"), summary)
                         };
                     }
                 }
@@ -74,9 +73,13 @@ namespace pappab0t.Responders
 
             return new BotMessage
             {
-                Text =
-                    "I never heard of that, which isn't all that surprisin'. What IS surprisin' is that neither has Wikipedia. Have you been hangin' out behind the barn again with SkeeterBot?"
+                Text = "Har aldrig hört talas om {0}, vilket kanske inte är så konstigt. Men vad som _är_ konstigt är att Wikipedia inte heller har nån info om det."
+                            .With(searchTerm)
             };
+        }
+
+        public string Usage {
+            get { return "wiki|wikipedia term|\"term1 term2\"\n>Kollar på wikipedia (en) efter angivna termer."; }
         }
     }
 }

@@ -2,11 +2,12 @@
 using System.Text.RegularExpressions;
 using MargieBot.Models;
 using MargieBot.Responders;
+using pappab0t.Abstractions;
 using pappab0t.Extensions;
 
 namespace pappab0t.Responders
 {
-    public class WeekNumberResponder : IResponder
+    public class WeekNumberResponder : IResponder, IExposedCapability
     {
         public bool CanRespond(ResponseContext context)
         {
@@ -30,6 +31,11 @@ namespace pappab0t.Responders
                 Text = formatStrings.Random()
                                     .With(DateTime.Now.Iso8601Week()) 
             };
+        }
+
+        public string Usage
+        {
+            get { return "vecka\n>Visar veckonummer."; }
         }
     }
 }

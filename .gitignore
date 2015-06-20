@@ -1,3 +1,6 @@
 *.exe
 pappab0t/bin/Debug/pappab0t.pdb
 *.pdb
+*.exe
+pappab0t/obj/Debug/pappab0t.pdb
+*.pdb

@@ -28,7 +28,6 @@ namespace pappab0t
                 var run = true;
                 while (run)
                 {
-                    Console.Write('>');
                     var consoleKeyInfo = Console.ReadKey();
 
                     if (consoleKeyInfo.Key == ConsoleKey.X)
@@ -53,8 +52,8 @@ namespace pappab0t
             {
                 _bot.ResponseContext.Add(value.Key, value.Value);
             }
+            _bot.ResponseContext.Add("Bot",_bot);
 
-            // RESPONDER WIREUP
             _bot.Responders.AddRange(GetResponders());
 
             _bot.ConnectionStatusChanged += isConnected =>
@@ -63,18 +62,6 @@ namespace pappab0t
 
                 if (isConnected)
                 {
-                    //// now that we're connected, build list of connected hubs for great glory
-                    //var hubs = new List<SlackChatHub>();
-                    //hubs.AddRange(_bot.ConnectedChannels);
-                    //hubs.AddRange(_bot.ConnectedGroups);
-                    //hubs.AddRange(_bot.ConnectedDMs);
-                    //ConnectedHubs = hubs;
-
-                    //if (ConnectedHubs.Count > 0)
-                    //{
-                    //    SelectedChatHub = ConnectedHubs[0];
-                    //}
-
                     ConnectedSince = _bot.ConnectedSince;
 
                     Console.WriteLine("UserName: {0}\nUserId: {1}",_bot.UserName, _bot.UserID);
@@ -113,13 +100,13 @@ namespace pappab0t
         /// <returns>A list of the responders this bot should respond with.</returns>
         private static IEnumerable<IResponder> GetResponders()
         {
-            // Some of these are more complicated than they need to be for the sake of example
             var responders = new List<IResponder>
             {
                 new ScoreResponder(),
                 new ScoreboardRequestResponder(),
                 new WikipediaResponder(),
                 new WeekNumberResponder(),
+                new CapabilitiesResponder(),
 
                 _bot.CreateResponder(
                     context => context.Message.MentionsBot &&
