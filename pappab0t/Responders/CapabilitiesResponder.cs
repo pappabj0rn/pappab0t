@@ -14,7 +14,7 @@ namespace pappab0t.Responders
         {
             return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
                    (Regex.IsMatch(context.Message.Text, @"vad kan du( göra)?", RegexOptions.IgnoreCase)
-                   || Regex.IsMatch(context.Message.Text, @"\bfunktioner\b", RegexOptions.IgnoreCase));
+                   || Regex.IsMatch(context.Message.Text, @"\bhjälp\b", RegexOptions.IgnoreCase));
         }
 
         public BotMessage GetResponse(ResponseContext context)
