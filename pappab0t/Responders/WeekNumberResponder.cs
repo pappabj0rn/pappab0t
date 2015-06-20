@@ -4,6 +4,7 @@ using MargieBot.Models;
 using MargieBot.Responders;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
+using pappab0t.Models;
 
 namespace pappab0t.Responders
 {
@@ -33,9 +34,9 @@ namespace pappab0t.Responders
             };
         }
 
-        public string Usage
+        public ExposedInformation Info
         {
-            get { return "vecka\n>Visar veckonummer."; }
+            get { return new ExposedInformation { Usage = "vecka", Explatation = "Visar veckonummer." }; }
         }
     }
 }

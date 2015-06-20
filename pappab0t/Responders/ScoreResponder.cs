@@ -163,9 +163,9 @@ namespace pappab0t.Responders
             public string UserID { get; set; }
         }
 
-        public string Usage
+        public ExposedInformation Info
         {
-            get { return "@(nickname) +1\n>Ger en poäng till specifierad användare."; }
+            get { return new ExposedInformation { Usage = "@(nickname) +1", Explatation = "Ger en poäng till specifierad användare." }; }
         }
     }
 }

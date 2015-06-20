@@ -1,7 +1,9 @@
-﻿namespace pappab0t.Abstractions
+﻿using pappab0t.Models;
+
+namespace pappab0t.Abstractions
 {
     public interface IExposedCapability
     {
-        string Usage { get; }
+        ExposedInformation Info { get; }
     }
 }

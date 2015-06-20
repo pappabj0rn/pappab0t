@@ -5,6 +5,7 @@ using MargieBot;
 using MargieBot.Models;
 using MargieBot.Responders;
 using pappab0t.Abstractions;
+using pappab0t.Extensions;
 
 namespace pappab0t.Responders
 {
@@ -26,7 +27,8 @@ namespace pappab0t.Responders
 
             foreach (var exposedCapability in bot.Responders.OfType<IExposedCapability>())
             {
-                sb.AppendLine(exposedCapability.Usage);
+                sb.AppendLine("*{0}*".With(exposedCapability.Info.Usage));
+                sb.AppendLine(">{0}".With(exposedCapability.Info.Explatation));
             }
 
             return new BotMessage{Text = sb.ToString()};

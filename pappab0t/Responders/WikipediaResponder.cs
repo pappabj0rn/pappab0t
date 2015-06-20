@@ -6,6 +6,7 @@ using MargieBot.Responders;
 using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
+using pappab0t.Models;
 
 namespace pappab0t.Responders
 {
@@ -78,8 +79,9 @@ namespace pappab0t.Responders
             };
         }
 
-        public string Usage {
-            get { return "wiki|wikipedia term|\"term1 term2\"\n>Kollar på wikipedia (en) efter angivna termer."; }
+        public ExposedInformation Info
+        {
+            get { return new ExposedInformation { Usage = "wiki|wikipedia term|\"term1 term2\"", Explatation = "Kollar på wikipedia (eng) efter angivna termer." }; }
         }
     }
 }

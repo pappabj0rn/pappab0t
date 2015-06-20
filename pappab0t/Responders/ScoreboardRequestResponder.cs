@@ -62,9 +62,9 @@ namespace pappab0t.Responders
             };
         }
 
-        public string Usage
+        public ExposedInformation Info
         {
-            get { return "poäng\n>Visar poängställning."; }
+            get { return new ExposedInformation { Usage = "poäng", Explatation = "Visar poängställning." }; }
         }
     }
 }
