@@ -82,10 +82,14 @@
     <Compile Include="Models\ExposedInformation.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />
+    <Compile Include="Modules\DikaGame\DikaCard.cs" />
+    <Compile Include="Modules\DikaGame\DikaDeck.cs" />
+    <Compile Include="Modules\DikaGame\Game.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responders\CapabilitiesResponder.cs" />
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
+    <Compile Include="Responders\DikaGameResponder.cs" />
     <Compile Include="Responders\RavenDbLogResponder.cs" />
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />
     <Compile Include="Responders\ScoreResponder.cs" />

@@ -28,7 +28,30 @@ namespace pappab0t.Models
                 "whoppi do!",
                 "Wiiii!",
                 "Satan va kul!",
-                "OMG"
+                "Grattis!",
+                "OMG",
+                ":smiley:",
+                ":sunglasses:",
+                ":parrot:",
+                ":pbjt:",
+                ":tinfoil:"
+            };
+
+            return exclamations.Random();
+        }
+
+        public string GetMutedExclamation()
+        {
+            string[] exclamations =
+            {
+                "Kul.",
+                "Jora, så atte...",
+                "Inte illa.",
+                "Heja.",
+                ":thumbsup:",
+                "grattis.",
+                ":clap:",
+                ":smiley:"
             };
 
             return exclamations.Random();

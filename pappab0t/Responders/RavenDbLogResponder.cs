@@ -134,8 +134,8 @@ namespace pappab0t.Responders
         {
             get { return new ExposedInformation
             {
-                Usage = "logg [fromDate](-[toDate])( p[2])\nex: logg 150621\nex: logg 150621-150623 s2", 
-                Explatation = "Sammanställer meddelanden som loggats för det givna datumet (eller inom givet intervall) och postar dem i chatten. 1000 meddelanden visas per sida."
+                Usage = "logg [fromDate](-[toDate])( p[2])",
+                Explatation = "Sammanställer meddelanden som loggats för det givna datumet (eller inom givet intervall) och postar dem i chatten. 1000 meddelanden visas per sida. Ex 1: logg 150621. Ex 2: logg 150621-150623 s2"
             }; } 
         }
     }

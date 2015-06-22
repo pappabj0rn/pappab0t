@@ -87,6 +87,7 @@ namespace pappab0t
                 new WeekNumberResponder(),
                 new CapabilitiesResponder(),
                 new RavenDbLogResponder(),
+                new DikaGameResponder(),
                 
                 new RavenDbLoggerMessageHandler(),
 

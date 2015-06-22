@@ -97,7 +97,7 @@ namespace pappab0t.Responders
                             "En ny deltagare! {0} är nu med på listan med en poäng. {1}"
                                 .With(
                                         scoringResults.First(r => r.UserID == scoringUsers[0]).FormattedUserID,
-                                        phrasebook.GetAffirmation())
+                                        phrasebook.GetExclamation())
                                     );
                     }
                     else
@@ -105,11 +105,10 @@ namespace pappab0t.Responders
                         var scoredUser = scoringResults.First(r => r.UserID == scoringUsers[0]);
 
                         responseBuilder.Append(
-                            "{0} {1} fick just en poäng. {2} {1}, du har nu {3}."
+                            "{0} {1} fick just en poäng. Ok, {1}, du har nu {2}."
                             .With(
                                     phrasebook.GetExclamation(),
                                     scoredUser.FormattedUserID,
-                                    phrasebook.GetAffirmation(),
                                     Scorebook.GetUserScore(scoredUser.UserID)
                                 )
                             );
@@ -127,7 +126,7 @@ namespace pappab0t.Responders
                             .With(
                                     scoringUserResults[0].FormattedUserID,
                                     scoringUserResults[1].FormattedUserID,
-                                    phrasebook.GetAffirmation()
+                                    phrasebook.GetMutedExclamation()
                                 )
                             );
                     }
