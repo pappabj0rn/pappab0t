@@ -42,6 +42,7 @@ namespace pappab0t
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex);
+                Console.ReadKey();
             }
         }
 
@@ -72,7 +73,7 @@ namespace pappab0t
         private static void Init()
         {
             _ravenStore = CreateStore();
-            _slackKey = ConfigurationManager.AppSettings["slackKey"];
+            _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
             _bot = new Bot();
         }
 
@@ -85,6 +86,8 @@ namespace pappab0t
                 new WikipediaResponder(),
                 new WeekNumberResponder(),
                 new CapabilitiesResponder(),
+                new RavenDbLogResponder(),
+                
                 new RavenDbLoggerMessageHandler(),
 
                 _bot.CreateResponder(
@@ -119,8 +122,8 @@ namespace pappab0t
         {
             var store = new DocumentStore
             {
-                Url = ConfigurationManager.AppSettings["ravenUrl"],
-                DefaultDatabase = ConfigurationManager.AppSettings["ravenDbName"]
+                Url = ConfigurationManager.AppSettings[Keys.AppSettings.RavenUrl],
+                DefaultDatabase = ConfigurationManager.AppSettings[Keys.AppSettings.RavenDbName]
             }.Initialize();
 
             return store;

@@ -8,5 +8,12 @@ namespace pappab0t.Extensions
         {
             return String.Format(s, p);
         }
+
+        public static string Fallback(this string s, string fallback)
+        {
+            return String.IsNullOrEmpty(s)
+                    ? fallback
+                    : s;
+        }
     }
 }
