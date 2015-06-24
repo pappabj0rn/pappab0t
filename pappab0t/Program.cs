@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MargieBot;
 using MargieBot.Models;
 using MargieBot.Responders;
+using pappab0t.Abstractions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
+using pappab0t.Modules.DikaGame;
 using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Document;
+using StructureMap;
 
 namespace pappab0t
 {
@@ -24,6 +28,8 @@ namespace pappab0t
         {
             try
             {
+                InitDependencies();
+
                 var t = MainAsync();
                 t.Wait();
 
@@ -44,6 +50,19 @@ namespace pappab0t
                 Console.Error.WriteLine(ex);
                 Console.ReadKey();
             }
+        }
+
+        private static void InitDependencies()
+        {
+            ObjectFactory.Initialize(x =>
+            {
+                //x.For<TYPE>().Use<IMPL>()
+                x.Scan(y =>
+                {
+                    y.AddAllTypesOf<IResponder>();
+                    y.AssemblyContainingType(typeof(IExposedCapability));
+                });
+            });
         }
 
         static async Task MainAsync()
@@ -79,19 +98,10 @@ namespace pappab0t
 
         private static IEnumerable<IResponder> GetResponders()
         {
-            var responders = new List<IResponder>
-            {
-                new ScoreResponder(),
-                new ScoreboardRequestResponder(),
-                new WikipediaResponder(),
-                new WeekNumberResponder(),
-                new CapabilitiesResponder(),
-                new RavenDbLogResponder(),
-                new DikaGameResponder(),
-                new TimeResponder(),
-                
-                new RavenDbLoggerMessageHandler(),
+            var responders = ObjectFactory.GetAllInstances<IResponder>().ToList();
 
+            responders.AddRange(new[]
+            {
                 _bot.CreateResponder(
                     context => context.Message.MentionsBot &&
                                Regex.IsMatch(context.Message.Text, @"\b(tack|tanks)\b", RegexOptions.IgnoreCase),
@@ -105,7 +115,7 @@ namespace pappab0t
                                context.Message.User.ID != context.BotUserID &&
                                !context.Message.User.IsSlackbot,
                     context => context.Get<Phrasebook>().GetQuery(context.Message.Text))
-            };
+            });
             
             return responders;
         }
