@@ -14,6 +14,7 @@
             public static class Metadata
             {
                 public const string Created = "Created";
+                public const string TimeStamp = "TimeStamp";
             }
         }
     }

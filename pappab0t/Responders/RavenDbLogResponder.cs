@@ -26,6 +26,7 @@ namespace pappab0t.Responders
         private int _page;
         private string _dateRange;
         private RavenQueryStatistics _queryStats;
+        private int _logMessageCount;
 
         public bool CanRespond(ResponseContext context)
         {
@@ -42,17 +43,16 @@ namespace pappab0t.Responders
             CollectParams();
 
             var logPage = CreateLog();
-
             var pageInfo = CreatePageInfo();
 
             return new BotMessage
             {
+                Text = "Logg för {0} {1}".With(_dateRange, pageInfo),
                 Attachments = new[]
                 {
                     new SlackAttachment
                     {
                         Title = "Loggutdrag",
-                        PreText = "Logg för {0} {1}".With(_dateRange,pageInfo),
                         Text = logPage
                     }
                 }
@@ -68,7 +68,7 @@ namespace pappab0t.Responders
                 pages++;
 
             return _queryStats.TotalResults > 0 
-                        ? "(s. {0}/{1})".With(_page, pages)
+                        ? "(s. {0}/{1}, {2} rader)".With(_page, pages, _logMessageCount)
                         : "(s. 0/0)";
         }
 
@@ -115,10 +115,12 @@ namespace pappab0t.Responders
                                     .DocumentQuery<SlackMessage>()
                                     .Statistics(out _queryStats)
                                     .WhereBetween(Keys.RavenDB.Metadata.Created, _fromDate.ToShortDateString(), _toDate.ToShortDateString())
-                                    .OrderBy(new[] { Keys.RavenDB.Metadata.Created })
+                                    .OrderBy(new[] { Keys.RavenDB.Metadata.TimeStamp })
                                     .Skip((_page-1)*PageSize)
                                     .Take(PageSize)
                                     .ToList();
+
+                _logMessageCount = messages.Count;
 
                 foreach (var slackMessage in messages)
                 {

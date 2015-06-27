@@ -95,6 +95,67 @@ namespace pappab0t
             await _bot.Connect(_slackKey);
         }
 
+        private static void Init()
+        {
+            _ravenStore = CreateStore();
+            _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
+            _bot = new Bot();
+            _userNameCache = new Dictionary<string, string>();
+            _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
+        }
+
+        private static Dictionary<string, object> GetStaticResponseContextData()
+        {
+            return new Dictionary<string, object>
+            {
+                {"Phrasebook", new Phrasebook()},
+                {"Bot",_bot},
+                {"RavenStore",_ravenStore}
+            };
+        }
+
+        private static IEnumerable<IResponder> GetResponders()
+        {
+            var responders = ObjectFactory.GetAllInstances<IResponder>().ToList();
+
+            responders.AddRange(new[]
+            {
+                _bot.CreateResponder(
+                    context => context.Message.MentionsBot &&
+                               Regex.IsMatch(context.Message.Text, @"\b(tack|tanks)\b", RegexOptions.IgnoreCase),
+                    context => context.Get<Phrasebook>().GetYoureWelcome()),
+
+                _bot.CreateResponder(
+                    context => (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
+                               !context.BotHasResponded &&
+                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|läget|hi|hello|morrn|mrn|nirrb)\b",
+                                   RegexOptions.IgnoreCase) &&
+                               context.Message.User.ID != context.BotUserID &&
+                               !context.Message.User.IsSlackbot,
+                    context => context.Get<Phrasebook>().GetQuery(context.Message.Text))
+            });
+
+            return responders;
+        }
+
+        private static async Task PopulateUsernameCache()
+        {
+            var client = new NoobWebClient();
+
+            var values = new List<string>
+                {
+                    "token", _slackKey
+                };
+
+            var json = await client.GetResponse("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
+            var jData = JObject.Parse(json);
+
+            foreach (var user in jData["members"].Values<JObject>())
+            {
+                _userNameCache.Add(user["id"].Value<string>(), user["name"].Value<string>());
+            }
+        }
+
         static void _bot_MessageReceived(string json)
         {
             //Copied from MargieBot source and modified to allow all messages
@@ -118,7 +179,7 @@ namespace pappab0t
             }
 
             var messageText = (jObject["text"] != null ? jObject["text"].Value<string>() : null);
-            
+
             var message = new SlackMessage
             {
                 ChatHub = hub,
@@ -149,67 +210,6 @@ namespace pappab0t
             {
                 handler.Execute(context);
             }
-        }
-
-        private static void Init()
-        {
-            _ravenStore = CreateStore();
-            _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
-            _bot = new Bot();
-            _userNameCache = new Dictionary<string, string>();
-            _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
-        }
-
-        private static async Task PopulateUsernameCache()
-        {
-            var client = new NoobWebClient();
-
-            var values = new List<string>
-                {
-                    "token", _slackKey
-                };
-
-            var json = await client.GetResponse("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
-            var jData = JObject.Parse(json);
-
-            foreach (var user in jData["members"].Values<JObject>())
-            {
-                _userNameCache.Add(user["id"].Value<string>(), user["name"].Value<string>());
-            }
-        }
-
-        private static IEnumerable<IResponder> GetResponders()
-        {
-            var responders = ObjectFactory.GetAllInstances<IResponder>().ToList();
-
-            responders.AddRange(new[]
-            {
-                _bot.CreateResponder(
-                    context => context.Message.MentionsBot &&
-                               Regex.IsMatch(context.Message.Text, @"\b(tack|tanks)\b", RegexOptions.IgnoreCase),
-                    context => context.Get<Phrasebook>().GetYoureWelcome()),
-
-                _bot.CreateResponder(
-                    context => (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
-                               !context.BotHasResponded &&
-                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|läget|hi|hello|morrn|mrn|nirrb)\b",
-                                   RegexOptions.IgnoreCase) &&
-                               context.Message.User.ID != context.BotUserID &&
-                               !context.Message.User.IsSlackbot,
-                    context => context.Get<Phrasebook>().GetQuery(context.Message.Text))
-            });
-            
-            return responders;
-        }
-
-        private static Dictionary<string, object> GetStaticResponseContextData()
-        {
-            return new Dictionary<string, object>
-            {
-                {"Phrasebook", new Phrasebook()},
-                {"Bot",_bot},
-                {"RavenStore",_ravenStore}
-            };
         }
 
         private static IDocumentStore CreateStore()
