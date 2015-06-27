@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Bazam.NoobWebClient;
 using MargieBot;
 using MargieBot.Models;
 using MargieBot.Responders;
+using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
-using pappab0t.Modules.DikaGame;
-using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Document;
 using StructureMap;
@@ -23,12 +24,14 @@ namespace pappab0t
         private static Bot _bot;
         private static string _slackKey;
         private static IDocumentStore _ravenStore;
+        private static Dictionary<string, string> _userNameCache;
+        private static List<IMessageHandler> _messageHandlers;
        
         private static void Main()
         {
             try
             {
-                InitDependencies();
+                InitStructureMap();
 
                 var t = MainAsync();
                 t.Wait();
@@ -52,7 +55,7 @@ namespace pappab0t
             }
         }
 
-        private static void InitDependencies()
+        private static void InitStructureMap()
         {
             ObjectFactory.Initialize(x =>
             {
@@ -60,6 +63,7 @@ namespace pappab0t
                 x.Scan(y =>
                 {
                     y.AddAllTypesOf<IResponder>();
+                    y.AddAllTypesOf<IMessageHandler>();
                     y.AssemblyContainingType(typeof(IExposedCapability));
                 });
             });
@@ -69,7 +73,7 @@ namespace pappab0t
         {
             Init();
 
-            _bot.Aliases = new List<string> {"pb0t"};
+            _bot.Aliases = new List<string> {"pb0t", "boten", "botfan"};
 
             foreach (var value in GetStaticResponseContextData())
             {
@@ -78,15 +82,73 @@ namespace pappab0t
 
             _bot.Responders.AddRange(GetResponders());
 
-            _bot.ConnectionStatusChanged += isConnected =>
+            _bot.ConnectionStatusChanged += async isConnected =>
             {
-                if (isConnected)
-                {
-                    Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
-                }
+                if (!isConnected) return;
+
+                Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
+                await PopulateUsernameCache();
             };
 
+            _bot.MessageReceived += _bot_MessageReceived;
+
             await _bot.Connect(_slackKey);
+        }
+
+        static void _bot_MessageReceived(string json)
+        {
+            //Copied from MargieBot source and modified to allow all messages
+
+            var jObject = JObject.Parse(json);
+            if (jObject["type"].Value<string>() != "message") return;
+
+            var channelID = jObject["channel"].Value<string>();
+            SlackChatHub hub;
+
+            if (_bot.ConnectedHubs.ContainsKey(channelID))
+            {
+                hub = _bot.ConnectedHubs[channelID];
+            }
+            else
+            {
+                hub = SlackChatHub.FromID(channelID);
+                var hubs = new List<SlackChatHub>();
+                hubs.AddRange(_bot.ConnectedHubs.Values);
+                hubs.Add(hub);
+            }
+
+            var messageText = (jObject["text"] != null ? jObject["text"].Value<string>() : null);
+            
+            var message = new SlackMessage
+            {
+                ChatHub = hub,
+                RawData = json,
+                Text = messageText,
+                User = (jObject["user"] != null ? new SlackUser { ID = jObject["user"].Value<string>() } : null)
+            };
+
+            var context = new ResponseContext
+            {
+                BotHasResponded = false,
+                BotUserID = _bot.UserID,
+                BotUserName = _bot.UserName,
+                Message = message,
+                TeamID = _bot.TeamID,
+                UserNameCache = new ReadOnlyDictionary<string, string>(_userNameCache)
+            };
+
+            if (_bot.ResponseContext != null)
+            {
+                foreach (var key in _bot.ResponseContext.Keys)
+                {
+                    context.Set(key, _bot.ResponseContext[key]);
+                }
+            }
+
+            foreach (var handler in _messageHandlers)
+            {
+                handler.Execute(context);
+            }
         }
 
         private static void Init()
@@ -94,6 +156,26 @@ namespace pappab0t
             _ravenStore = CreateStore();
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
             _bot = new Bot();
+            _userNameCache = new Dictionary<string, string>();
+            _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
+        }
+
+        private static async Task PopulateUsernameCache()
+        {
+            var client = new NoobWebClient();
+
+            var values = new List<string>
+                {
+                    "token", _slackKey
+                };
+
+            var json = await client.GetResponse("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
+            var jData = JObject.Parse(json);
+
+            foreach (var user in jData["members"].Values<JObject>())
+            {
+                _userNameCache.Add(user["id"].Value<string>(), user["name"].Value<string>());
+            }
         }
 
         private static IEnumerable<IResponder> GetResponders()

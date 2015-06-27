@@ -115,6 +115,7 @@ namespace pappab0t.Responders
                                     .DocumentQuery<SlackMessage>()
                                     .Statistics(out _queryStats)
                                     .WhereBetween(Keys.RavenDB.Metadata.Created, _fromDate.ToShortDateString(), _toDate.ToShortDateString())
+                                    .OrderBy(new[] { Keys.RavenDB.Metadata.Created })
                                     .Skip((_page-1)*PageSize)
                                     .Take(PageSize)
                                     .ToList();
@@ -123,7 +124,7 @@ namespace pappab0t.Responders
                 {
                     var meta = session.Advanced.GetMetadataFor(slackMessage);
 
-                    sb.AppendFormat("{0} {1}: {2}\n", meta.Value<DateTime>(Keys.RavenDB.Metadata.Created), slackMessage.User.FormattedUserID, slackMessage.Text);
+                    sb.AppendFormat("{0} {1}: {2}\n", meta.Value<DateTime>(Keys.RavenDB.Metadata.Created), _context.UserNameCache[slackMessage.User.ID], slackMessage.Text);
                 }
             }
 

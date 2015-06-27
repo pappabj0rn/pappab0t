@@ -4,9 +4,9 @@ using Raven.Client;
 
 namespace pappab0t.MessageHandler
 {
-    public class RavenDbLoggerMessageHandler : MessageHandlerBase
+    public class RavenDbLoggerMessageHandler : IMessageHandler
     {
-        protected override void Act(ResponseContext context)
+        public void Execute(ResponseContext context)
         {
             var store = context.Get<IDocumentStore>();
 

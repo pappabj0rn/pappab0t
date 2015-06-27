@@ -85,7 +85,7 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Keys.cs" />
-    <Compile Include="MessageHandler\MessageHandlerBase.cs" />
+    <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />
