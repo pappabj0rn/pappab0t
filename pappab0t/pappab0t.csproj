@@ -101,6 +101,7 @@
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />
     <Compile Include="Responders\ScoreResponder.cs" />
     <Compile Include="Responders\TimeResponder.cs" />
+    <Compile Include="Responders\UptimeResponder.cs" />
     <Compile Include="Responders\WeekNumberResponder.cs" />
     <Compile Include="Responders\WikipediaResponder.cs" />
   </ItemGroup>
