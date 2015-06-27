@@ -23,6 +23,7 @@ namespace pappab0t
     {
         private static Bot _bot;
         private static string _slackKey;
+        private static string[] _botAliases;
         private static IDocumentStore _ravenStore;
         private static Dictionary<string, string> _userNameCache;
         private static List<IMessageHandler> _messageHandlers;
@@ -73,7 +74,7 @@ namespace pappab0t
         {
             Init();
 
-            _bot.Aliases = new List<string> {"pb0t", "boten", "botfan"};
+            _bot.Aliases = _botAliases;
 
             foreach (var value in GetStaticResponseContextData())
             {
@@ -102,6 +103,8 @@ namespace pappab0t
             _bot = new Bot();
             _userNameCache = new Dictionary<string, string>();
             _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
+
+            _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
         }
 
         private static Dictionary<string, object> GetStaticResponseContextData()

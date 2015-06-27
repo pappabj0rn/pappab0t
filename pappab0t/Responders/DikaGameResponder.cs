@@ -13,7 +13,7 @@ namespace pappab0t.Responders
         public bool CanRespond(ResponseContext context)
         {
             return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
-                   Regex.IsMatch(context.Message.Text, @"\bdikagame\b", RegexOptions.IgnoreCase);
+                   Regex.IsMatch(context.Message.Text, @"\b(dikagame|dg)\b", RegexOptions.IgnoreCase);
         }
 
         public BotMessage GetResponse(ResponseContext context)
@@ -33,7 +33,7 @@ namespace pappab0t.Responders
             { 
                 return new ExposedInformation
                             {
-                                Usage = "dikagame", 
+                                Usage = "dikagame|dg", 
                                 Explatation = "Blandar upp en kortlek och kör en omgång DikaGame(tm)."
                             }; 
             }

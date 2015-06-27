@@ -7,6 +7,7 @@
             public const string SlackKey = "slackKey";
             public const string RavenUrl = "ravenUrl";
             public const string RavenDbName = "ravenDbName";
+            public const string BotAliases = "botAliases";
         }
 
         public static class RavenDB
