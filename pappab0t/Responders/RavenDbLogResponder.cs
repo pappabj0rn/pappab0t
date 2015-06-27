@@ -114,6 +114,8 @@ namespace pappab0t.Responders
                 var messages = session.Advanced
                                     .DocumentQuery<SlackMessage>()
                                     .Statistics(out _queryStats)
+                                    .WhereEquals(x=>x.ChatHub.ID, _context.Message.ChatHub.ID)
+                                    .AndAlso()
                                     .WhereBetween(Keys.RavenDB.Metadata.Created, _fromDate.ToShortDateString(), _toDate.ToShortDateString())
                                     .OrderBy(new[] { Keys.RavenDB.Metadata.TimeStamp })
                                     .Skip((_page-1)*PageSize)
