@@ -91,8 +91,8 @@ namespace pappab0t.Responders
         private void CollectInputParams(Match match)
         {
             _fromDate = ParseDate(match.Groups[FromDateKey].Value);
-            _toDate = String.IsNullOrEmpty(match.Groups[ToDateKey].Value) 
-                        ? DateTime.Now.AddDays(1) 
+            _toDate = String.IsNullOrEmpty(match.Groups[ToDateKey].Value)
+                        ? _fromDate.AddDays(1) 
                         : ParseDate(match.Groups[ToDateKey].Value);
             _page = int.Parse(match.Groups[PageKey].Value.Fallback("1"));
         }
