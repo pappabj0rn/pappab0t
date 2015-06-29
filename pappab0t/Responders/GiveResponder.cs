@@ -50,7 +50,7 @@ namespace pappab0t.Responders
                                   .Key;
 
             if(targetUserId.IsNullOrEmpty())
-                return new BotMessage { Text = "{0} jag känner inte till nån användare som heter {1}"
+                return new BotMessage { Text = "{0} {1}"
                                                 .With(PhraseBook.GetOpenAppology(), PhraseBook.GetIDontKnowXxxNamedYyy()
                                                                                                 .With("nån användare",targetUsername)) };
 
