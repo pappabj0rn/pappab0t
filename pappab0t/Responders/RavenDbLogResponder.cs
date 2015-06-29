@@ -31,7 +31,7 @@ namespace pappab0t.Responders
         public bool CanRespond(ResponseContext context)
         {
             return (context.Message.MentionsBot 
-                    || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
+                    || context.Message.IsDirectMessage()) &&
                    (Regex.IsMatch(context.Message.Text, SingleDayRegex, RegexOptions.IgnoreCase)
                     || Regex.IsMatch(context.Message.Text, SingleDayRegex, RegexOptions.IgnoreCase));
         }
@@ -139,7 +139,7 @@ namespace pappab0t.Responders
         {
             get { return new ExposedInformation
             {
-                Usage = "logg [fromDate](-[toDate])( p[2])",
+                Usage = "logg <fromDate>[-toDate] [sX]",
                 Explatation = "Sammanställer meddelanden som loggats för det givna datumet (eller inom givet intervall) och postar dem i chatten. 1000 meddelanden visas per sida. Ex 1: logg 150621. Ex 2: logg 150621-150623 s2"
             }; } 
         }

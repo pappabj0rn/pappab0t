@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using MargieBot.Models;
 using MargieBot.Responders;
 using pappab0t.Abstractions;
+using pappab0t.Extensions;
 using pappab0t.Models;
 
 namespace pappab0t.Responders
@@ -12,7 +13,7 @@ namespace pappab0t.Responders
     {
         public bool CanRespond(ResponseContext context)
         {
-            return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
+            return (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                    Regex.IsMatch(context.Message.Text, @"\bpoäng\b", RegexOptions.IgnoreCase);
         }
 

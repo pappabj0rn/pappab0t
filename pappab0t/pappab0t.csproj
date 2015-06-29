@@ -83,10 +83,14 @@
     <Compile Include="Abstractions\IExposedCapability.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\SlackMessageExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
+    <Compile Include="Modules\Inventory\Inventory.cs" />
+    <Compile Include="Modules\Inventory\InventoryManager.cs" />
+    <Compile Include="Modules\Inventory\Item.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />
     <Compile Include="Modules\DikaGame\DikaCard.cs" />
@@ -97,7 +101,10 @@
     <Compile Include="Responders\CapabilitiesResponder.cs" />
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
     <Compile Include="Responders\DikaGameResponder.cs" />
+    <Compile Include="Responders\GiveResponder.cs" />
+    <Compile Include="Responders\InventoryResponder.cs" />
     <Compile Include="Responders\RavenDbLogResponder.cs" />
+    <Compile Include="Responders\ResponderBase.cs" />
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />
     <Compile Include="Responders\ScoreResponder.cs" />
     <Compile Include="Responders\TimeResponder.cs" />
@@ -107,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

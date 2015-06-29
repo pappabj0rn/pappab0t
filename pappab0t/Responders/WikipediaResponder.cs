@@ -81,7 +81,7 @@ namespace pappab0t.Responders
 
         public ExposedInformation Info
         {
-            get { return new ExposedInformation { Usage = "wiki|wikipedia term|\"term1 term2\"", Explatation = "Kollar på wikipedia (eng) efter angivna termer." }; }
+            get { return new ExposedInformation { Usage = "<wiki|wikipedia> <term|\"term1 term2\">", Explatation = "Kollar på wikipedia (eng) efter angivna termer." }; }
         }
     }
 }

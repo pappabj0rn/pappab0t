@@ -7,7 +7,7 @@ namespace pappab0t.Models
     {
         public string GetAffirmation()
         {
-            string[] affirmations =
+            string[] response =
             {
                 "ok",
                 "råger",
@@ -16,12 +16,12 @@ namespace pappab0t.Models
                 "absolut"
             };
 
-            return affirmations.Random();
+            return response.Random();
         }
 
         public string GetExclamation()
         {
-            string[] exclamations =
+            string[] response =
             {
                 "Fuck YEAH!",
                 "Whooo!",
@@ -37,12 +37,12 @@ namespace pappab0t.Models
                 ":tinfoil:"
             };
 
-            return exclamations.Random();
+            return response.Random();
         }
 
         public string GetMutedExclamation()
         {
-            string[] exclamations =
+            string[] response =
             {
                 "Kul.",
                 "Jora, så atte...",
@@ -54,21 +54,21 @@ namespace pappab0t.Models
                 ":smiley:"
             };
 
-            return exclamations.Random();
+            return response.Random();
         }
 
         public string GetQuery(string input)
         {
             var text = (input??"").Replace(" pb0t", "").Replace("pappab0t", "").Trim();
 
-            var svar = new List<string>();
+            var response = new List<string>();
 
             switch (text)
             {
                 case "hej":
                 case "tja":
                 case "tjena":
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "hej",
                         "tja",
@@ -80,7 +80,7 @@ namespace pappab0t.Models
                     break;
 
                 case "yo":
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "yo!",
                         "yo man",
@@ -90,7 +90,7 @@ namespace pappab0t.Models
                     break;
 
                 case "hi":
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "hi hi",
                         "?",
@@ -99,7 +99,7 @@ namespace pappab0t.Models
                     });
                     break;
                 case "hello":
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "haj!",
                         "svenska plz.",
@@ -111,7 +111,7 @@ namespace pappab0t.Models
                 case "mrn":
                 case "morrn":
                 case "nirrb":
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "morrn",
                         "nirrb",
@@ -119,7 +119,7 @@ namespace pappab0t.Models
                     });
                     break;
                 default:
-                    svar.AddRange(new[]
+                    response.AddRange(new[]
                     {
                         "Hej du. Vad är upp?",
                         "Hej cepe, behöver du hjälp?",
@@ -130,24 +130,24 @@ namespace pappab0t.Models
                     break;
             }
 
-            return svar.Random();
+            return response.Random();
         }
 
         public string GetScoreboardHype()
         {
-            string[] hypes =
+            string[] response =
             {
                 "Ok, så här ser det ut ATM.",
                 "Ställningen är som följer:",
                 "Ok, en liten uppdatering om ställningarna då.",
             };
 
-            return hypes.Random();
+            return response.Random();
         }
 
         public string GetYoureWelcome()
         {
-            string[] youreWelcomes =
+            string[] response =
             {
                 "np",
                 "lugnt",
@@ -156,7 +156,33 @@ namespace pappab0t.Models
                 "Det var så lite så."
             };
 
-            return youreWelcomes.Random();
+            return response.Random();
+        }
+
+        public string GetOpenAppology()
+        {
+            string[] response =
+            {
+                "sry, men",
+                "ursäkta mig, men",
+                "Du får ursäkta mig, men",
+                "du får ursäkta mig, men",
+                "hmm,",
+                "Hmm,"
+            };
+
+            return response.Random();
+        }
+
+        public string GetIDontKnowXxxNamedYyy()
+        {
+            string[] response =
+            {
+                "jag känner inte till {0} som heter {1}",
+                "jag har inte koll på {0} som heter {1}",
+            };
+
+            return response.Random();
         }
     }
 }

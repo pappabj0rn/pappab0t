@@ -13,7 +13,7 @@ namespace pappab0t.Responders
     {
         public bool CanRespond(ResponseContext context)
         {
-            return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
+            return (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                    Regex.IsMatch(context.Message.Text, @"\bupptid\b", RegexOptions.IgnoreCase);
         }
 

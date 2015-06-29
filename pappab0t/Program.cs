@@ -11,6 +11,7 @@ using MargieBot.Models;
 using MargieBot.Responders;
 using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
+using pappab0t.Extensions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
 using Raven.Client;
@@ -129,7 +130,7 @@ namespace pappab0t
                     context => context.Get<Phrasebook>().GetYoureWelcome()),
 
                 _bot.CreateResponder(
-                    context => (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM) &&
+                    context => (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                                !context.BotHasResponded &&
                                Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|läget|hi|hello|morrn|mrn|nirrb)\b",
                                    RegexOptions.IgnoreCase) &&

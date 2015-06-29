@@ -164,7 +164,7 @@ namespace pappab0t.Responders
 
         public ExposedInformation Info
         {
-            get { return new ExposedInformation { Usage = "@(nickname) +1", Explatation = "Ger en poäng till specifierad användare." }; }
+            get { return new ExposedInformation { Usage = "<@nickname> +1", Explatation = "Ger en poäng till specifierad användare." }; }
         }
     }
 }
