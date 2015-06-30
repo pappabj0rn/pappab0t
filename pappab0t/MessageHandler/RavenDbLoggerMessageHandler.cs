@@ -17,7 +17,7 @@ namespace pappab0t.MessageHandler
                 session.Store(context.Message);
                 var metadata = session.Advanced.GetMetadataFor(context.Message);
                 metadata.Add(Keys.RavenDB.Metadata.Created,DateTime.Now);
-                metadata.Add(Keys.RavenDB.Metadata.TimeStamp, jObject["ts"].Value<string>());
+                metadata.Add(Keys.RavenDB.Metadata.TimeStamp, jObject[Keys.Slack.MessageJson.TimeStamp].Value<string>());
                 session.SaveChanges();
             }
         }

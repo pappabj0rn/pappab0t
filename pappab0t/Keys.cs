@@ -18,5 +18,23 @@
                 public const string TimeStamp = "TimeStamp";
             }
         }
+
+        public static class Slack
+        {
+            public static class MessageJson
+            {
+                public const string Username = "username";
+                public const string TimeStamp = "ts";
+                public const string Type = "type";
+                public const string Text = "text";
+                public const string User = "user";
+                public const string Channel = "channel";
+            }
+
+            public static class UserListJson
+            {
+                public const string Members = "members";
+            }
+        }
     }
 }

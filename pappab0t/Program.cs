@@ -154,7 +154,7 @@ namespace pappab0t
             var json = await client.GetResponse("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
             var jData = JObject.Parse(json);
 
-            foreach (var user in jData["members"].Values<JObject>())
+            foreach (var user in jData[Keys.Slack.UserListJson.Members].Values<JObject>())
             {
                 _userNameCache.Add(user["id"].Value<string>(), user["name"].Value<string>());
             }
@@ -165,9 +165,9 @@ namespace pappab0t
             //Copied from MargieBot source and modified to allow all messages
 
             var jObject = JObject.Parse(json);
-            if (jObject["type"].Value<string>() != "message") return;
+            if (jObject[Keys.Slack.MessageJson.Type].Value<string>() != "message") return;
 
-            var channelID = jObject["channel"].Value<string>();
+            var channelID = jObject[Keys.Slack.MessageJson.Channel].Value<string>();
             SlackChatHub hub;
 
             if (_bot.ConnectedHubs.ContainsKey(channelID))
@@ -182,14 +182,14 @@ namespace pappab0t
                 hubs.Add(hub);
             }
 
-            var messageText = (jObject["text"] != null ? jObject["text"].Value<string>() : null);
+            var messageText = (jObject[Keys.Slack.MessageJson.Text] != null ? jObject[Keys.Slack.MessageJson.Text].Value<string>() : null);
 
             var message = new SlackMessage
             {
                 ChatHub = hub,
                 RawData = json,
                 Text = messageText,
-                User = (jObject["user"] != null ? new SlackUser { ID = jObject["user"].Value<string>() } : null)
+                User = (jObject[Keys.Slack.MessageJson.User] != null ? new SlackUser { ID = jObject[Keys.Slack.MessageJson.User].Value<string>() } : null)
             };
 
             var context = new ResponseContext

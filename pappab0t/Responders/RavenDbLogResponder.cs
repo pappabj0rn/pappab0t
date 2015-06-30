@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using MargieBot.Models;
 using MargieBot.Responders;
+using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
@@ -11,7 +12,7 @@ using Raven.Client;
 
 namespace pappab0t.Responders
 {
-    public class RavenDbLogResponder : IResponder, IExposedCapability
+    public class RavenDbLogResponder : ResponderBase, IExposedCapability
     {
         private const string FromDateKey = "fromDate";
         private const string ToDateKey = "toDate";
@@ -20,7 +21,6 @@ namespace pappab0t.Responders
         private const string MultipleDayRegex = @"\blogg\b\s+(?<" + FromDateKey + ">[0-9]{6})-(?<" + ToDateKey + @">[0-9]{6})(\ss(?<" + PageKey + ">[0-9]{0,3}))?";
         private const int PageSize = 1000;
         
-        private ResponseContext _context;
         private DateTime _fromDate;
         private DateTime _toDate;
         private int _page;
@@ -28,7 +28,7 @@ namespace pappab0t.Responders
         private RavenQueryStatistics _queryStats;
         private int _logMessageCount;
 
-        public bool CanRespond(ResponseContext context)
+        public override bool CanRespond(ResponseContext context)
         {
             return (context.Message.MentionsBot 
                     || context.Message.IsDirectMessage()) &&
@@ -36,9 +36,9 @@ namespace pappab0t.Responders
                     || Regex.IsMatch(context.Message.Text, SingleDayRegex, RegexOptions.IgnoreCase));
         }
 
-        public BotMessage GetResponse(ResponseContext context)
+        public override BotMessage GetResponse(ResponseContext context)
         {
-            _context = context;
+            Context = context;
             
             CollectParams();
 
@@ -74,7 +74,7 @@ namespace pappab0t.Responders
 
         private void CollectParams()
         {
-            var match = Regex.Match(_context.Message.Text, MultipleDayRegex);
+            var match = Regex.Match(Context.Message.Text, MultipleDayRegex);
             if (match.Success)
             {
                 CollectInputParams(match);
@@ -82,7 +82,7 @@ namespace pappab0t.Responders
             }
             else
             {
-                match = Regex.Match(_context.Message.Text, SingleDayRegex);
+                match = Regex.Match(Context.Message.Text, SingleDayRegex);
                 CollectInputParams(match);
                 _dateRange = match.Groups[FromDateKey].Value;
             }
@@ -106,15 +106,13 @@ namespace pappab0t.Responders
 
         private string CreateLog()
         {
-            var store = _context.Get<IDocumentStore>();
-
             var sb = new StringBuilder();
-            using (var session = store.OpenSession())
+            using (var session = DocumentStore.OpenSession())
             {
                 var messages = session.Advanced
                                     .DocumentQuery<SlackMessage>()
                                     .Statistics(out _queryStats)
-                                    .WhereEquals(x=>x.ChatHub.ID, _context.Message.ChatHub.ID)
+                                    .WhereEquals(x=>x.ChatHub.ID, Context.Message.ChatHub.ID)
                                     .AndAlso()
                                     .WhereBetween(Keys.RavenDB.Metadata.Created, _fromDate.ToShortDateString(), _toDate.ToShortDateString())
                                     .OrderBy(new[] { Keys.RavenDB.Metadata.TimeStamp })
@@ -124,11 +122,26 @@ namespace pappab0t.Responders
 
                 _logMessageCount = messages.Count;
 
-                foreach (var slackMessage in messages)
+                foreach (var message in messages)
                 {
-                    var meta = session.Advanced.GetMetadataFor(slackMessage);
+                    string username;
+                    if (message.User == null && message.Text != null)
+                    {
+                        var jObject = JObject.Parse(message.RawData);
+                        username = "`BOT`{0}".With(jObject[Keys.Slack.MessageJson.Username].Value<string>());
+                    }
+                    else if(message.User != null)
+                    {
+                        username = Context.UserNameCache[message.User.ID];
+                    }
+                    else
+                    {
+                        continue;
+                    }
 
-                    sb.AppendFormat("{0} {1}: {2}\n", meta.Value<DateTime>(Keys.RavenDB.Metadata.Created), _context.UserNameCache[slackMessage.User.ID], slackMessage.Text);
+                    var meta = session.Advanced.GetMetadataFor(message);
+
+                    sb.AppendFormat("{0} {1}: {2}\n", meta.Value<DateTime>(Keys.RavenDB.Metadata.Created), username, message.Text);
                 }
             }
 

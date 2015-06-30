@@ -1,7 +1,7 @@
 using MargieBot.Models;
 using MargieBot.Responders;
 using pappab0t.Models;
-using Raven.Client.Document;
+using Raven.Client;
 
 namespace pappab0t.Responders
 {
@@ -12,13 +12,13 @@ namespace pappab0t.Responders
 
         protected ResponseContext Context;
 
-        protected DocumentStore DocumentStore
+        protected IDocumentStore DocumentStore
         {
             get
             {
                 return Context == null
                     ? null
-                    : Context.Get<DocumentStore>();
+                    : Context.Get<IDocumentStore>();
             }
         }
 
