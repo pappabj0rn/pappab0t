@@ -43,7 +43,7 @@ namespace pappab0t.Responders
             sb.AppendFormat("{0} kr", inv.BEK);
 
             if (inv.Items.Any())
-                sb.AppendLine("Samt följande objekt:");
+                sb.AppendLine(", samt följande objekt:");
 
             var i = 0;
             foreach (var item in inv.Items)

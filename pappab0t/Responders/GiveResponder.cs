@@ -22,7 +22,6 @@ namespace pappab0t.Responders
         private string targetUserId;
         private int amount, itemIndex;
         private bool moneyTransfer;
-        private bool _failedToGetIntParam;
 
         public override bool CanRespond(ResponseContext context)
         {
@@ -41,10 +40,7 @@ namespace pappab0t.Responders
         {
             Context = context;
             CollectParams();
-
-            if(_failedToGetIntParam)
-                return new BotMessage{ Text = "Jag förstod inte sifferdelen av det där."};
-
+            
             targetUserId = context.UserNameCache
                                   .FirstOrDefault(x => x.Value.Equals(targetUsername, StringComparison.InvariantCultureIgnoreCase))
                                   .Key;
@@ -58,7 +54,7 @@ namespace pappab0t.Responders
             var userInventory = invMan.GetUserInventory();
             var targetInventory = invMan.GetUserInventory(targetUserId);
 
-            var msgText = "";
+            string msgText;
             if (moneyTransfer)
             {
                 if(userInventory.BEK < amount)
@@ -71,9 +67,6 @@ namespace pappab0t.Responders
             }
             else
             {
-                if (itemIndex<1)
-                    return new BotMessage { Text = "Positiva heltal för att ange vilken pryl du vill ge bort, tack." };
-
                 if(userInventory.Items.Count<itemIndex)
                     return new BotMessage { Text = "Du har inte så många saker." };
 
@@ -94,28 +87,17 @@ namespace pappab0t.Responders
             var match = Regex.Match(Context.Message.Text, MoneyRegex);
             if (match.Success)
             {
-                amount = GetIntParamWithErrorLogging(AmountKey, match);
+                amount = int.Parse(match.Groups[AmountKey].Value);
                 moneyTransfer = true;
             }
             else
             {
                 match = Regex.Match(Context.Message.Text, ItemRegex);
-                itemIndex = GetIntParamWithErrorLogging(IndexKey, match);
+                itemIndex = int.Parse(match.Groups[IndexKey].Value);
+                moneyTransfer = false;
             }
 
             targetUsername = match.Groups[UserKey].Value;
-        }
-
-        private int GetIntParamWithErrorLogging(string paramKey, Match match)
-        {
-            int x;
-
-            if (!int.TryParse(match.Groups[paramKey].Value, out x))
-            {
-                _failedToGetIntParam = true;
-            }
-
-            return x;
         }
 
         public ExposedInformation Info
