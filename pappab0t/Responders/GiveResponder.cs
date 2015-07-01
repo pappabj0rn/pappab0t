@@ -15,13 +15,13 @@ namespace pappab0t.Responders
         private const string UserKey = "user";
         private const string AmountKey = "amount";
         private const string IndexKey = "index";
-        private const string MoneyRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\s(?<" + AmountKey + @">[0-9]+)kr";
-        private const string ItemRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\sitem_(?<" + IndexKey + @">[0-9]+)";
+        private const string MoneyRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\s+(?<" + AmountKey + @">[0-9]+)kr";
+        private const string ItemRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\s+item_(?<" + IndexKey + @">[0-9]+)";
 
-        private string targetUsername;
-        private string targetUserId;
-        private int amount, itemIndex;
-        private bool moneyTransfer;
+        private string _targetUsername;
+        private string _targetUserId;
+        private int _amount, _itemIndex;
+        private bool _moneyTransfer;
 
         public override bool CanRespond(ResponseContext context)
         {
@@ -41,40 +41,40 @@ namespace pappab0t.Responders
             Context = context;
             CollectParams();
             
-            targetUserId = context.UserNameCache
-                                  .FirstOrDefault(x => x.Value.Equals(targetUsername, StringComparison.InvariantCultureIgnoreCase))
+            _targetUserId = context.UserNameCache
+                                  .FirstOrDefault(x => x.Value.Equals(_targetUsername, StringComparison.InvariantCultureIgnoreCase))
                                   .Key;
 
-            if(targetUserId.IsNullOrEmpty())
+            if(_targetUserId.IsNullOrEmpty())
                 return new BotMessage { Text = "{0} {1}"
                                                 .With(PhraseBook.GetOpenAppology(), PhraseBook.GetIDontKnowXxxNamedYyy()
-                                                                                                .With("nån användare",targetUsername)) };
+                                                                                                .With("nån användare",_targetUsername)) };
 
             var invMan = new InventoryManager(Context);
             var userInventory = invMan.GetUserInventory();
-            var targetInventory = invMan.GetUserInventory(targetUserId);
+            var targetInventory = invMan.GetUserInventory(_targetUserId);
 
             string msgText;
-            if (moneyTransfer)
+            if (_moneyTransfer)
             {
-                if(userInventory.BEK < amount)
+                if(userInventory.BEK < _amount)
                     return new BotMessage { Text = "Du kan inte ge nån mer pengar än du har." };
 
-                userInventory.BEK -= amount;
-                targetInventory.BEK += amount;
+                userInventory.BEK -= _amount;
+                targetInventory.BEK += _amount;
 
-                msgText = "{0}kr överlämnade.".With(amount);
+                msgText = "{0}kr överlämnade.".With(_amount);
             }
             else
             {
-                if(userInventory.Items.Count<itemIndex)
+                if(userInventory.Items.Count<_itemIndex)
                     return new BotMessage { Text = "Du har inte så många saker." };
 
-                var item = userInventory.Items[itemIndex - 1];
+                var item = userInventory.Items[_itemIndex - 1];
                 userInventory.Items.Remove(item);
                 targetInventory.Items.Add(item);
 
-                msgText = "{0} är överlämnad.".With(item.Name);
+                msgText = "{0} överlämnad.".With(item.Name);
             }
 
             invMan.Save(new[] {userInventory, targetInventory});
@@ -87,17 +87,17 @@ namespace pappab0t.Responders
             var match = Regex.Match(Context.Message.Text, MoneyRegex);
             if (match.Success)
             {
-                amount = int.Parse(match.Groups[AmountKey].Value);
-                moneyTransfer = true;
+                _amount = int.Parse(match.Groups[AmountKey].Value);
+                _moneyTransfer = true;
             }
             else
             {
                 match = Regex.Match(Context.Message.Text, ItemRegex);
-                itemIndex = int.Parse(match.Groups[IndexKey].Value);
-                moneyTransfer = false;
+                _itemIndex = int.Parse(match.Groups[IndexKey].Value);
+                _moneyTransfer = false;
             }
 
-            targetUsername = match.Groups[UserKey].Value;
+            _targetUsername = match.Groups[UserKey].Value;
         }
 
         public ExposedInformation Info
