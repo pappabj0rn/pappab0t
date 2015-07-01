@@ -7,22 +7,18 @@ namespace pappab0t.Models
     {
         public string GetAffirmation()
         {
-            string[] response =
-            {
+            return new[]{
                 "ok",
                 "råger",
                 "roger",
                 "jag hör dig.",
                 "absolut"
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetExclamation()
         {
-            string[] response =
-            {
+            return new[]{
                 "Fuck YEAH!",
                 "Whooo!",
                 "whoppi do!",
@@ -35,15 +31,12 @@ namespace pappab0t.Models
                 ":parrot:",
                 ":pbjt:",
                 ":tinfoil:"
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetMutedExclamation()
         {
-            string[] response =
-            {
+            return new[]{
                 "Kul.",
                 "Jora, så atte...",
                 "Inte illa.",
@@ -52,9 +45,7 @@ namespace pappab0t.Models
                 "grattis.",
                 ":clap:",
                 ":smiley:"
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetQuery(string input)
@@ -135,54 +126,58 @@ namespace pappab0t.Models
 
         public string GetScoreboardHype()
         {
-            string[] response =
-            {
+            return new[]{
                 "Ok, så här ser det ut ATM.",
                 "Ställningen är som följer:",
                 "Ok, en liten uppdatering om ställningarna då.",
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetYoureWelcome()
         {
-            string[] response =
-            {
+            return new[]{
                 "np",
                 "lugnt",
                 "esch då",
                 "^^",
                 "Det var så lite så."
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetOpenAppology()
         {
-            string[] response =
-            {
+            return new[]{
                 "sry, men",
                 "ursäkta mig, men",
                 "Du får ursäkta mig, men",
                 "du får ursäkta mig, men",
                 "hmm,",
                 "Hmm,"
-            };
-
-            return response.Random();
+            }.Random();
         }
 
         public string GetIDontKnowXxxNamedYyy()
         {
-            string[] response =
-            {
+            return new[]{
                 "jag känner inte till {0} som heter {1}",
                 "jag har inte koll på {0} som heter {1}",
-            };
+            }.Random();
+        }
 
-            return response.Random();
+        public string GetIDidntUnderstand()
+        {
+            return new[]{
+                "Det fär förstod jag inte",
+                "va?",
+                "huh?",
+                "?",
+                "...?",
+                "FLAGRANT SYSTEM ERROR",
+                "Flamboyant System Error",
+                "Oh, Child!",
+                "FRAGRANT SYSTEM ERROR",
+                "Monkey, hush."
+            }.Random();
         }
     }
 }

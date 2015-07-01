@@ -132,11 +132,18 @@ namespace pappab0t
                 _bot.CreateResponder(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                                !context.BotHasResponded &&
-                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|läget|hi|hello|morrn|mrn|nirrb)\b",
+                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|yo|läget|hi|hello|morrn|mrn|nirrb)\b",
                                    RegexOptions.IgnoreCase) &&
                                context.Message.User.ID != context.BotUserID &&
                                !context.Message.User.IsSlackbot,
-                    context => context.Get<Phrasebook>().GetQuery(context.Message.Text))
+                    context => context.Get<Phrasebook>().GetQuery(context.Message.Text)),
+                
+                _bot.CreateResponder(
+                    context => (context.Message.MentionsBot || context.Message.IsDirectMessage())
+                               && !context.BotHasResponded
+                               && context.Message.User.ID != context.BotUserID 
+                               && !context.Message.User.IsSlackbot,
+                    context => context.Get<Phrasebook>().GetIDidntUnderstand())
             });
 
             return responders;
