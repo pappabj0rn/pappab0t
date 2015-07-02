@@ -179,5 +179,34 @@ namespace pappab0t.Models
                 "Monkey, hush."
             }.Random();
         }
+
+        public string GetInsufficientFundsFormat()
+        {
+            return new[]{
+                "För lite pengar i plånkan, Du behöver {0}kr.",
+                "Det kostart {0}kr att göra det där, vilket du inte har.",
+                "Återkom när du har minst {0}kr.",
+                "{0}kr först, sen kan vi prata.",
+                "Inga rabatter, {0}kr kostar det."
+            }.Random();
+        }
+
+        public string GetDidntMakeHighScoreFormat()
+        {
+            return new[]{
+                "Du fick {0}p, vilket tyvärr inte tar dig in på highscore-listan :(",
+                "{0}p! Tyvärr räcker det inte.",
+                "{0}p, bättre lycka nästa gång!"
+            }.Random();
+        }
+
+        public string GetPotPayoutFormat()
+        {
+            return new[]{
+                "Ny highscore! {0}p tar dig till plats {1} och ger dig {2}kr :D",
+                "Vinnare! {0}p => plats {1} => {2}kr.",
+                "{2}kr utdelning! {0}p (pos. {1})"
+            }.Random();
+        }
     }
 }

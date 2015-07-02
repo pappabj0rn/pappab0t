@@ -49,5 +49,10 @@ namespace pappab0t.Modules.Inventory
                 session.SaveChanges();
             }
         }
+
+        public void Save(Inventory userInv)
+        {
+            Save(new []{userInv});
+        }
     }
 }

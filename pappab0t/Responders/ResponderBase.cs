@@ -7,9 +7,6 @@ namespace pappab0t.Responders
 {
     public abstract class ResponderBase : IResponder
     {
-        public abstract bool CanRespond(ResponseContext context);
-        public abstract BotMessage GetResponse(ResponseContext context);
-
         protected ResponseContext Context;
 
         protected IDocumentStore DocumentStore
@@ -31,5 +28,8 @@ namespace pappab0t.Responders
                     : Context.Get<Phrasebook>();
             }
         }
+
+        public abstract bool CanRespond(ResponseContext context);
+        public abstract BotMessage GetResponse(ResponseContext context);
     }
 }

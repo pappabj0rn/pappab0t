@@ -8,6 +8,7 @@
             public const string RavenUrl = "ravenUrl";
             public const string RavenDbName = "ravenDbName";
             public const string BotAliases = "botAliases";
+            public const string Admins = "admins";
         }
 
         public static class RavenDB
