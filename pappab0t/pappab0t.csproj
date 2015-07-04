@@ -109,6 +109,7 @@
     <Compile Include="Responders\GiveResponder.cs" />
     <Compile Include="Responders\HighScoreResponder.cs" />
     <Compile Include="Responders\InventoryResponder.cs" />
+    <Compile Include="Responders\MoneyPotResponder.cs" />
     <Compile Include="Responders\RavenDbLogResponder.cs" />
     <Compile Include="Responders\ResponderBase.cs" />
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />

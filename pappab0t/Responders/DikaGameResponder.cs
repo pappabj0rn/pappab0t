@@ -71,7 +71,7 @@ namespace pappab0t.Responders
                 }
                     
 
-                payout = Math.Round(PayoutDictionary[outcome] * pot.BEK,2);
+                payout = Math.Round(PayoutDictionary[outcome] * pot.BEK,2)+GameCost;
                 pot.BEK -= payout;
                 userInv.BEK += payout;
 

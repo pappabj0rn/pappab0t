@@ -161,6 +161,7 @@ namespace pappab0t.Models
             return new[]{
                 "jag känner inte till {0} som heter {1}",
                 "jag har inte koll på {0} som heter {1}",
+                "mina böcker nämner inte {0} vid namn {1}"
             }.Random();
         }
 

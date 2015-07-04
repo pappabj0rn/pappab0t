@@ -13,7 +13,7 @@ namespace pappab0t.Responders
     public class HighScoreResponder : ResponderBase, IExposedCapability
     {
         private const string GameNameKey = "gameName";
-        private const string HighScoreRegex = @"\bhighscore|hs\b(\s+(?<"+GameNameKey+@">\w+))?";
+        private const string HighScoreRegex = @"\bhighscore|hs\b(\s+(?<" + GameNameKey + @">\w+))?";
 
         private string _gameName;
 
@@ -28,8 +28,8 @@ namespace pappab0t.Responders
             Context = context;
 
             var match = Regex.Match(Context.Message.Text, HighScoreRegex, RegexOptions.IgnoreCase);
-            _gameName = match.Groups[GameNameKey].Value.IsNullOrEmpty() 
-                        ? String.Empty 
+            _gameName = match.Groups[GameNameKey].Value.IsNullOrEmpty()
+                        ? String.Empty
                         : match.Groups[GameNameKey].Value;
 
             string messageText;
@@ -39,7 +39,7 @@ namespace pappab0t.Responders
                 {
                     var lists = session.Query<HighScore>().ToList();
 
-                    if(!lists.Any())
+                    if (!lists.Any())
                         return new BotMessage { Text = "Jag hittar tyvärr inte en enda lista med poäng." };
 
 
@@ -57,7 +57,7 @@ namespace pappab0t.Responders
                 }
             }
 
-            return new BotMessage{Text = messageText};
+            return new BotMessage { Text = messageText };
         }
 
         private string BuildSingleListTestMessage(HighScore hs)
