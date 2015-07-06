@@ -7,6 +7,7 @@ using MargieBot.Responders;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
+using pappab0t.Modules.Inventory;
 
 namespace pappab0t.Responders
 {
@@ -18,6 +19,8 @@ namespace pappab0t.Responders
     public class ScoreResponder : IResponder, IExposedCapability
     {
         private const string ScoreRegex = @"((?<formattedUserID><@(?<userID>U[a-zA-Z0-9]+)>)[\s,:]*)+?\+\s*1";
+        private const decimal TargetCashPayout = 10.0m;
+        private const decimal SourceCashPayout = 3.0m;
 
         // this responder holds a scorebook that keeps track of the score per teamID. We hold internal references
         // to the team we're scoring so we don't have to build the scorebook every time a response is requested, but
@@ -71,7 +74,7 @@ namespace pappab0t.Responders
             if (allUsers.Contains(context.Message.User.ID))
             {
                 responseBuilder.Append( //TODO in i frasboken med knasiga utryck
-                    "@{0}. Du kan inte ge dig själv poäng - vad skulle det vara för ett spel?. Hörrni, {0} är ju för söt, men jag undrar om alla indianer ror åt samma håll.\n\n"
+                    "@{0}. Du kan inte ge dig själv poäng - vad skulle det vara för ett spel?. {0} är ju för rolig, men jag undrar om alla indianer ror åt samma håll.\n\n"
                         .With(context.Message.User.FormattedUserID));
             }
 
@@ -88,8 +91,8 @@ namespace pappab0t.Responders
                     {
                         int margieScore = Scorebook.GetUserScore(context.BotUserID);
                         responseBuilder.Append(
-                            "Åh vad du är go! Om du insisterar. Då har jag {0} poäng.\n\n"
-                                .With(margieScore));
+                            "{0} Då har jag {1} poäng.\n\n"
+                                .With(phrasebook.GetThankYou(), margieScore));
                     }
                     else if (newScorers.Contains(scoringUsers[0]))
                     {
@@ -105,7 +108,7 @@ namespace pappab0t.Responders
                         var scoredUser = scoringResults.First(r => r.UserID == scoringUsers[0]);
 
                         responseBuilder.Append(
-                            "{0} {1} fick just en poäng. Ok, {1}, du har nu {2}."
+                            "{0} {1} fick just en poäng. {1}, du har nu {2}."
                             .With(
                                     phrasebook.GetExclamation(),
                                     scoredUser.FormattedUserID,
@@ -151,6 +154,22 @@ namespace pappab0t.Responders
                 }
             }
 
+            var invMan = new InventoryManager(context);
+            
+            var sourceUserInv = invMan.GetUserInventory();
+            sourceUserInv.BEK += SourceCashPayout;
+
+            var userInventories = new List<Inventory>{sourceUserInv};
+
+            foreach (var userId in scoringUsers)
+            {
+                var targetInv = invMan.GetUserInventory(userId);
+                targetInv.BEK += TargetCashPayout;
+                userInventories.Add(targetInv);
+            }
+
+            invMan.Save(userInventories);
+
             return new BotMessage {Text = responseBuilder.ToString().Trim()};
         }
 
@@ -164,7 +183,7 @@ namespace pappab0t.Responders
 
         public ExposedInformation Info
         {
-            get { return new ExposedInformation { Usage = "<@nickname> +1", Explatation = "Ger en poäng till specifierad användare." }; }
+            get { return new ExposedInformation { Usage = "<@nickname1> [nickname2...] +1", Explatation = "Ger en poäng och {0:0.00}kr till specifierade användare. Du får {1:0.00}kr".With(TargetCashPayout, SourceCashPayout) }; }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using MargieBot.Models;
 using Raven.Client.Document;
 
@@ -36,7 +37,7 @@ namespace pappab0t.Modules.Inventory
             }
         }
 
-        public void Save(Inventory[] inventories)
+        public void Save(IEnumerable<Inventory> inventories)
         {
             var ravenStore = _context.Get<DocumentStore>();
             using (var session = ravenStore.OpenSession())

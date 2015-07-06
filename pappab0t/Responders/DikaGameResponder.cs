@@ -33,8 +33,7 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
-            return (context.Message.MentionsBot && Regex.IsMatch(context.Message.Text, @"^\w+\s(?:dikagame|dg)", RegexOptions.IgnoreCase))
-                || (context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:dikagame|dg)", RegexOptions.IgnoreCase));
+            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\dikagame\b|\bdg\b)", RegexOptions.IgnoreCase);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -97,7 +96,7 @@ namespace pappab0t.Responders
                 return new ExposedInformation
                             {
                                 Usage = "dikagame|dg", 
-                                Explatation = "Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {0}kr.".With(GameCost)
+                                Explatation = "Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {0}kr.".With(GameCost)
                             }; 
             }
         }

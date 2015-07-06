@@ -12,7 +12,7 @@ namespace pappab0t.Responders
     public class MoneyPotResponder : ResponderBase, IExposedCapability
     {
         private const string PotNameKey = "potName";
-        private const string HighScoreRegex = @"(?:pott|p)(\s+(?<" + PotNameKey + @">\w+))?";
+        private const string HighScoreRegex = @"(?:\bpott\b|\bp\b)(\s+(?<" + PotNameKey + @">\w+))?";
 
         private string _potName;
 

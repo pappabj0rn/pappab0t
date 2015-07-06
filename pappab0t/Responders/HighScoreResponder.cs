@@ -13,7 +13,7 @@ namespace pappab0t.Responders
     public class HighScoreResponder : ResponderBase, IExposedCapability
     {
         private const string GameNameKey = "gameName";
-        private const string HighScoreRegex = @"\bhighscore|hs\b(\s+(?<" + GameNameKey + @">\w+))?";
+        private const string HighScoreRegex = @"(?:\bhighscore\b|\bhs\b)(\s+(?<" + GameNameKey + @">\w+))?";
 
         private string _gameName;
 

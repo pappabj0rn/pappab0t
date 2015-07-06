@@ -16,6 +16,20 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string GetThankYou()
+        {
+            return new[]{
+                "Tack!",
+                "Tack.",
+                "tanks.",
+                "tack o bock.",
+                "man tackar, man tackar!",
+                "ty.",
+                ":thumbsup:",
+                "tank you!"
+            }.Random();
+        }
+
         public string GetExclamation()
         {
             return new[]{
