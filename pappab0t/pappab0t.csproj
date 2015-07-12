@@ -114,6 +114,7 @@
     <Compile Include="Responders\ResponderBase.cs" />
     <Compile Include="Responders\ScoreboardRequestResponder.cs" />
     <Compile Include="Responders\ScoreResponder.cs" />
+    <Compile Include="Responders\SecondaryMessageResponder.cs" />
     <Compile Include="Responders\TimeResponder.cs" />
     <Compile Include="Responders\UptimeResponder.cs" />
     <Compile Include="Responders\WeekNumberResponder.cs" />

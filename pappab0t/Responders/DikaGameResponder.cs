@@ -80,7 +80,14 @@ namespace pappab0t.Responders
             }
             
             invMan.Save(userInv);
-            
+
+            var channelNames = context.Get<Dictionary<string, string>>(Keys.StaticContextKeys.ChannelsNameCache);
+            SecondaryMessageResponder.Message = new BotMessage
+            {
+                ChatHub = new SlackChatHub{ID = channelNames.First(x=>x.Value=="general").Key},
+                Text = PhraseBook.GetNewHighscoreFormat().With(GameKey, context.UserNameCache[context.Message.User.ID], outcome)
+            };
+
             return new BotMessage
             {
                 Text ="{0} {1}".With(

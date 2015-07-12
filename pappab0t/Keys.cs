@@ -2,6 +2,14 @@
 {
     public static class Keys
     {
+        public static class StaticContextKeys
+        {
+            public const string Phrasebook = "Phrasebook";
+            public const string Bot = "Bot";
+            public const string RavenStore = "RavenStore";
+            public const string ChannelsNameCache = "ChannelsNameCache";
+        }
+
         public static class AppSettings
         {
             public const string SlackKey = "slackKey";
@@ -35,6 +43,11 @@
             public static class UserListJson
             {
                 public const string Members = "members";
+            }
+
+            public static class ChannelsListJson
+            {
+                public const string Channels = "channels";
             }
         }
     }

@@ -14,6 +14,7 @@ using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
+using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Document;
 using StructureMap;
@@ -27,6 +28,7 @@ namespace pappab0t
         private static string[] _botAliases;
         private static IDocumentStore _ravenStore;
         private static Dictionary<string, string> _userNameCache;
+        private static Dictionary<string, string> _channelsNameCache;
         private static List<IMessageHandler> _messageHandlers;
        
         private static void Main()
@@ -61,7 +63,6 @@ namespace pappab0t
         {
             ObjectFactory.Initialize(x =>
             {
-                //x.For<TYPE>().Use<IMPL>()
                 x.Scan(y =>
                 {
                     y.AddAllTypesOf<IResponder>();
@@ -90,6 +91,7 @@ namespace pappab0t
 
                 Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
                 await PopulateUsernameCache();
+                await PopulateChannelsCache();
             };
 
             _bot.MessageReceived += _bot_MessageReceived;
@@ -103,6 +105,7 @@ namespace pappab0t
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
             _bot = new Bot();
             _userNameCache = new Dictionary<string, string>();
+            _channelsNameCache = new Dictionary<string, string>();
             _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
 
             _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
@@ -112,15 +115,17 @@ namespace pappab0t
         {
             return new Dictionary<string, object>
             {
-                {"Phrasebook", new Phrasebook()},
-                {"Bot",_bot},
-                {"RavenStore",_ravenStore}
+                {Keys.StaticContextKeys.Phrasebook, new Phrasebook()},
+                {Keys.StaticContextKeys.Bot,_bot},
+                {Keys.StaticContextKeys.RavenStore,_ravenStore},
+                {Keys.StaticContextKeys.ChannelsNameCache,_channelsNameCache}
             };
         }
 
         private static IEnumerable<IResponder> GetResponders()
         {
             var responders = ObjectFactory.GetAllInstances<IResponder>().ToList();
+            MoveMultiMessageresponderLast(responders);
 
             responders.AddRange(new[]
             {
@@ -149,6 +154,13 @@ namespace pappab0t
             return responders;
         }
 
+        private static void MoveMultiMessageresponderLast(List<IResponder> responders)
+        {
+            var temp = responders.Find(x => x is SecondaryMessageResponder);
+            responders.Remove(temp);
+            responders.Add(temp);
+        }
+
         private static async Task PopulateUsernameCache()
         {
             var client = new NoobWebClient();
@@ -164,6 +176,25 @@ namespace pappab0t
             foreach (var user in jData[Keys.Slack.UserListJson.Members].Values<JObject>())
             {
                 _userNameCache.Add(user["id"].Value<string>(), user["name"].Value<string>());
+            }
+        }
+
+        private static async Task PopulateChannelsCache()
+        {
+            var client = new NoobWebClient();
+
+            var values = new List<string>
+                {
+                    "token", _slackKey,
+                    "exclude_archived","1"
+                };
+
+            var json = await client.GetResponse("https://slack.com/api/channels.list", RequestMethod.Post, values.ToArray());
+            var jData = JObject.Parse(json);
+
+            foreach (var channel in jData[Keys.Slack.ChannelsListJson.Channels].Values<JObject>())
+            {
+                _channelsNameCache.Add(channel["id"].Value<string>(), channel["name"].Value<string>());
             }
         }
 

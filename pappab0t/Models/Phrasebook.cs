@@ -223,5 +223,14 @@ namespace pappab0t.Models
                 "{2}kr utdelning! {0}p (pos. {1})"
             }.Random();
         }
+
+        public string GetNewHighscoreFormat()
+        {
+            return new[]{
+                "Ny higscore i {0}! {1} tog plats {2} :D",
+                "{1} knep just plats {2} på {0}-listan!",
+                "Plats {2} på {0}-listan tillhör nu {1}"
+            }.Random();
+        }
     }
 }
