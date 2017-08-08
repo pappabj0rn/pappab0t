@@ -12,18 +12,20 @@ namespace pappab0t.Modules.Common
             Cards = new List<Card>();
         }
 
+        /// <summary>
+        /// Fisher–Yates shuffle
+        /// https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+        /// </summary>
         public void Shuffle()
         {
             var rnd = new Random();
 
-            for (var swapCount = (rnd.NextDouble()+100) * 100000; swapCount > 0; swapCount--)
+            for (var i = Cards.Count - 1; i > 0; i--)
             {
-                var swapIndex1 = rnd.Next(Cards.Count - 1);
-                var swapIndex2 = rnd.Next(Cards.Count - 1);
-
-                var cardHolder = Cards[swapIndex1];
-                Cards[swapIndex1] = Cards[swapIndex2];
-                Cards[swapIndex2] = cardHolder;
+                var j = rnd.Next(0, i + 1);
+                var tempCard = Cards[i];
+                Cards[i] = Cards[j];
+                Cards[j] = tempCard;
             }
         }
 
