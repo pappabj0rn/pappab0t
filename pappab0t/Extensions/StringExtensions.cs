@@ -15,5 +15,10 @@ namespace pappab0t.Extensions
                     ? fallback
                     : s;
         }
+
+        public static bool IsNullOrEmpty(this string s)
+        {
+            return string.IsNullOrEmpty(s);
+        }
     }
 }

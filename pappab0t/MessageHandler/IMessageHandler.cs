@@ -1,4 +1,4 @@
-﻿using MargieBot.Models;
+﻿using MargieBot;
 
 namespace pappab0t.MessageHandler
 {

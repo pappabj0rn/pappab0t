@@ -5,19 +5,16 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Bazam.NoobWebClient;
+using Bazam.Http;
 using MargieBot;
-using MargieBot.Models;
-using MargieBot.Responders;
 using Newtonsoft.Json.Linq;
-using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
 using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Document;
-using StructureMap;
+using Raven.Client.Embedded;
 
 namespace pappab0t
 {
@@ -35,8 +32,6 @@ namespace pappab0t
         {
             try
             {
-                InitStructureMap();
-
                 var t = MainAsync();
                 t.Wait();
 
@@ -57,19 +52,6 @@ namespace pappab0t
                 Console.Error.WriteLine(ex);
                 Console.ReadKey();
             }
-        }
-
-        private static void InitStructureMap()
-        {
-            ObjectFactory.Initialize(x =>
-            {
-                x.Scan(y =>
-                {
-                    y.AddAllTypesOf<IResponder>();
-                    y.AddAllTypesOf<IMessageHandler>();
-                    y.AssemblyContainingType(typeof(IExposedCapability));
-                });
-            });
         }
 
         static async Task MainAsync()
@@ -106,7 +88,7 @@ namespace pappab0t
             _bot = new Bot();
             _userNameCache = new Dictionary<string, string>();
             _channelsNameCache = new Dictionary<string, string>();
-            _messageHandlers = ObjectFactory.GetAllInstances<IMessageHandler>().ToList();
+            _messageHandlers = ObjectFactory.Container.GetAllInstances<IMessageHandler>().ToList();
 
             _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
         }
@@ -124,17 +106,17 @@ namespace pappab0t
 
         private static IEnumerable<IResponder> GetResponders()
         {
-            var responders = ObjectFactory.GetAllInstances<IResponder>().ToList();
+            var responders = ObjectFactory.Container.GetAllInstances<IResponder>().ToList();
             MoveMultiMessageresponderLast(responders);
 
             responders.AddRange(new[]
             {
-                _bot.CreateResponder(
+                SimpleResponder.Create(
                     context => context.Message.MentionsBot &&
                                Regex.IsMatch(context.Message.Text, @"\b(tack|tanks)\b", RegexOptions.IgnoreCase),
                     context => context.Get<Phrasebook>().GetYoureWelcome()),
 
-                _bot.CreateResponder(
+                SimpleResponder.Create(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                                !context.BotHasResponded &&
                                Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|yo|läget|hi|hello|morrn|mrn|nirrb)\b",
@@ -142,8 +124,8 @@ namespace pappab0t
                                context.Message.User.ID != context.BotUserID &&
                                !context.Message.User.IsSlackbot,
                     context => context.Get<Phrasebook>().GetQuery(context.Message.Text)),
-                
-                _bot.CreateResponder(
+
+                SimpleResponder.Create(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage())
                                && !context.BotHasResponded
                                && context.Message.User.ID != context.BotUserID 
@@ -170,7 +152,7 @@ namespace pappab0t
                     "token", _slackKey
                 };
 
-            var json = await client.GetResponse("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
+            var json = await client.DownloadString("https://slack.com/api/users.list", RequestMethod.Post, values.ToArray());
             var jData = JObject.Parse(json);
 
             foreach (var user in jData[Keys.Slack.UserListJson.Members].Values<JObject>())
@@ -189,7 +171,7 @@ namespace pappab0t
                     "exclude_archived","1"
                 };
 
-            var json = await client.GetResponse("https://slack.com/api/channels.list", RequestMethod.Post, values.ToArray());
+            var json = await client.DownloadString("https://slack.com/api/channels.list", RequestMethod.Post, values.ToArray());
             var jData = JObject.Parse(json);
 
             foreach (var channel in jData[Keys.Slack.ChannelsListJson.Channels].Values<JObject>())
@@ -220,14 +202,14 @@ namespace pappab0t
                 hubs.Add(hub);
             }
 
-            var messageText = (jObject[Keys.Slack.MessageJson.Text] != null ? jObject[Keys.Slack.MessageJson.Text].Value<string>() : null);
+            var messageText = jObject[Keys.Slack.MessageJson.Text]?.Value<string>();
 
             var message = new SlackMessage
             {
                 ChatHub = hub,
                 RawData = json,
                 Text = messageText,
-                User = (jObject[Keys.Slack.MessageJson.User] != null ? new SlackUser { ID = jObject[Keys.Slack.MessageJson.User].Value<string>() } : null)
+                User = jObject[Keys.Slack.MessageJson.User] != null ? new SlackUser { ID = jObject[Keys.Slack.MessageJson.User].Value<string>() } : null
             };
 
             var context = new ResponseContext
@@ -256,6 +238,12 @@ namespace pappab0t
 
         private static IDocumentStore CreateStore()
         {
+            var eds = new EmbeddableDocumentStore
+            {
+                DataDirectory = "Data"
+            };
+            eds.Initialize();
+            return eds;
             var store = new DocumentStore
             {
                 Url = ConfigurationManager.AppSettings[Keys.AppSettings.RavenUrl],

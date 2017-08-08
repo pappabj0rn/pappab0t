@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using MargieBot;
-using MargieBot.Models;
-using MargieBot.Responders;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
@@ -33,12 +31,6 @@ namespace pappab0t.Responders
                                             )};
         }
 
-        public ExposedInformation Info
-        {
-            get
-            {
-                return new ExposedInformation{Usage = "upptid", Explatation = "Visar när pappab0t senast startades."};
-            }
-        }
+        public ExposedInformation Info => new ExposedInformation{Usage = "upptid", Explatation = "Visar när pappab0t senast startades."};
     }
 }

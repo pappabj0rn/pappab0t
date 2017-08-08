@@ -2,8 +2,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using MargieBot;
-using MargieBot.Models;
-using MargieBot.Responders;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 

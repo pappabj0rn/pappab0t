@@ -1,5 +1,5 @@
 ﻿using System;
-using MargieBot.Models;
+using MargieBot;
 using Newtonsoft.Json.Linq;
 using Raven.Client;
 

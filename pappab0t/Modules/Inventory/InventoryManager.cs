@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MargieBot.Models;
-using Raven.Client.Document;
+using MargieBot;
+using Raven.Client;
 
 namespace pappab0t.Modules.Inventory
 {
@@ -21,7 +21,7 @@ namespace pappab0t.Modules.Inventory
 
         public Inventory GetUserInventory(string targetUserId)
         {
-            var ravenStore = _context.Get<DocumentStore>();
+            var ravenStore = _context.Get<IDocumentStore>();
             using (var session = ravenStore.OpenSession())
             {
                 var inv = session.Query<Inventory>().SingleOrDefault(x => x.UserId == targetUserId);
@@ -39,7 +39,7 @@ namespace pappab0t.Modules.Inventory
 
         public void Save(IEnumerable<Inventory> inventories)
         {
-            var ravenStore = _context.Get<DocumentStore>();
+            var ravenStore = _context.Get<IDocumentStore>();
             using (var session = ravenStore.OpenSession())
             {
                 foreach (var inventory in inventories)

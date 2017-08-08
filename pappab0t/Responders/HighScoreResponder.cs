@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using MargieBot.Models;
+using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Models;
-using WebSocketSharp;
+using pappab0t.Extensions;
 
 namespace pappab0t.Responders
 {

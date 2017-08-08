@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MargieBot.Models;
+using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
-using WebSocketSharp;
 
 namespace pappab0t.Responders
 {

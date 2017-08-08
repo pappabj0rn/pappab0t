@@ -1,13 +1,13 @@
-﻿namespace pappab0t.Modules.DikaGame
+﻿using pappab0t.Modules.Common;
+
+namespace pappab0t.Modules.DikaGame
 {
-    public class DikaCard
+    public class DikaCard : Card
     {
-        public int Value { get; private set; }
         public bool IsFaceUp { get; private set; }
 
-        public DikaCard(int value)
+        public DikaCard(int value) : base(value)
         {
-            Value = value;
             IsFaceUp = false;
         }
 

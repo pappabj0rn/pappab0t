@@ -1,78 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using pappab0t.Modules.Common;
 
 namespace pappab0t.Modules.DikaGame
 {
-    public class DikaDeck
+    public class DikaDeck : Deck
     {
-        readonly List<DikaCard> _cards;
+        public bool IsTopCardFaceUp => ((DikaCard)Cards[0]).IsFaceUp;
 
         public DikaDeck()
         {
-            _cards = new List<DikaCard>();
-            CreateCards();
+            CreateCards(4,1,13);
             Shuffle();
         }
 
-        public bool IsTopCardFaceUp
+        protected override Card CreateCard(int value, Suit suit)
         {
-            get { return _cards[0].IsFaceUp; }
-        }
-
-        private void CreateCards()
-        {
-            for (var i = 1; i <= 4; i++)
-            {
-                for (var j = 1; j <= 13; j++)
-                {
-                    _cards.Add(new DikaCard(j));
-                }
-            }
-        }
-
-        private void Shuffle()
-        {
-            var rnd = new Random();
-
-            for (int i = 0; i < 52; i++)
-            {
-                int swapIndex;
-                do
-                {
-                    swapIndex = rnd.Next(51);
-                }
-                //No point in swapping a card for itself
-                while (swapIndex == i);
-
-                DikaCard cardHolder = _cards[swapIndex];
-                _cards[swapIndex] = _cards[i];
-                _cards[i] = cardHolder;
-            }
+            return new DikaCard(value);
         }
 
         public DikaCard TakeOne()
         {
-            var card = _cards[0];
-            _cards.RemoveAt(0);
-            return card;
+            var card = Cards[0];
+            Cards.RemoveAt(0);
+            return card as DikaCard;
         }
 
         public List<DikaCard> Take(int count)
         {
-            var takeList = _cards.GetRange(0, count);
-            _cards.RemoveRange(0, count);
+            var takeList = Cards.GetRange(0, count);
+            Cards.RemoveRange(0, count);
 
-            return takeList;
+            return takeList.Cast<DikaCard>().ToList();
         }
 
         public void AddToEnd(DikaCard card)
         {
-            _cards.Add(card);
+            Cards.Add(card);
         }
 
         public void AddToEnd(IEnumerable<DikaCard> cards)
         {
-            _cards.AddRange(cards);
+            Cards.AddRange(cards);
         }
 
         public int CalculateScore()
@@ -80,9 +49,9 @@ namespace pappab0t.Modules.DikaGame
             var score = 0;
             var currentSet = 0;
 
-            foreach (var card in _cards)
+            foreach (var card in Cards)
             {
-                if (card.IsFaceUp)
+                if (((DikaCard)card).IsFaceUp)
                 {
                     currentSet++;
                     continue;

@@ -232,5 +232,15 @@ namespace pappab0t.Models
                 "Plats {2} på {0}-listan tillhör nu {1}"
             }.Random();
         }
+
+        public string NoPoints()
+        {
+            return new[]{
+                "Tyvärr, inga poäng denna gång :(",
+                "Det här var inte din gång :/",
+                "Prova igen!",
+                "Rackarns! Inga poäng."
+            }.Random();
+        }
     }
 }

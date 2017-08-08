@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using MargieBot.Models;
-using MargieBot.Responders;
+using MargieBot;
+
 using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
@@ -148,13 +148,10 @@ namespace pappab0t.Responders
             return sb.ToString();
         }
 
-        public ExposedInformation Info 
+        public ExposedInformation Info => new ExposedInformation
         {
-            get { return new ExposedInformation
-            {
-                Usage = "logg <fromDate>[-toDate] [sX]",
-                Explatation = "Sammanställer meddelanden som loggats för det givna datumet (eller inom givet intervall) och postar dem i chatten. 1000 meddelanden visas per sida. Ex 1: logg 150621. Ex 2: logg 150621-150623 s2"
-            }; } 
-        }
+            Usage = "logg <fromDate>[-toDate] [sX]",
+            Explatation = "Sammanställer meddelanden som loggats för det givna datumet (eller inom givet intervall) och postar dem i chatten. 1000 meddelanden visas per sida. Ex 1: logg 150621. Ex 2: logg 150621-150623 s2"
+        };
     }
 }

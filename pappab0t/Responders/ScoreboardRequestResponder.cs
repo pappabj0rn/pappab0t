@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using MargieBot.Models;
-using MargieBot.Responders;
+using MargieBot;
+
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
@@ -19,7 +19,7 @@ namespace pappab0t.Responders
 
         public BotMessage GetResponse(ResponseContext context)
         {
-            var scores = context.Get<Scorebook>().GetScores();
+            var scores = new Scorebook(context.TeamID).GetScores();// context.Get<Scorebook>().GetScores();
 
             if (scores.Count <= 0)
                 return new BotMessage {Text = "Ingen av er har en enda poäng ännu. Skärpning!"};

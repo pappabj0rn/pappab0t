@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
-using Bazam.NoobWebClient;
-using MargieBot.Models;
-using MargieBot.Responders;
+using Bazam.Http;
+using MargieBot;
 using Newtonsoft.Json.Linq;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
@@ -39,7 +38,7 @@ namespace pappab0t.Responders
                 string.Format(
                     "http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&prop=extracts&exintro=&explaintext=&srsearch={0}&utf8=&continue=",
                     WebUtility.UrlEncode(searchTerm.Trim()));
-            var response = new NoobWebClient().GetResponse(requestUrl, RequestMethod.Get).GetAwaiter().GetResult();
+            var response = new NoobWebClient().DownloadString(requestUrl, RequestMethod.Get).GetAwaiter().GetResult();
             var responseData = JObject.Parse(response);
 
             if (responseData["query"] != null && responseData["query"]["searchinfo"] != null)
@@ -53,7 +52,7 @@ namespace pappab0t.Responders
                         "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" +
                         WebUtility.UrlEncode(articleTitle);
                     var articleResponse =
-                        new NoobWebClient().GetResponse(articleRequestUrl, RequestMethod.Get).GetAwaiter().GetResult();
+                        new NoobWebClient().DownloadString(articleRequestUrl, RequestMethod.Get).GetAwaiter().GetResult();
                     var articleData = JObject.Parse(articleResponse);
 
                     if (articleData["query"]["pages"]["-1"] == null)

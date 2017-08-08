@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MargieBot.Models;
+using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
@@ -33,7 +33,7 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
-            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\dikagame\b|\bdg\b)", RegexOptions.IgnoreCase);
+            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bdikagame\b|\bdg\b)", RegexOptions.IgnoreCase);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -96,16 +96,10 @@ namespace pappab0t.Responders
             };
         }
 
-        public ExposedInformation Info
+        public ExposedInformation Info => new ExposedInformation
         {
-            get 
-            { 
-                return new ExposedInformation
-                            {
-                                Usage = "dikagame|dg", 
-                                Explatation = "Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {0}kr.".With(GameCost)
-                            }; 
-            }
-        }
+            Usage = "dikagame|dg", 
+            Explatation = "Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {0}kr.".With(GameCost)
+        };
     }
 }
