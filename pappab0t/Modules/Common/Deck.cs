@@ -16,19 +16,14 @@ namespace pappab0t.Modules.Common
         {
             var rnd = new Random();
 
-            for (var i = 0; i < Cards.Count; i++)
+            for (var swapCount = (rnd.NextDouble()+100) * 100000; swapCount > 0; swapCount--)
             {
-                int swapIndex;
-                do
-                {
-                    swapIndex = rnd.Next(Cards.Count-1);
-                }
-                //No point in swapping a card for itself
-                while (swapIndex == i);
+                var swapIndex1 = rnd.Next(Cards.Count - 1);
+                var swapIndex2 = rnd.Next(Cards.Count - 1);
 
-                var cardHolder = Cards[swapIndex];
-                Cards[swapIndex] = Cards[i];
-                Cards[i] = cardHolder;
+                var cardHolder = Cards[swapIndex1];
+                Cards[swapIndex1] = Cards[swapIndex2];
+                Cards[swapIndex2] = cardHolder;
             }
         }
 

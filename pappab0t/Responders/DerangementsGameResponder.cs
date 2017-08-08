@@ -17,29 +17,16 @@ namespace pappab0t.Responders
         private const decimal PotPercentage = .75m;
         private const string GameKey = "DerangementsGame";
 
-        private static readonly Dictionary<int, decimal> PayoutDictionary = new Dictionary<int, decimal>
-        {
-            {1,1.0m},
-            {2,2.0m},
-            {3,4.0m},
-            {4,8.0m},
-            {5,16.0m},
-            {6,32.0m},
-            {7,64.0m},
-            {8,128.0m},
-            {9,256.0m},
-            {10,512.0m}
-        };
-
         public override bool CanRespond(ResponseContext context)
         {
-            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bderangements\b|\bdr\b)", RegexOptions.IgnoreCase);
+            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bderangements\b|\bdr\b|\bdrd\b)", RegexOptions.IgnoreCase);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
             Context = context;
 
+            var enableDebugOutput = Regex.IsMatch(context.Message.Text, @"^(?:\bdrd\b)", RegexOptions.IgnoreCase);
             var invMan = new InventoryManager(Context);
             var userInv = invMan.GetUserInventory();
 
@@ -56,7 +43,10 @@ namespace pappab0t.Responders
             };
 
             var score = game.Play();
-            
+            var debugOutput = enableDebugOutput 
+                ? game.DebugOutput 
+                : "";
+
             decimal payout;
             int outcome;
 
@@ -69,7 +59,7 @@ namespace pappab0t.Responders
                 {
                     session.Store(pot);
                     session.SaveChanges();
-                    return new BotMessage { Text = PhraseBook.NoPoints() };
+                    return new BotMessage { Text = PhraseBook.NoPoints() + $"\n{debugOutput}" };
                 }
 
                 var highScore = session.Query<HighScore>().FirstOrDefault(x => x.Name == GameKey) ?? new HighScore { Name = GameKey };
@@ -79,11 +69,11 @@ namespace pappab0t.Responders
                 {
                     session.Store(pot);
                     session.SaveChanges();
-                    return new BotMessage { Text = $"{game.Outcome}\n{PhraseBook.GetDidntMakeHighScoreFormat().With(score)}" };
+                    return new BotMessage { Text = $"{game.Outcome}\n{PhraseBook.GetDidntMakeHighScoreFormat().With(score)}\n{debugOutput}" };
                 }
 
 
-                payout = Math.Min(Math.Round(PayoutDictionary[score] * GameCost, 2), pot.BEK);
+                payout = Math.Min(Math.Round((decimal)Math.Pow(2.0,score) * GameCost, 2), pot.BEK);
                 pot.BEK -= payout;
                 userInv.BEK += payout;
 
@@ -103,14 +93,14 @@ namespace pappab0t.Responders
 
             return new BotMessage
             {
-                Text = $"{game.Outcome}\n{PhraseBook.GetPotPayoutFormat().With(score, outcome, payout)} {PhraseBook.GetExclamation()}"
+                Text = $"{game.Outcome}\n{PhraseBook.GetPotPayoutFormat().With(score, outcome, payout)} {PhraseBook.GetExclamation()}\n{debugOutput}"
             };
         }
 
         public ExposedInformation Info => new ExposedInformation
         {
-            Usage = "derangements|dr",
-            Explatation = $"Endast DM. Blandar upp tio kort och kör en omgång Derangements. Ett spel kostar {GameCost}kr."
+            Usage = "derangements|dr|drd",
+            Explatation = $"Endast DM. Blandar upp tio kort och kör en omgång Derangements. Ett spel kostar {GameCost}kr. Nyckel (ex. för hs): {GameKey}. Starta med drd för att få debugutskrift av restulat."
         };
     }
 }

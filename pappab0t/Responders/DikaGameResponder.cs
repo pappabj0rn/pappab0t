@@ -99,7 +99,7 @@ namespace pappab0t.Responders
         public ExposedInformation Info => new ExposedInformation
         {
             Usage = "dikagame|dg", 
-            Explatation = "Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {0}kr.".With(GameCost)
+            Explatation = $"Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {GameCost}kr. Nyckel (ex. för hs): {GameKey}."
         };
     }
 }
