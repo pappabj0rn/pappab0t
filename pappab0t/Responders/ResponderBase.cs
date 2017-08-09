@@ -13,6 +13,8 @@ namespace pappab0t.Responders
 
         protected Phrasebook PhraseBook => Context?.Get<Phrasebook>();
 
+        protected Bot Bot => Context?.Get<Bot>();
+
         public abstract bool CanRespond(ResponseContext context);
         public abstract BotMessage GetResponse(ResponseContext context);
     }

@@ -2,12 +2,11 @@
 using pappab0t.Modules.Common;
 using Xunit;
 
-
 namespace pappab0t.Tests.Modules.Common
 {
     public abstract class DeckTests
     {
-        public class Shuffle
+        public class Shuffle : DeckTests
         {
             // Info on "Position maps"
             // ABCDEFGHIJ = all cards in order

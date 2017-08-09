@@ -10,18 +10,20 @@ using pappab0t.Modules.Inventory;
 
 namespace pappab0t.Responders
 {
-    public class InventoryResponder : IResponder, IExposedCapability
+    public class InventoryResponder : ResponderBase, IExposedCapability
     {
-        private ResponseContext _context;
-        public bool CanRespond(ResponseContext context)
+        public override bool CanRespond(ResponseContext context)
         {
-            return (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
-                   Regex.IsMatch(context.Message.Text, @"\bi\b", RegexOptions.IgnoreCase);
+            Context = context;
+
+            var aliases = Bot.Aliases.Aggregate("", (prev, next) => prev + "|" + next, s => s.Substring(1));
+            return context.Message.MentionsBot && context.Message.Text.Split(' ').Length == 2 && Regex.IsMatch(context.Message.Text, $"{aliases}\\x020i", RegexOptions.IgnoreCase)
+                   || context.Message.IsDirectMessage() && context.Message.Text == "i";
         }
 
-        public BotMessage GetResponse(ResponseContext context)
+        public override BotMessage GetResponse(ResponseContext context)
         {
-            _context = context;
+            Context = context;
 
             var inv = new InventoryManager(context).GetUserInventory();
 
@@ -35,9 +37,9 @@ namespace pappab0t.Responders
         {
             var sb = new StringBuilder();
 
-            var displayName = _context.Message.IsDirectMessage()
+            var displayName = Context.Message.IsDirectMessage()
                                 ? "Du"
-                                : _context.UserNameCache[_context.Message.User.ID];
+                                : Context.UserNameCache[Context.Message.User.ID];
 
             sb.AppendFormat("{0} har:\n", displayName);
             sb.AppendFormat("{0} kr", inv.BEK);
@@ -55,16 +57,10 @@ namespace pappab0t.Responders
             return sb.ToString();
         }
 
-        public ExposedInformation Info
+        public ExposedInformation Info => new ExposedInformation
         {
-            get
-            {
-                return new ExposedInformation
-                {
-                    Usage = "i",
-                    Explatation = "Visar din nuvarande inventarieförteckning."
-                };
-            }
-        }
+            Usage = "i",
+            Explatation = "Visar din nuvarande inventarieförteckning."
+        };
     }
 }
