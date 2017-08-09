@@ -87,6 +87,18 @@ namespace pappab0t.Tests.Responders
 
                 Assert.False(canRespond);
             }
+
+            [Fact]
+            public void Should_return_true_when_bot_is_mentionedby_alias_with_only_i()
+            {
+                var responder = new InventoryResponder();
+
+                var context = CreateResponseContext("pb0t i", SlackChatHubType.Channel, mentionsBot: true);
+
+                var canRespond = responder.CanRespond(context);
+
+                Assert.True(canRespond);
+            }
         }
     }
 }
