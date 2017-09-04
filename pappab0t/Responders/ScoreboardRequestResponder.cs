@@ -24,7 +24,7 @@ namespace pappab0t.Responders
             if (scores.Count <= 0)
                 return new BotMessage {Text = "Ingen av er har en enda poäng ännu. Skärpning!"};
 
-            var builder = new StringBuilder(context.Get<Phrasebook>().GetScoreboardHype());
+            var builder = new StringBuilder(context.Get<Phrasebook>().ScoreboardHype());
             builder.Append("```");
 
             // add the scores to a list for sorting. while we do, figure out who has the longest name for the pseudo table formatting

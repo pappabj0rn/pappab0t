@@ -37,7 +37,7 @@ namespace pappab0t.Responders
                                  .FirstOrDefault(x=>x.Name.Equals(_potName, StringComparison.InvariantCultureIgnoreCase));
 
                 if(pot == null)
-                    return new BotMessage{ Text = PhraseBook.GetIDontKnowXxxNamedYyy().With("nån pott", _potName)};
+                    return new BotMessage{ Text = PhraseBook.IDontKnowXxxNamedYyyFormat().With("nån pott", _potName)};
 
                 return new BotMessage{Text = "{0}-potten är uppe i {1}kr.".With(_potName, pot.BEK)};
             }

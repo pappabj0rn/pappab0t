@@ -4,7 +4,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class InventoryResponderTests
+    public abstract class InventoryResponderTests : ResponderTestsBase
     {
         public class CanRespond : InventoryResponderTests
         {
@@ -19,37 +19,6 @@ namespace pappab0t.Tests.Responders
                 var canRespond = responder.CanRespond(context);
 
                 Assert.True(canRespond);
-            }
-
-            private static ResponseContext CreateResponseContext(string text, SlackChatHubType chatHubType, bool mentionsBot = false)
-            {
-                var context = new ResponseContext
-                {
-                    BotUserID = "botUUID",
-                    BotUserName = "pbot",
-                    TeamID = "teamID",
-                    Message = new SlackMessage
-                    {
-                        ChatHub = new SlackChatHub
-                        {
-                            ID = "hubID",
-                            Name = "hubName",
-                            Type = chatHubType
-                        },
-                        Text = text,
-                        User = new SlackUser
-                        {
-                            ID = "userUUID"
-                        },
-                        MentionsBot = mentionsBot
-                    }
-                };
-                context.Set(new Bot
-                {
-                    Aliases = new []{"pbot","pb0t"}
-                });
-
-                return context;
             }
 
             [Fact]

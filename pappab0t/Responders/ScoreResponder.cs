@@ -92,7 +92,7 @@ namespace pappab0t.Responders
                         int margieScore = Scorebook.GetUserScore(context.BotUserID);
                         responseBuilder.Append(
                             "{0} Då har jag {1} poäng.\n\n"
-                                .With(phrasebook.GetThankYou(), margieScore));
+                                .With(phrasebook.ThankYou(), margieScore));
                     }
                     else if (newScorers.Contains(scoringUsers[0]))
                     {
@@ -100,7 +100,7 @@ namespace pappab0t.Responders
                             "En ny deltagare! {0} är nu med på listan med en poäng. {1}"
                                 .With(
                                         scoringResults.First(r => r.UserID == scoringUsers[0]).FormattedUserID,
-                                        phrasebook.GetExclamation())
+                                        phrasebook.Exclamation())
                                     );
                     }
                     else
@@ -110,7 +110,7 @@ namespace pappab0t.Responders
                         responseBuilder.Append(
                             "{0} {1} fick just en poäng. {1}, du har nu {2}."
                             .With(
-                                    phrasebook.GetExclamation(),
+                                    phrasebook.Exclamation(),
                                     scoredUser.FormattedUserID,
                                     Scorebook.GetUserScore(scoredUser.UserID)
                                 )
@@ -129,7 +129,7 @@ namespace pappab0t.Responders
                             .With(
                                     scoringUserResults[0].FormattedUserID,
                                     scoringUserResults[1].FormattedUserID,
-                                    phrasebook.GetMutedExclamation()
+                                    phrasebook.MutedExclamation()
                                 )
                             );
                     }
@@ -149,7 +149,7 @@ namespace pappab0t.Responders
                             }
                         }
 
-                        responseBuilder.Append(" fick just en poäng var. " + phrasebook.GetExclamation());
+                        responseBuilder.Append(" fick just en poäng var. " + phrasebook.Exclamation());
                     }
                 }
             }

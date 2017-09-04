@@ -3,9 +3,9 @@ using pappab0t.Extensions;
 
 namespace pappab0t.Models
 {
-    public class Phrasebook
+    public class Phrasebook : IPhrasebook
     {
-        public string GetAffirmation()
+        public string Affirmation()
         {
             return new[]{
                 "ok",
@@ -16,7 +16,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetThankYou()
+        public string ThankYou()
         {
             return new[]{
                 "Tack!",
@@ -30,7 +30,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetExclamation()
+        public string Exclamation()
         {
             return new[]{
                 "Fuck YEAH!",
@@ -48,7 +48,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetMutedExclamation()
+        public string MutedExclamation()
         {
             return new[]{
                 "Kul.",
@@ -62,7 +62,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetQuery(string input)
+        public string AttentionResponse(string input)
         {
             var text = (input??"").Replace(" pb0t", "").Replace("pappab0t", "").Trim();
 
@@ -89,8 +89,7 @@ namespace pappab0t.Models
                     {
                         "yo!",
                         "yo man",
-                        "läget?",
-
+                        "läget?"
                     });
                     break;
 
@@ -98,6 +97,8 @@ namespace pappab0t.Models
                     response.AddRange(new[]
                     {
                         "hi hi",
+                        "hi",
+                        "hi som i hej? hej.",
                         "?",
                         "nåt som är kul?",
                         "har jag missat något?"
@@ -138,7 +139,7 @@ namespace pappab0t.Models
             return response.Random();
         }
 
-        public string GetScoreboardHype()
+        public string ScoreboardHype()
         {
             return new[]{
                 "Ok, så här ser det ut ATM.",
@@ -147,7 +148,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetYoureWelcome()
+        public string YoureWelcome()
         {
             return new[]{
                 "np",
@@ -158,7 +159,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetOpenAppology()
+        public string OpenAppology()
         {
             return new[]{
                 "sry, men",
@@ -170,7 +171,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetIDontKnowXxxNamedYyy()
+        public string IDontKnowXxxNamedYyyFormat()
         {
             return new[]{
                 "jag känner inte till {0} som heter {1}",
@@ -179,7 +180,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetIDidntUnderstand()
+        public string IDidntUnderstand()
         {
             return new[]{
                 "Det fär förstod jag inte",
@@ -195,7 +196,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetInsufficientFundsFormat()
+        public string InsufficientFundsFormat()
         {
             return new[]{
                 "För lite pengar i plånkan, Du behöver {0}kr.",
@@ -206,7 +207,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetDidntMakeHighScoreFormat()
+        public string DidntMakeHighScoreFormat()
         {
             return new[]{
                 "Du fick {0}p, vilket tyvärr inte tar dig in på highscore-listan :(",
@@ -215,7 +216,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetPotPayoutFormat()
+        public string PotPayoutFormat()
         {
             return new[]{
                 "Ny highscore! {0}p tar dig till plats {1} och ger dig {2}kr :D",
@@ -224,7 +225,7 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string GetNewHighscoreFormat()
+        public string NewHighscoreFormat()
         {
             return new[]{
                 "Ny higscore i {0}! {1} tog plats {2} :D",
@@ -240,6 +241,76 @@ namespace pappab0t.Models
                 "Det här var inte din gång :/",
                 "Prova igen!",
                 "Rackarns! Inga poäng."
+            }.Random();
+        }
+
+        public string Noted()
+        {
+            return new[]{
+                "Noterat.",
+                "Antecknat.",
+                "Sparat.",
+                "Ok"
+            }.Random();
+        }
+
+        public string TauntOld()
+        {
+            return new[]{
+                "OÄZ!",
+                "oäz!",
+                "old!",
+                "OÄZ.",
+                "oäz.",
+                "Gammal potatis.",
+            }.Random();
+        }
+
+        public string CreditUserBecauseFormat()
+        {
+            return new[]{
+                "All hail, <@{0}>, {1}!",
+                "cred till <@{0}>, {1}.",
+                "<@{0}>, {1}.",
+                "{1}, <@{0}>."
+            }.Random();
+        }
+
+        public string QuestionAction()
+        {
+            return new[]{
+                "Så, vad var det som fick dig att säga så?",
+                "Varför säger du det till mig?",
+                "Pratar du med mig?",
+                "Hmm?",
+                "?",
+                "vad förväntar du dig av mig?",
+                "jag vet inte vad du vill riktigt",
+                "What's this, I don't even.. wha?"
+            }.Random();
+        }
+
+        public string InvalidType()
+        {
+            return new[]{
+                "Den typen känner jag inte till",
+                "den typen känner jag inte till",
+                "felaktig typ",
+                "okänd typ",
+                "en vaffernå?",
+                "en vassaru?",
+                "nä, nå' sånna har jag inte.",
+                "inte min typ"
+            }.Random();
+        }
+
+        public string NoDataFound()
+        {
+            return new[]{
+                "Hittade inget.",
+                "Inget sånt i arkivet.",
+                "Där var det tomt.",
+                "Ingen utdelning.",
             }.Random();
         }
     }

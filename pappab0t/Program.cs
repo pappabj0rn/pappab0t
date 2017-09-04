@@ -84,6 +84,10 @@ namespace pappab0t
         private static void Init()
         {
             _ravenStore = CreateStore();
+            ObjectFactory.Container.Configure(
+                x=>x.For<IDocumentStore>()
+                .Use(_ravenStore));
+
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
             _bot = new Bot();
             _userNameCache = new Dictionary<string, string>();
@@ -114,7 +118,7 @@ namespace pappab0t
                 SimpleResponder.Create(
                     context => context.Message.MentionsBot &&
                                Regex.IsMatch(context.Message.Text, @"\b(tack|tanks)\b", RegexOptions.IgnoreCase),
-                    context => context.Get<Phrasebook>().GetYoureWelcome()),
+                    context => context.Get<Phrasebook>().YoureWelcome()),
 
                 SimpleResponder.Create(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
@@ -123,14 +127,14 @@ namespace pappab0t
                                    RegexOptions.IgnoreCase) &&
                                context.Message.User.ID != context.BotUserID &&
                                !context.Message.User.IsSlackbot,
-                    context => context.Get<Phrasebook>().GetQuery(context.Message.Text)),
+                    context => context.Get<Phrasebook>().AttentionResponse(context.Message.Text)),
 
                 SimpleResponder.Create(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage())
                                && !context.BotHasResponded
                                && context.Message.User.ID != context.BotUserID 
                                && !context.Message.User.IsSlackbot,
-                    context => context.Get<Phrasebook>().GetIDidntUnderstand())
+                    context => context.Get<Phrasebook>().IDidntUnderstand())
             });
 
             return responders;
@@ -238,12 +242,18 @@ namespace pappab0t
 
         private static IDocumentStore CreateStore()
         {
+#if DEBUG
             var eds = new EmbeddableDocumentStore
             {
-                DataDirectory = "Data"
+                DataDirectory = "Data",
+                //UseEmbeddedHttpServer = true,
+                DefaultDatabase = "pbot"
             };
+            //eds.Configuration.Port = 8090;
             eds.Initialize();
+
             return eds;
+#endif
             var store = new DocumentStore
             {
                 Url = ConfigurationManager.AppSettings[Keys.AppSettings.RavenUrl],

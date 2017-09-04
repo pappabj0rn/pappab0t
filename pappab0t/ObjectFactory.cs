@@ -3,6 +3,7 @@ using System.Threading;
 using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.MessageHandler;
+using pappab0t.Models;
 using StructureMap;
 
 namespace pappab0t
@@ -22,6 +23,8 @@ namespace pappab0t
                 {
                     y.AddAllTypesOf<IResponder>();
                     y.AddAllTypesOf<IMessageHandler>();
+                    y.AddAllTypesOf<IUrlParser>();
+                    y.AddAllTypesOf<IPhrasebook>();
                     y.AssemblyContainingType(typeof(IExposedCapability));
                 });
             });

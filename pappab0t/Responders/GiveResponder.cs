@@ -46,7 +46,7 @@ namespace pappab0t.Responders
 
             if(_targetUserId.IsNullOrEmpty())
                 return new BotMessage { Text = "{0} {1}"
-                                                .With(PhraseBook.GetOpenAppology(), PhraseBook.GetIDontKnowXxxNamedYyy()
+                                                .With(PhraseBook.OpenAppology(), PhraseBook.IDontKnowXxxNamedYyyFormat()
                                                                                                 .With("nån användare",_targetUsername)) };
 
             var invMan = new InventoryManager(Context);
