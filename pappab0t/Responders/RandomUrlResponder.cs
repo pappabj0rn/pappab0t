@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MargieBot;
+using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.Models;
 using Raven.Client;
 
 namespace pappab0t.Responders
 {
-    public class RandomUrlResponder : ResponderBase
+    public class RandomUrlResponder : ResponderBase, IExposedCapability
     {
         private readonly IPhrasebook _phrasebook;
         private readonly IDocumentStore _store;
@@ -88,5 +89,11 @@ namespace pappab0t.Responders
                 };
             }
         }
+
+        public ExposedInformation Info => new ExposedInformation
+        {
+            Usage = "random url [video|image|document|music|other]",
+            Explatation = "Hämtar upp en sparad url. Urltyp kan användas för att begränsa urvalet. Typerna kan inte kombineras."
+        };
     }
 }
