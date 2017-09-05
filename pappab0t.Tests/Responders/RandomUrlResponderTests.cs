@@ -175,7 +175,7 @@ namespace pappab0t.Tests.Responders
                 var videoPost1Used = false;
                 var videoPost2Used = false;
 
-                for (var i = 0; i < 1000; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     var response = Responder.GetResponse(context);
 
@@ -239,7 +239,7 @@ namespace pappab0t.Tests.Responders
                 var videoPost1Used = false;
                 var videoPost2Used = false;
 
-                for (var i = 0; i < 1000; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     var response = Responder.GetResponse(context);
 
