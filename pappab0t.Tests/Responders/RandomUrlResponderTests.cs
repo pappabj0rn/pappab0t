@@ -166,118 +166,6 @@ namespace pappab0t.Tests.Responders
             }
 
             [Fact]
-            public void Should_query_for_random_url_of_any_type_when_no_type_is_given()
-            {
-                var context = CreateRandomUrlContext("pbot random url");
-
-                var otherPost1Used = false;
-                var otherPost2Used = false;
-                var videoPost1Used = false;
-                var videoPost2Used = false;
-
-                for (var i = 0; i < 100; i++)
-                {
-                    var response = Responder.GetResponse(context);
-
-                    try
-                    {
-                        AssertPostUsed(_otherPost1, response);
-                        otherPost1Used = true;
-                    }
-                    catch (EqualException)
-                    {
-                        try
-                        {
-                            AssertPostUsed(_otherPost2, response);
-                            otherPost2Used = true;
-                        }
-                        catch (EqualException)
-                        {
-                            try
-                            {
-                                AssertPostUsed(_videoPost1, response);
-                                videoPost1Used = true;
-                            }
-                            catch (EqualException)
-                            {
-                                AssertPostUsed(_videoPost2, response);
-                                videoPost2Used = true;
-                            }
-                        }
-                    }
-                }
-
-                Assert.True(otherPost1Used);
-                Assert.True(otherPost2Used);
-                Assert.True(videoPost1Used);
-                Assert.True(videoPost2Used);
-            }
-            
-            [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-            private void AssertPostUsed(UserUrlPost post, BotMessage response)
-            {
-                Assert.Equal(post.TimeStamp, 
-                    response.Attachments[0].TimeStamp);
-
-                Assert.Equal(_userNameCache[post.UserId], 
-                    response.Attachments[0].AuthorName);
-
-                Assert.Equal(post.UrlMatchData.ToString(),
-                    response.Attachments[0].Title);
-
-                Assert.Equal(post.UrlMatchData.ToString(),
-                    response.Attachments[0].TitleLink);
-            }
-
-            [Fact]
-            public void Should_query_for_random_url_with_given_type()
-            {
-                var context = CreateRandomUrlContext("pbot random url video");
-
-                var otherPost1Used = false;
-                var otherPost2Used = false;
-                var videoPost1Used = false;
-                var videoPost2Used = false;
-
-                for (var i = 0; i < 100; i++)
-                {
-                    var response = Responder.GetResponse(context);
-
-                    try
-                    {
-                        AssertPostUsed(_otherPost1, response);
-                        otherPost1Used = true;
-                    }
-                    catch (EqualException)
-                    {
-                        try
-                        {
-                            AssertPostUsed(_otherPost2, response);
-                            otherPost2Used = true;
-                        }
-                        catch (EqualException)
-                        {
-                            try
-                            {
-                                AssertPostUsed(_videoPost1, response);
-                                videoPost1Used = true;
-                            }
-                            catch (EqualException)
-                            {
-                                AssertPostUsed(_videoPost2, response);
-                                videoPost2Used = true;
-                            }
-                        }
-                    }
-                }
-
-                Assert.False(otherPost1Used);
-                Assert.False(otherPost2Used);
-                Assert.True(videoPost1Used);
-                Assert.True(videoPost2Used);
-            }
-
-            [Fact]
             public void Should_state_when_there_are_no_posts_of_given_type()
             {
                 var msg = "hitta inge";
@@ -290,6 +178,89 @@ namespace pappab0t.Tests.Responders
 
                 Assert.Equal(msg, response.Text);
             }
+
+            [Fact]
+            public void Should_query_for_random_url_of_any_type_when_no_type_is_given()
+            {
+                var context = CreateRandomUrlContext("pbot random url");
+
+                var used = AssertPostsUsed(context);
+
+                Assert.True(used.Other1);
+                Assert.True(used.Other2);
+                Assert.True(used.Video1);
+                Assert.True(used.Video2);
+            }
+
+            private UsedPosts AssertPostsUsed(ResponseContext context)
+            {
+                var up = new UsedPosts();
+
+                for (var i = 0; i < 100; i++)
+                {
+                    var response = Responder.GetResponse(context);
+
+                    try
+                    {
+                        AssertPostUsed(_otherPost1, response);
+                        up.Other1 = true;
+                    }
+                    catch (EqualException)
+                    {
+                        try
+                        {
+                            AssertPostUsed(_otherPost2, response);
+                            up.Other2 = true; ;
+                        }
+                        catch (EqualException)
+                        {
+                            try
+                            {
+                                AssertPostUsed(_videoPost1, response);
+                                up.Video1 = true;
+                            }
+                            catch (EqualException)
+                            {
+                                AssertPostUsed(_videoPost2, response);
+                                up.Video2 = true;
+                            }
+                        }
+                    }
+                }
+
+                return up;
+            }
+            
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+            private void AssertPostUsed(UserUrlPost post, BotMessage response)
+            {
+                Assert.Equal(
+                    $"{post.Created:yy-MM-dd HH:mm} " +
+                    $"{_userNameCache[post.UserId]}: " +
+                    $"{post.UrlMatchData}",
+                    response.Text);
+            }
+
+            [Fact]
+            public void Should_query_for_random_url_with_given_type()
+            {
+                var context = CreateRandomUrlContext("pbot random url video");
+
+                var used = AssertPostsUsed(context);
+
+                Assert.False(used.Other1);
+                Assert.False(used.Other2);
+                Assert.True(used.Video1);
+                Assert.True(used.Video2);
+            }
         }
+    }
+
+    internal class UsedPosts
+    {
+        public bool Other1 { get; set; }
+        public bool Other2 { get; set; }
+        public bool Video1 { get; set; }
+        public bool Video2 { get; set; }
     }
 }

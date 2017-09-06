@@ -50,7 +50,7 @@ namespace pappab0t.Tests.Responders
             {
                 var responder = new InventoryResponder();
 
-                var context = CreateResponseContext("i en tunna", SlackChatHubType.Channel, mentionsBot:true);
+                var context = CreateResponseContext("i en tunna", SlackChatHubType.Channel);
 
                 var canRespond = responder.CanRespond(context);
 
@@ -67,6 +67,18 @@ namespace pappab0t.Tests.Responders
                 var canRespond = responder.CanRespond(context);
 
                 Assert.True(canRespond);
+            }
+
+            [Fact]
+            public void Should_return_false_when_bot_is_greeted()
+            {
+                var responder = new InventoryResponder();
+
+                var context = CreateResponseContext("hej pbot", SlackChatHubType.Channel, mentionsBot: true);
+
+                var canRespond = responder.CanRespond(context);
+
+                Assert.False(canRespond);
             }
         }
     }
