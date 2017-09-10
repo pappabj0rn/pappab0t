@@ -24,12 +24,14 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
-            return context.Message.MentionsBot
-                && (context.Message.Text.Contains(" random url")
-                    || context.Message.Text.Contains(" ru"))
-                || context.Message.ChatHub.Type == SlackChatHubType.DM
-                && (context.Message.Text.StartsWith("random url")
-                    || context.Message.Text.StartsWith("ru"));
+            var triggerMatch = Regex.Match(
+                context.Message.Text,
+                "^(?:[\\w]* )?(random url|ru)($| [.]*)",
+                RegexOptions.IgnoreCase);
+
+            return (context.Message.MentionsBot
+                    || context.Message.ChatHub.Type == SlackChatHubType.DM)
+                && triggerMatch.Success;
         }
 
         public override BotMessage GetResponse(ResponseContext context)

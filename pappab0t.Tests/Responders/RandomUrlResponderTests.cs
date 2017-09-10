@@ -75,6 +75,8 @@ namespace pappab0t.Tests.Responders
             [InlineData("pbot ru t:video u:falfa", true)]
             [InlineData("pbot ru u:falfa", true)]
             [InlineData("pbot ru", true)]
+            [InlineData("pbot rux", false)]
+            [InlineData("pbot random urlx", false)]
 
             [InlineData("random url video", true, SlackChatHubType.DM)]
             [InlineData("random url music", true, SlackChatHubType.DM)]
@@ -96,6 +98,8 @@ namespace pappab0t.Tests.Responders
             [InlineData("ru t:video u:falfa", true, SlackChatHubType.DM)]
             [InlineData("ru u:falfa", true, SlackChatHubType.DM)]
             [InlineData("ru", true, SlackChatHubType.DM)]
+            [InlineData("rux", false, SlackChatHubType.DM)]
+            [InlineData("random urlx", false, SlackChatHubType.DM)]
 
             [InlineData("random url video", false)]
             [InlineData("random url music", false)]
