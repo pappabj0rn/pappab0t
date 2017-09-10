@@ -76,8 +76,6 @@
 
         string QuestionAction();
 
-        string InvalidType();
-
         string NoDataFound();
     }
 }

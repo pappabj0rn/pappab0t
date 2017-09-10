@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MargieBot;
@@ -12,6 +11,8 @@ namespace pappab0t.Responders
 {
     public class RandomUrlResponder : ResponderBase, IExposedCapability
     {
+        private const string TypeGroupName = "type";
+        private const string UserGroupName = "user";
         private readonly IPhrasebook _phrasebook;
         private readonly IDocumentStore _store;
 
@@ -24,20 +25,20 @@ namespace pappab0t.Responders
         public override bool CanRespond(ResponseContext context)
         {
             return context.Message.MentionsBot
-                && context.Message.Text.Contains(" random url");
+                && (context.Message.Text.Contains(" random url")
+                    || context.Message.Text.Contains(" ru"))
+                || context.Message.ChatHub.Type == SlackChatHubType.DM
+                && (context.Message.Text.StartsWith("random url")
+                    || context.Message.Text.StartsWith("ru"));
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
-            var regexMatch = BuildRegexMatch(context);
+            Context = context;
 
-            if(!regexMatch.Success)
-                return new BotMessage
-                {
-                    Text = _phrasebook.InvalidType()
-                };
+            var matches = BuildRegexMatch(context);
             
-            var typeFilter = BuildTypeFilter(regexMatch);
+            var typeFilter = BuildFilter(matches.typeMatch, matches.userMatch);
 
             using (var session = _store.OpenSession())
             {
@@ -49,6 +50,10 @@ namespace pappab0t.Responders
                 if (typeFilter.filterByType)
                     filteredQuery = query
                         .Where(x => x.UrlMatchData.TargetType == typeFilter.type);
+
+                if (typeFilter.filterByUser)
+                    filteredQuery = (filteredQuery ?? query)
+                        .Where(x => x.UserId == typeFilter.userId);
 
                 var post = (filteredQuery ?? query)
                     .FirstOrDefault();
@@ -63,43 +68,62 @@ namespace pappab0t.Responders
             }
         }
 
-        private static (bool filterByType, UrlTargetType type) BuildTypeFilter(Match regexMatch)
+        private (bool filterByType, UrlTargetType type, bool filterByUser, string userId) 
+            BuildFilter(Match typeMatch, Match userMatch)
         {
             var type = UrlTargetType.Other;
-            var filterByType = !regexMatch.Groups["type"].Value.IsNullOrEmpty();
+            var filterByType = !typeMatch.Groups[TypeGroupName].Value.IsNullOrEmpty();
 
             if (filterByType)
             {
-                type = (UrlTargetType) Enum.Parse(
+                type = (UrlTargetType)Enum.Parse(
                     typeof(UrlTargetType),
-                    regexMatch.Groups["type"].Value,
+                    typeMatch.Groups[TypeGroupName].Value,
                     ignoreCase: true);
             }
-            return (filterByType,type);
+
+            var userId = "";
+            var filterByUser = !userMatch.Groups[UserGroupName].Value.IsNullOrEmpty();
+
+            if (filterByUser)
+            {
+                userId = Context
+                    .UserNameCache
+                    .Where(x=>x.Value == userMatch.Groups[UserGroupName].Value)
+                    .Select(x=>x.Key)
+                    .FirstOrDefault();
+            }
+
+            return (filterByType,type, filterByUser, userId);
         }
 
-        private static Match BuildRegexMatch(ResponseContext context)
+        private static (Match typeMatch, Match userMatch) BuildRegexMatch(ResponseContext context)
         {
             var types = Enum
                 .GetValues(typeof(UrlTargetType))
                 .Cast<UrlTargetType>()
                 .Aggregate(
                     "",
-                    (prev, next) => $"{prev}|(?<type>{next})",
+                    (prev, next) => $"{prev}|(?<{TypeGroupName}>{next})",
                     s => s.TrimStart('|'));
 
-            var regexMatch = Regex.Match(
+            var typeMatch = Regex.Match(
                 context.Message.Text,
-                $"^([\\w]* )?random url( (?:{types}))?$",
+                $"( (t:)?(?:{types}))",
                 RegexOptions.IgnoreCase);
-            return regexMatch;
+
+            var userMatch = Regex.Match(
+                context.Message.Text,
+                $"( u:(?<{UserGroupName}>[\\w]*))",
+                RegexOptions.IgnoreCase);
+
+            return (typeMatch, userMatch);
         }
 
         public ExposedInformation Info => new ExposedInformation
         {
-            Usage = "random url [video|image|document|music|other]",
-            Explatation = "Hämtar upp en sparad url. Urltyp kan användas för att begränsa urvalet. " +
-                          "Typerna kan inte kombineras."
+            Usage = "<random url|ru> [t:][video|image|document|music|other] [u:[username]]",
+            Explatation = "Hämtar upp en sparad url. Urltyp och användarnamn kan användas för att begränsa urvalet."
         };
     }
 }

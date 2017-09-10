@@ -290,20 +290,6 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string InvalidType()
-        {
-            return new[]{
-                "Den typen känner jag inte till",
-                "den typen känner jag inte till",
-                "felaktig typ",
-                "okänd typ",
-                "en vaffernå?",
-                "en vassaru?",
-                "nä, nå' sånna har jag inte.",
-                "inte min typ"
-            }.Random();
-        }
-
         public string NoDataFound()
         {
             return new[]{

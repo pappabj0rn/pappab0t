@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using MargieBot;
@@ -31,20 +32,18 @@ namespace pappab0t.Tests.Responders
 
             _userNameCache = new Dictionary<string, string>
             {
-                { "userUUID1","Göran" },
-                { "userUUID2","Nisse" },
-                { "userUUID3","Bossse" },
-                { "userUUID4","Putas" },
+                { "userUUID1","eriska" },
+                { "userUUID2","falfa" },
             };
 
             Responder = new RandomUrlResponder(_phrasebookMock.Object, _documentStore);
         }
 
-        protected ResponseContext CreateRandomUrlContext(string msg)
+        protected ResponseContext CreateRandomUrlContext(string msg, SlackChatHubType hubType = SlackChatHubType.Channel)
         {
             var context = CreateResponseContext(
                 msg,
-                SlackChatHubType.Channel,
+                hubType,
                 mentionsBot: msg.StartsWith("pbot"));
 
             context.UserNameCache = _userNameCache;
@@ -63,6 +62,40 @@ namespace pappab0t.Tests.Responders
             [InlineData("pbot random url bogusType", true)] // I want it to respond to it, but it should say it's an invalid type
             [InlineData("pbot nonrandom url", false)]
             [InlineData("pbot random potato", false)]
+            [InlineData("pbot ru video", true)]
+            [InlineData("pbot ru music", true)]
+            [InlineData("pbot ru image", true)]
+            [InlineData("pbot ru document", true)]
+            [InlineData("pbot ru other", true)]
+            [InlineData("pbot ru t:video", true)]
+            [InlineData("pbot ru t:music", true)]
+            [InlineData("pbot ru t:image", true)]
+            [InlineData("pbot ru t:document", true)]
+            [InlineData("pbot ru t:other", true)]
+            [InlineData("pbot ru t:video u:falfa", true)]
+            [InlineData("pbot ru u:falfa", true)]
+            [InlineData("pbot ru", true)]
+
+            [InlineData("random url video", true, SlackChatHubType.DM)]
+            [InlineData("random url music", true, SlackChatHubType.DM)]
+            [InlineData("random url image", true, SlackChatHubType.DM)]
+            [InlineData("random url document", true, SlackChatHubType.DM)]
+            [InlineData("random url other", true, SlackChatHubType.DM)]
+            [InlineData("random url", true, SlackChatHubType.DM)]
+            [InlineData("random url bogusType", true, SlackChatHubType.DM)] // I want it to respond to it, but it should say it's an invalid type
+            [InlineData("ru video", true, SlackChatHubType.DM)]
+            [InlineData("ru music", true, SlackChatHubType.DM)]
+            [InlineData("ru image", true, SlackChatHubType.DM)]
+            [InlineData("ru document", true, SlackChatHubType.DM)]
+            [InlineData("ru other", true, SlackChatHubType.DM)]
+            [InlineData("ru t:video", true, SlackChatHubType.DM)]
+            [InlineData("ru t:music", true, SlackChatHubType.DM)]
+            [InlineData("ru t:image", true, SlackChatHubType.DM)]
+            [InlineData("ru t:document", true, SlackChatHubType.DM)]
+            [InlineData("ru t:other", true, SlackChatHubType.DM)]
+            [InlineData("ru t:video u:falfa", true, SlackChatHubType.DM)]
+            [InlineData("ru u:falfa", true, SlackChatHubType.DM)]
+            [InlineData("ru", true, SlackChatHubType.DM)]
 
             [InlineData("random url video", false)]
             [InlineData("random url music", false)]
@@ -70,9 +103,9 @@ namespace pappab0t.Tests.Responders
             [InlineData("random url document", false)]
             [InlineData("random url other", false)]
             [InlineData("random url", false)]
-            public void Should_respond_to_random_url_requests(string msg, bool expectedResult)
+            public void Should_respond_to_random_url_requests(string msg, bool expectedResult, SlackChatHubType hubType = SlackChatHubType.Channel)
             {
-                var context = CreateRandomUrlContext(msg);
+                var context = CreateRandomUrlContext(msg, hubType);
 
                 var result = Responder.CanRespond(context);
 
@@ -96,7 +129,7 @@ namespace pappab0t.Tests.Responders
             {
                 _otherPost1 = new UserUrlPost
                 {
-                    UserId = "userUUID1",
+                    UserId = _userNameCache.First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "www.nu",
@@ -106,7 +139,7 @@ namespace pappab0t.Tests.Responders
 
                 _otherPost2 = new UserUrlPost
                 {
-                    UserId = "userUUID2",
+                    UserId = _userNameCache.Skip(1).First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "dn.se",
@@ -116,7 +149,7 @@ namespace pappab0t.Tests.Responders
 
                 _videoPost1 = new UserUrlPost
                 {
-                    UserId = "userUUID3",
+                    UserId = _userNameCache.First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "youtube.com",
@@ -126,7 +159,7 @@ namespace pappab0t.Tests.Responders
 
                 _videoPost2 = new UserUrlPost
                 {
-                    UserId = "userUUID4",
+                    UserId = _userNameCache.Skip(1).First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "vimeo.com",
@@ -146,43 +179,39 @@ namespace pappab0t.Tests.Responders
                     // ReSharper disable once UnusedVariable
                     var q = session.Query<UserUrlPost>()
                         .Customize(x => x.WaitForNonStaleResults())
-                        .Customize(x=>x.RandomOrdering())
+                        .Customize(x => x.RandomOrdering())
                         .ToList();
                 }
             }
 
-            [Fact]
-            public void Should_respond_with_invalid_type()
-            {
-                var msg = "fel typ";
-                _phrasebookMock.Setup(x => x.InvalidType())
-                    .Returns(msg);
-
-                var context = CreateRandomUrlContext("pbot random url bogusType");
-
-                var response = Responder.GetResponse(context);
-
-                Assert.Equal(msg, response.Text);
-            }
-
-            [Fact]
-            public void Should_state_when_there_are_no_posts_of_given_type()
+            [Theory]
+            [InlineData("pbot random url image", SlackChatHubType.Channel)]
+            [InlineData("pbot ru image", SlackChatHubType.Channel)]
+            [InlineData("pbot ru t:image", SlackChatHubType.Channel)]
+            [InlineData("random url image", SlackChatHubType.DM)]
+            [InlineData("ru image", SlackChatHubType.DM)]
+            [InlineData("ru t:image", SlackChatHubType.DM)]
+            public void Should_state_when_there_are_no_posts_of_given_type(string text, SlackChatHubType hubType)
             {
                 var msg = "hitta inge";
                 _phrasebookMock.Setup(x => x.NoDataFound())
                     .Returns(msg);
 
-                var context = CreateRandomUrlContext("pbot random url image");
+                var context = CreateRandomUrlContext(text,hubType);
 
                 var response = Responder.GetResponse(context);
 
                 Assert.Equal(msg, response.Text);
             }
 
-            [Fact]
-            public void Should_query_for_random_url_of_any_type_when_no_type_is_given()
+            [Theory]
+            [InlineData("pbot random url", SlackChatHubType.Channel)]
+            [InlineData("pbot ru", SlackChatHubType.Channel)]
+            [InlineData("random url", SlackChatHubType.DM)]
+            [InlineData("ru", SlackChatHubType.DM)]
+            public void Should_query_for_random_url_of_any_type_when_no_type_is_given(string text, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext("pbot random url");
+                var context = CreateRandomUrlContext(text,hubType);
 
                 var used = AssertPostsUsed(context);
 
@@ -241,16 +270,71 @@ namespace pappab0t.Tests.Responders
                     response.Text);
             }
 
-            [Fact]
-            public void Should_query_for_random_url_with_given_type()
+            [Theory]
+            [InlineData("pbot random url video", SlackChatHubType.Channel)]
+            [InlineData("pbot ru video", SlackChatHubType.Channel)]
+            [InlineData("pbot ru t:video", SlackChatHubType.Channel)]
+            [InlineData("random url video", SlackChatHubType.DM)]
+            [InlineData("ru video", SlackChatHubType.DM)]
+            [InlineData("ru t:video", SlackChatHubType.DM)]
+            public void Should_query_for_random_url_with_given_type(string text, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext("pbot random url video");
+                var context = CreateRandomUrlContext(text, hubType);
 
                 var used = AssertPostsUsed(context);
 
                 Assert.False(used.Other1);
                 Assert.False(used.Other2);
                 Assert.True(used.Video1);
+                Assert.True(used.Video2);
+            }
+
+            [Theory]
+            [InlineData("pbot random url u:falfa", "falfa", SlackChatHubType.Channel)]
+            [InlineData("pbot ru u:falfa", "falfa", SlackChatHubType.Channel)]
+            [InlineData("random url u:falfa", "falfa", SlackChatHubType.DM)]
+            [InlineData("ru u:falfa", "falfa", SlackChatHubType.DM)]
+            public void Should_query_for_random_url_with_given_user(string text, string user, SlackChatHubType hubType)
+            {
+                var context = CreateRandomUrlContext(text, hubType);
+
+                var used = AssertPostsUsed(context);
+
+                Assert.Equal(
+                    _userNameCache[_otherPost1.UserId]
+                        .Equals(user,StringComparison.InvariantCultureIgnoreCase), 
+                    used.Other1);
+
+                Assert.Equal(
+                    _userNameCache[_otherPost2.UserId]
+                        .Equals(user, StringComparison.InvariantCultureIgnoreCase),
+                    used.Other2);
+
+                Assert.Equal(
+                    _userNameCache[_videoPost1.UserId]
+                        .Equals(user, StringComparison.InvariantCultureIgnoreCase),
+                    used.Video1);
+
+                Assert.Equal(
+                    _userNameCache[_videoPost2.UserId]
+                        .Equals(user, StringComparison.InvariantCultureIgnoreCase),
+                    used.Video2);
+            }
+
+            [Theory]
+            [InlineData("pbot random url t:video u:falfa", "falfa", SlackChatHubType.Channel)]
+            [InlineData("pbot ru t:video u:falfa", "falfa", SlackChatHubType.Channel)]
+            [InlineData("random url t:video u:falfa", "falfa", SlackChatHubType.DM)]
+            [InlineData("ru t:video u:falfa", "falfa", SlackChatHubType.DM)]
+            public void Should_query_for_random_url_with_given_type_and_user(string text, string user, SlackChatHubType hubType)
+            {
+                var context = CreateRandomUrlContext(text, hubType);
+
+                var used = AssertPostsUsed(context);
+
+                Assert.False(used.Other1);
+                Assert.False(used.Other2);
+                Assert.False(used.Video1);
                 Assert.True(used.Video2);
             }
         }
