@@ -5,6 +5,8 @@ namespace pappab0t.Tests.Responders
 {
     public abstract class ResponderTestsBase
     {
+        protected Dictionary<string, string> _userNameCache;
+
         protected static ResponseContext CreateResponseContext(
             string text, 
             SlackChatHubType chatHubType, 
@@ -15,7 +17,7 @@ namespace pappab0t.Tests.Responders
             var context = new ResponseContext
             {
                 BotUserID = "botUUID",
-                BotUserName = "pbot",
+                BotUserName = "pappab0t",
                 TeamID = "teamID",
                 Message = new SlackMessage
                 {
@@ -46,6 +48,17 @@ namespace pappab0t.Tests.Responders
                 }
             }
 
+            return context;
+        }
+
+        protected ResponseContext CreateContext(string msg, SlackChatHubType hubType = SlackChatHubType.Channel)
+        {
+            var context = CreateResponseContext(
+                msg,
+                hubType,
+                mentionsBot: msg.StartsWith("pbot"));
+
+            context.UserNameCache = _userNameCache;
             return context;
         }
     }

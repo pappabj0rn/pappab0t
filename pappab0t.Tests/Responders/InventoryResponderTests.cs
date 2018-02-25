@@ -38,7 +38,7 @@ namespace pappab0t.Tests.Responders
             {
                 var responder = new InventoryResponder();
 
-                var context = CreateResponseContext("pbot i", SlackChatHubType.Channel, mentionsBot:true);
+                var context = CreateResponseContext("pappab0t i", SlackChatHubType.Channel, mentionsBot: true);
 
                 var canRespond = responder.CanRespond(context);
 

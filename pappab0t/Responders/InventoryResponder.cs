@@ -16,8 +16,8 @@ namespace pappab0t.Responders
         {
             Context = context;
 
-            var aliases = Bot.Aliases.Aggregate("", (prev, next) => prev + "|" + next, s => $"({s.Substring(1)})");
-            
+            var aliases = Bot.Aliases.Aggregate(Bot.UserName+"|", (prev, next) => prev + "|" + next, s => $"({s.Substring(1)})");
+
             return context.Message.MentionsBot 
                 && Regex.IsMatch(context.Message.Text, $"{aliases} i", RegexOptions.IgnoreCase)
                 || context.Message.IsDirectMessage() 
