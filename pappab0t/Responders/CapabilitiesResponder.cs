@@ -25,8 +25,8 @@ namespace pappab0t.Responders
 
             foreach (var exposedCapability in bot.Responders.OfType<IExposedCapability>())
             {
-                sb.AppendLine("*{0}*".With(exposedCapability.Info.Usage));
-                sb.AppendLine(">{0}".With(exposedCapability.Info.Explatation));
+                sb.AppendLine($"*{exposedCapability?.Info?.Usage ?? $"[{ exposedCapability.GetType().Name}]"}*");
+                sb.AppendLine($">{exposedCapability?.Info?.Explatation ?? ""}");
             }
 
             return new BotMessage{Text = sb.ToString()};

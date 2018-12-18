@@ -77,5 +77,6 @@
         string QuestionAction();
 
         string NoDataFound();
+        string QuestionSimilarUrl();
     }
 }

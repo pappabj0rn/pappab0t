@@ -31,55 +31,89 @@ namespace pappab0t.Responders
             {10,0.02m}
         };
 
+        private const string gameMaxCountKey = "gmc";
+        private const string DikaGameRegex = @"(?:\bdikagame\b|\bdg\b)(\s+(?<" + gameMaxCountKey + @">\w+))?";
+
+        private int _maxGames = 1;
+
         public override bool CanRespond(ResponseContext context)
         {
-            return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bdikagame\b|\bdg\b)", RegexOptions.IgnoreCase);
+            return context.Message.IsDirectMessage()
+                   && Regex.IsMatch(context.Message.Text, DikaGameRegex, RegexOptions.IgnoreCase);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
             Context = context;
 
+            var match = Regex.Match(Context.Message.Text, DikaGameRegex, RegexOptions.IgnoreCase);
+            int.TryParse(match.Groups[gameMaxCountKey].Value, out _maxGames);
+            if (_maxGames < 1)
+                _maxGames = 1;
+            
+
             var invMan = new InventoryManager(Context);
             var userInv = invMan.GetUserInventory();
 
-            if(userInv.BEK < GameCost)
-                return new BotMessage{Text = PhraseBook.InsufficientFundsFormat().With(GameCost)};
-
-            userInv.BEK -= GameCost;
-            invMan.Save(userInv);
-
+            var outcome = 0;
+            var losses = 0;
+            var broke = false;
+            var maxScore = 0;
+            decimal payout = 0M;
             var game = new Game();
-            var score = game.Play();
 
-            decimal payout;
-            int outcome;
-            using (var session = DocumentStore.OpenSession())
+            for (int i = 0; i < _maxGames; i++)
             {
-                var pot = session.Query<MoneyPot>().FirstOrDefault(x => x.Name == GameKey) ?? new MoneyPot { Name = GameKey };
-                pot.BEK += Math.Round(GameCost * PotPercentage,2);
-            
-                var highScore = session.Query<HighScore>().FirstOrDefault(x => x.Name == GameKey) ?? new HighScore { Name = GameKey };
-                outcome = highScore.TryAddNewScore(new Score { UserId = userInv.UserId, Value = score });
-
-                if (outcome < 1)
+                if (userInv.BEK < GameCost)
                 {
-                    session.Store(pot);
-                    session.SaveChanges();
-                    return new BotMessage { Text = PhraseBook.DidntMakeHighScoreFormat().With(score) };
+                    if(i==0)
+                        return new BotMessage { Text = PhraseBook.InsufficientFundsFormat().With(GameCost) };
+
+                    broke = true;
+                    break;
                 }
-                    
 
-                payout = Math.Round(PayoutDictionary[outcome] * pot.BEK,2)+GameCost;
-                pot.BEK -= payout;
-                userInv.BEK += payout;
+                userInv.BEK -= GameCost;
+                invMan.Save(userInv);
+                
+                var score = game.Play();
 
-                session.Store(pot);
-                session.Store(highScore);
-                session.SaveChanges();
+                if (maxScore < score)
+                    maxScore = score;
+                
+                using (var session = DocumentStore.OpenSession())
+                {
+                    var pot = session.Query<MoneyPot>().FirstOrDefault(x => x.Name == GameKey) ?? new MoneyPot { Name = GameKey };
+                    pot.BEK += Math.Round(GameCost * PotPercentage, 2);
+
+                    var highScore = session.Query<HighScore>().FirstOrDefault(x => x.Name == GameKey) ?? new HighScore { Name = GameKey };
+                    outcome = highScore.TryAddNewScore(new Score { UserId = userInv.UserId, Value = score });
+
+                    if (outcome < 1) //no highscore
+                    {
+                        session.Store(pot);
+                        session.SaveChanges();
+                        losses++;
+                    }
+                    else
+                    {
+                        payout = Math.Round(PayoutDictionary[outcome] * pot.BEK, 2) + GameCost;
+                        pot.BEK -= payout;
+                        userInv.BEK += payout;
+
+                        session.Store(pot);
+                        session.Store(highScore);
+                        session.SaveChanges();
+                        invMan.Save(userInv);
+                        break;
+                    }
+                }
             }
             
-            invMan.Save(userInv);
+            if(outcome < 1)
+            {
+                return new BotMessage { Text = PhraseBook.DidntMakeHighScoreInCountFormat().With(maxScore, losses) };
+            }
 
             var channelNames = context.Get<Dictionary<string, string>>(Keys.StaticContextKeys.ChannelsNameCache);
             SecondaryMessageResponder.Message = new BotMessage
@@ -91,7 +125,7 @@ namespace pappab0t.Responders
             return new BotMessage
             {
                 Text ="{0} {1}".With(
-                        PhraseBook.PotPayoutFormat().With(score, outcome, payout),
+                        PhraseBook.PotPayoutFormat().With(maxScore, outcome, payout, losses + 1),
                         PhraseBook.Exclamation())
             };
         }

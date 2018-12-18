@@ -19,7 +19,6 @@ namespace pappab0t.Tests.Responders
 
         private readonly Mock<IPhrasebook> _phrasebookMock;
         private readonly IDocumentStore _documentStore;
-        private readonly Dictionary<string, string> _userNameCache;
 
         protected RandomUrlResponderTests()
         {
@@ -37,17 +36,6 @@ namespace pappab0t.Tests.Responders
             };
 
             Responder = new RandomUrlResponder(_phrasebookMock.Object, _documentStore);
-        }
-
-        protected ResponseContext CreateRandomUrlContext(string msg, SlackChatHubType hubType = SlackChatHubType.Channel)
-        {
-            var context = CreateResponseContext(
-                msg,
-                hubType,
-                mentionsBot: msg.StartsWith("pbot"));
-
-            context.UserNameCache = _userNameCache;
-            return context;
         }
 
         public class CanRespond : RandomUrlResponderTests
@@ -109,7 +97,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("random url", false)]
             public void Should_respond_to_random_url_requests(string msg, bool expectedResult, SlackChatHubType hubType = SlackChatHubType.Channel)
             {
-                var context = CreateRandomUrlContext(msg, hubType);
+                var context = CreateContext(msg, hubType);
 
                 var result = Responder.CanRespond(context);
 
@@ -201,7 +189,7 @@ namespace pappab0t.Tests.Responders
                 _phrasebookMock.Setup(x => x.NoDataFound())
                     .Returns(msg);
 
-                var context = CreateRandomUrlContext(text,hubType);
+                var context = CreateContext(text,hubType);
 
                 var response = Responder.GetResponse(context);
 
@@ -215,7 +203,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("ru", SlackChatHubType.DM)]
             public void Should_query_for_random_url_of_any_type_when_no_type_is_given(string text, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext(text,hubType);
+                var context = CreateContext(text,hubType);
 
                 var used = AssertPostsUsed(context);
 
@@ -283,7 +271,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("ru t:video", SlackChatHubType.DM)]
             public void Should_query_for_random_url_with_given_type(string text, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext(text, hubType);
+                var context = CreateContext(text, hubType);
 
                 var used = AssertPostsUsed(context);
 
@@ -300,7 +288,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("ru u:falfa", "falfa", SlackChatHubType.DM)]
             public void Should_query_for_random_url_with_given_user(string text, string user, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext(text, hubType);
+                var context = CreateContext(text, hubType);
 
                 var used = AssertPostsUsed(context);
 
@@ -332,7 +320,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("ru t:video u:falfa", "falfa", SlackChatHubType.DM)]
             public void Should_query_for_random_url_with_given_type_and_user(string text, string user, SlackChatHubType hubType)
             {
-                var context = CreateRandomUrlContext(text, hubType);
+                var context = CreateContext(text, hubType);
 
                 var used = AssertPostsUsed(context);
 

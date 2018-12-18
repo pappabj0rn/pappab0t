@@ -216,12 +216,21 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string DidntMakeHighScoreInCountFormat()
+        {
+            return new[]{
+                "Du fick som mest {0}p över {1} spel, vilket tyvärr inte tar dig in på highscore-listan :(",
+                "{0}p ({1} spel)! Tyvärr räcker det inte.",
+                "{0}p över {1} spel, bättre lycka nästa gång!"
+            }.Random();
+        }
+
         public string PotPayoutFormat()
         {
             return new[]{
-                "Ny highscore! {0}p tar dig till plats {1} och ger dig {2}kr :D",
-                "Vinnare! {0}p => plats {1} => {2}kr.",
-                "{2}kr utdelning! {0}p (pos. {1})"
+                "Ny highscore! {0}p tar dig till plats {1} och ger dig {2}kr :D ({3} spel)",
+                "Vinnare! {0}p => plats {1} => {2}kr. ({3} spel)",
+                "{2}kr utdelning! {0}p (pos. {1}) ({3} spel)"
             }.Random();
         }
 
@@ -297,6 +306,17 @@ namespace pappab0t.Models
                 "Inget sånt i arkivet.",
                 "Där var det tomt.",
                 "Ingen utdelning.",
+            }.Random();
+        }
+
+        public string QuestionSimilarUrl()
+        {
+            return new[]{
+                "Har redan en väldigt lik url sparad, men kan inte avgöra om din är unik",
+                "Snudd på samma url som redan finns reggad.",
+                "Som två tvillingurlar separerade vid födseln.",
+                "Urlsch!",
+                "Urlaberla"
             }.Random();
         }
     }

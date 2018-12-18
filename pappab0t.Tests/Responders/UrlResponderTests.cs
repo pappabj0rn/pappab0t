@@ -55,7 +55,7 @@ namespace pappab0t.Tests.Responders
         public abstract class GetResponseBase : UrlResponderTests
         {
             protected readonly IDocumentStore Store;
-            protected readonly UrlMatchData ParsedUrlData;
+            protected UrlMatchData ParsedUrlData;
             protected readonly Dictionary<string, object> StaticContextItems = 
                 new Dictionary<string, object>();
             protected ResponseContext ResponseContext;
@@ -73,7 +73,7 @@ namespace pappab0t.Tests.Responders
                 };
 
                 _urlParserMock.Setup(x => x.Parse(It.IsAny<string>()))
-                    .Returns(ParsedUrlData);
+                    .Returns(()=>ParsedUrlData);
 
                 Store = new EmbeddableDocumentStore
                 {
@@ -218,6 +218,38 @@ namespace pappab0t.Tests.Responders
                 TriggerResponder();
 
                 Assert.Null(Response);
+            }
+
+            [Fact]
+            public void Should_question_post_when_there_are_similar_posts_in_db()
+            {
+                _phrasebookMock
+                    .Setup(x => x.QuestionSimilarUrl())
+                    .Returns("poff");
+
+                UseDefaultContext();
+                TriggerResponder();
+
+                WaitForNonStaleUserUrlStats();
+
+                ParsedUrlData = new UrlMatchData
+                {
+                    Protocol = "http",
+                    Domain = "www.nu",
+                    Path = "/folder1/folder2/",
+                    Query = "test=true",
+                    FileName = "ost.jpg",
+                    TargetType = UrlTargetType.Image
+                };
+
+                ResponseContext = CreateResponseContext(
+                    "<http://www.nu/folder1/folder2/ost.jpg?test=true>",
+                    SlackChatHubType.Channel,
+                    mentionsBot: false,
+                    staticContextItems: StaticContextItems);
+                TriggerResponder();
+
+                Assert.StartsWith(_phrasebookMock.Object.QuestionSimilarUrl(), Response.Text);
             }
 
             public class CaseUrlPostedPreviously : GetResponseBase

@@ -182,6 +182,8 @@
     <Compile Include="Keys.cs" />
     <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
+    <Compile Include="Modules\FeatureRequest\Models\FeatureRequest.cs" />
+    <Compile Include="Modules\FeatureRequest\Models\FeatureRequestComment.cs" />
     <Compile Include="Models\HighScore.cs" />
     <Compile Include="Models\IPhrasebook.cs" />
     <Compile Include="Models\MoneyPot.cs" />
@@ -201,6 +203,7 @@
     <Compile Include="Modules\DikaGame\DikaCard.cs" />
     <Compile Include="Modules\DikaGame\DikaDeck.cs" />
     <Compile Include="Modules\DikaGame\Game.cs" />
+    <Compile Include="Modules\Inventory\Token.cs" />
     <Compile Include="ObjectFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -208,9 +211,11 @@
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
     <Compile Include="Responders\DerangementsGameResponder.cs" />
     <Compile Include="Responders\DikaGameResponder.cs" />
+    <Compile Include="Modules\FeatureRequest\FeatureRequestResponder.cs" />
     <Compile Include="Responders\GiveResponder.cs" />
     <Compile Include="Responders\HighScoreResponder.cs" />
     <Compile Include="Responders\InventoryResponder.cs" />
+    <Compile Include="Responders\ItemActionResponder.cs" />
     <Compile Include="Responders\MoneyPotResponder.cs" />
     <Compile Include="Responders\RandomUrlResponder.cs" />
     <Compile Include="Responders\RavenDbLogResponder.cs" />

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Bazam.Http;
 using MargieBot;
@@ -49,9 +50,16 @@ namespace pappab0t
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                Error(ex);
                 Console.ReadKey();
             }
+        }
+
+        private static void Error(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(ex);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         static async Task MainAsync()
@@ -69,7 +77,11 @@ namespace pappab0t
 
             _bot.ConnectionStatusChanged += async isConnected =>
             {
-                if (!isConnected) return;
+                if (!isConnected)
+                {
+                    Console.WriteLine("Disconnected.");
+                    return;
+                }
 
                 Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
                 await PopulateUsernameCache();
@@ -78,7 +90,8 @@ namespace pappab0t
 
             _bot.MessageReceived += _bot_MessageReceived;
 
-            await _bot.Connect(_slackKey);
+            //await _bot.Connect(_slackKey);
+            await ConnectToSlackIfDisconnectedAsync(false);
         }
 
         private static void Init()
@@ -89,12 +102,47 @@ namespace pappab0t
                 .Use(_ravenStore));
 
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
-            _bot = new Bot();
+            
             _userNameCache = new Dictionary<string, string>();
             _channelsNameCache = new Dictionary<string, string>();
             _messageHandlers = ObjectFactory.Container.GetAllInstances<IMessageHandler>().ToList();
 
             _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
+
+            _bot = new Bot();
+            _bot.ConnectionStatusChanged += ConnectToSlackIfDisconnected;
+        }
+
+        private static async void ConnectToSlackIfDisconnected(bool isConnected)
+        {
+            Console.WriteLine("info: void connect");
+            await ConnectToSlackIfDisconnectedAsync(isConnected);
+        }
+
+        private static async Task ConnectToSlackIfDisconnectedAsync(bool isConnected)
+        {
+            Console.WriteLine("info: task connect, "+isConnected);
+            if (!isConnected)
+            {
+                await Task.Factory.StartNew(async () =>
+                {
+                    Console.WriteLine("info: start new");
+                    while (!_bot.IsConnected)
+                    {
+                        Console.WriteLine("info: not connected, while");
+                        try
+                        {
+                            Console.Error.WriteLine("Trying to connect to Slack...");
+                            await _bot.Connect(_slackKey);
+                        }
+                        catch (Exception ex)
+                        {
+                            Error(ex);
+                            Thread.Sleep(TimeSpan.FromSeconds(10));
+                        }
+                    }
+                });
+            }
         }
 
         private static Dictionary<string, object> GetStaticResponseContextData()
@@ -123,7 +171,7 @@ namespace pappab0t
                 SimpleResponder.Create(
                     context => (context.Message.MentionsBot || context.Message.IsDirectMessage()) &&
                                !context.BotHasResponded &&
-                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|yo|läget|hi|hello|morrn|mrn|nirrb)\b",
+                               Regex.IsMatch(context.Message.Text, @"\b(hej|tja|tjena|yo|läget|hi|hello|morrn|mrn|nirrb/)\b",
                                    RegexOptions.IgnoreCase) &&
                                context.Message.User.ID != context.BotUserID &&
                                !context.Message.User.IsSlackbot,
@@ -187,6 +235,7 @@ namespace pappab0t
         static void _bot_MessageReceived(string json)
         {
             //Copied from MargieBot source and modified to allow all messages
+            ConsoleDebugLog(json);
 
             var jObject = JObject.Parse(json);
             if (jObject[Keys.Slack.MessageJson.Type].Value<string>() != "message") return;
@@ -203,7 +252,7 @@ namespace pappab0t
                 hub = SlackChatHub.FromID(channelID);
                 var hubs = new List<SlackChatHub>();
                 hubs.AddRange(_bot.ConnectedHubs.Values);
-                hubs.Add(hub);
+                hubs.Add(hub); // ?
             }
 
             var messageText = jObject[Keys.Slack.MessageJson.Text]?.Value<string>();
@@ -240,6 +289,17 @@ namespace pappab0t
             }
         }
 
+        private static void ConsoleDebugLog(string json)
+        {
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine();
+            Console.WriteLine(json);
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+
+        }
+
         private static IDocumentStore CreateStore()
         {
 #if DEBUG
@@ -254,6 +314,7 @@ namespace pappab0t
 
             return eds;
 #endif
+#pragma warning disable 162
             var store = new DocumentStore
             {
                 Url = ConfigurationManager.AppSettings[Keys.AppSettings.RavenUrl],
@@ -261,6 +322,7 @@ namespace pappab0t
             }.Initialize();
 
             return store;
+#pragma warning restore 162
         }
     }
 }
