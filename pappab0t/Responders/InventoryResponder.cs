@@ -14,14 +14,10 @@ namespace pappab0t.Responders
     {
         public override bool CanRespond(ResponseContext context)
         {
-            Context = context;
+            Init(context);
 
-            var aliases = Bot.Aliases.Aggregate(Bot.UserName+"|", (prev, next) => prev + "|" + next, s => $"({s.Substring(1)})");
-
-            return context.Message.MentionsBot 
-                && Regex.IsMatch(context.Message.Text, $"{aliases} i", RegexOptions.IgnoreCase)
-                || context.Message.IsDirectMessage() 
-                && context.Message.Text == "i";
+            return CommandParser.Command == "i"
+                   && CommandParser.ParamsRaw.IsNullOrEmpty();
         }
 
         public override BotMessage GetResponse(ResponseContext context)

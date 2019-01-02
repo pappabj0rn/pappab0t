@@ -15,7 +15,21 @@ namespace pappab0t.Responders
 
         protected Bot Bot => Context?.Get<Bot>();
 
+        public ICommandParser CommandParser { get; }
+
         public abstract bool CanRespond(ResponseContext context);
         public abstract BotMessage GetResponse(ResponseContext context);
+
+        protected ResponderBase()
+        {
+            CommandParser = new CommandParser();
+        }
+
+        protected void Init(ResponseContext context)
+        {
+            Context = context;
+            CommandParser.Context = Context;
+            CommandParser.Parse();
+        }
     }
 }

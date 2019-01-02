@@ -35,7 +35,7 @@ namespace pappab0t.Tests.Responders
                     MentionsBot = mentionsBot
                 }
             };
-            context.Set("aliases",new Bot
+            context.Set(Keys.StaticContextKeys.Bot, new Bot
             {
                 Aliases = new []{"pbot","pb0t"}
             });
@@ -51,14 +51,21 @@ namespace pappab0t.Tests.Responders
             return context;
         }
 
-        protected ResponseContext CreateContext(string msg, SlackChatHubType hubType = SlackChatHubType.Channel)
+        protected ResponseContext CreateContext(
+            string msg, 
+            SlackChatHubType hubType = SlackChatHubType.Channel,
+            bool? mentionsBot = null)
         {
             var context = CreateResponseContext(
                 msg,
                 hubType,
-                mentionsBot: msg.StartsWith("pbot"));
+                mentionsBot: mentionsBot 
+                             ?? msg.Contains("pbot")
+                             || msg.Contains("pb0t")
+                             || msg.Contains("pappab0t")
+                             || msg.Contains("<@botUUID>"));
 
-            context.UserNameCache = _userNameCache;
+            context.UserNameCache = _userNameCache ?? new Dictionary<string, string>();
             return context;
         }
     }

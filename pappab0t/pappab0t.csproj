@@ -209,11 +209,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responders\CapabilitiesResponder.cs" />
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
+    <Compile Include="Responders\CommandParser.cs" />
     <Compile Include="Responders\DerangementsGameResponder.cs" />
     <Compile Include="Responders\DikaGameResponder.cs" />
     <Compile Include="Modules\FeatureRequest\FeatureRequestResponder.cs" />
     <Compile Include="Responders\GiveResponder.cs" />
     <Compile Include="Responders\HighScoreResponder.cs" />
+    <Compile Include="Responders\ICommandParser.cs" />
     <Compile Include="Responders\InventoryResponder.cs" />
     <Compile Include="Responders\ItemActionResponder.cs" />
     <Compile Include="Responders\MoneyPotResponder.cs" />

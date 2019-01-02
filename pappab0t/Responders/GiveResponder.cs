@@ -9,6 +9,9 @@ using pappab0t.Modules.Inventory;
 
 namespace pappab0t.Responders
 {
+    //todo: ge ören
+    //todo: ge med @
+
     public class GiveResponder : ResponderBase, IExposedCapability
     {
         private const string UserKey = "user";
@@ -24,6 +27,7 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
+            //return CommandInfo.ToBot && CommandInfo.Command == "ge"
             return (
                     context.Message.MentionsBot 
                     || context.Message.IsDirectMessage()
