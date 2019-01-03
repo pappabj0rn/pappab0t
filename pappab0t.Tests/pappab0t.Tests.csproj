@@ -144,6 +144,7 @@
     <Compile Include="Responders\DikagameResponderTests.cs" />
     <Compile Include="Responders\FeatureRequestResponderTests.cs" />
     <Compile Include="Responders\InventoryResponderTests.cs" />
+    <Compile Include="Responders\MoneyPotResponderTests.cs" />
     <Compile Include="Responders\RandomUrlResponderTests.cs" />
     <Compile Include="Responders\ResponderTestsBase.cs" />
     <Compile Include="Responders\UrlResponderTests.cs" />

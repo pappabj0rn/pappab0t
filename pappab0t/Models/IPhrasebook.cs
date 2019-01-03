@@ -78,5 +78,6 @@
 
         string NoDataFound();
         string QuestionSimilarUrl();
+        string DidntMakeHighScoreInCountFormat();
     }
 }

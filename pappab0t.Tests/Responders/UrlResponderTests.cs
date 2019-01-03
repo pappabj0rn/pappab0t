@@ -54,10 +54,7 @@ namespace pappab0t.Tests.Responders
 
         public abstract class GetResponseBase : UrlResponderTests
         {
-            protected readonly IDocumentStore Store;
             protected UrlMatchData ParsedUrlData;
-            protected readonly Dictionary<string, object> StaticContextItems = 
-                new Dictionary<string, object>();
             protected ResponseContext ResponseContext;
             protected BotMessage Response;
 
@@ -75,23 +72,11 @@ namespace pappab0t.Tests.Responders
                 _urlParserMock.Setup(x => x.Parse(It.IsAny<string>()))
                     .Returns(()=>ParsedUrlData);
 
-                Store = new EmbeddableDocumentStore
-                {
-                    RunInMemory = true
-                };
-
-                Store.Initialize();
-
-                StaticContextItems.Add("ravenStore", Store);
+                ConfigureRavenDB();
 
                 _responder = new UrlResponder(
                     _urlParserMock.Object,
                     _phrasebookMock.Object);
-            }
-
-            ~GetResponseBase()
-            {
-                Store.Dispose();
             }
 
             protected void UseDefaultContext()
@@ -99,8 +84,7 @@ namespace pappab0t.Tests.Responders
                 ResponseContext = CreateResponseContext(
                     "<http://www.nu/folder1/folder2/ost.jpg>", 
                     SlackChatHubType.Channel,
-                    mentionsBot: false,
-                    staticContextItems: StaticContextItems);
+                    mentionsBot: false);
             }
 
             protected void TriggerResponder()
@@ -250,8 +234,7 @@ namespace pappab0t.Tests.Responders
                 ResponseContext = CreateResponseContext(
                     "<http://www.nu/folder1/folder2/ost.jpg?test=true>",
                     SlackChatHubType.Channel,
-                    mentionsBot: false,
-                    staticContextItems: StaticContextItems);
+                    mentionsBot: false);
 
                 TriggerResponder();
 

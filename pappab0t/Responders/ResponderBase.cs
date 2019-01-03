@@ -11,7 +11,7 @@ namespace pappab0t.Responders
 
         protected IDocumentStore DocumentStore => Context?.Get<IDocumentStore>();
 
-        protected Phrasebook PhraseBook => Context?.Get<Phrasebook>();
+        protected IPhrasebook PhraseBook => Context?.Get<IPhrasebook>();
 
         protected Bot Bot => Context?.Get<Bot>();
 

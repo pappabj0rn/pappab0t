@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
@@ -10,49 +10,61 @@ namespace pappab0t.Responders
 {
     public class MoneyPotResponder : ResponderBase, IExposedCapability
     {
-        private const string PotNameKey = "potName";
-        private const string HighScoreRegex = @"(?:\bpott\b|\bp\b)(\s+(?<" + PotNameKey + @">\w+))?";
-
         private string _potName;
 
         public override bool CanRespond(ResponseContext context)
         {
-            return (context.Message.MentionsBot || context.Message.ChatHub.Type == SlackChatHubType.DM)
-                   && Regex.IsMatch(context.Message.Text, HighScoreRegex, RegexOptions.IgnoreCase);
+            Init(context);
+
+            return CommandParser.Command == "pott"
+                   || CommandParser.Command == "p";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
-            Context = context;
+            Init(context);
 
-            var match = Regex.Match(Context.Message.Text, HighScoreRegex, RegexOptions.IgnoreCase);
-            _potName = match.Groups[PotNameKey].Value;
+            _potName = "";
+            if (CommandParser.Params.ContainsKey(Responders.CommandParser.UnnamedParam))
+                _potName = CommandParser.Params[Responders.CommandParser.UnnamedParam];
 
-            if(_potName.IsNullOrEmpty())
-                return new BotMessage { Text = "Du måste ange vilken pott som skall visas." };
+            if(_potName == "")
+                using (var session = DocumentStore.OpenSession())
+                {
+                    var pots = session.Query<MoneyPot>();
+
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Nuvarande potter:");
+
+                    foreach (var pot in pots)
+                    {
+                        sb.AppendLine($"> {pot.Name} {pot.BEK:C}");
+                    }
+
+                    return new BotMessage{Text = sb.ToString()};
+                }
 
             using (var session = DocumentStore.OpenSession())
             {
                 var pot = session.Query<MoneyPot>()
                                  .FirstOrDefault(x=>x.Name.Equals(_potName, StringComparison.InvariantCultureIgnoreCase));
 
-                if(pot == null)
-                    return new BotMessage{ Text = PhraseBook.IDontKnowXxxNamedYyyFormat().With("nån pott", _potName)};
-
-                return new BotMessage{Text = "{0}-potten är uppe i {1}kr.".With(_potName, pot.BEK)};
+                return pot == null 
+                    ? new BotMessage
+                    {
+                        Text = PhraseBook.IDontKnowXxxNamedYyyFormat().With("nån pott", _potName)
+                    } 
+                    : new BotMessage
+                    {
+                        Text = $"{_potName}: {pot.BEK:C}"
+                    };
             }
         }
 
-        public ExposedInformation Info
+        public ExposedInformation Info => new ExposedInformation
         {
-            get
-            {
-                return new ExposedInformation
-                {
-                    Usage = "pott|p <pottnamn>",
-                    Explatation = "Visar potten med givet namn."
-                };
-            }
-        }
+            Usage = "pott|p [pottnamn]",
+            Explatation = "Visar potter, eller potten med givet namn."
+        };
     }
 }

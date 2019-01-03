@@ -1,22 +1,36 @@
 using System.Collections.Generic;
 using MargieBot;
+using Moq;
+using pappab0t.Models;
+using Raven.Client;
+using Raven.Client.Embedded;
 
 namespace pappab0t.Tests.Responders
 {
     public abstract class ResponderTestsBase
     {
         protected Dictionary<string, string> UserNameCache;
+        protected Dictionary<string, object> StaticContextItems;
+        protected IDocumentStore Store;
+
+        protected Mock<IPhrasebook> PhraseBookMock;
 
         protected ResponderTestsBase()
         {
-            UserNameCache = new Dictionary<string, string> { { "U06BH8WTT", "eriska" } };
+            UserNameCache = new Dictionary<string, string> {{"U06BH8WTT", "eriska"}};
+            StaticContextItems = new Dictionary<string, object>();
+
+            PhraseBookMock = new Mock<IPhrasebook>();
+            PhraseBookMock.SetupAllProperties();
+            StaticContextItems.Add(
+                Keys.StaticContextKeys.Phrasebook, 
+                PhraseBookMock.Object);
         }
 
         protected ResponseContext CreateResponseContext(
             string text, 
             SlackChatHubType chatHubType, 
-            bool mentionsBot = false, 
-            IDictionary<string,object> staticContextItems = null,
+            bool mentionsBot = false,
             string userUUID = null)
         {
             var context = new ResponseContext
@@ -45,17 +59,22 @@ namespace pappab0t.Tests.Responders
                 Aliases = new []{"pbot","pb0t"}
             });
 
-            if (staticContextItems != null)
-            {
-                foreach (var item in staticContextItems)
-                {
-                    context.Set(item.Key,item.Value);
-                }
-            }
+            SetStaticContextItems(context);
 
             context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
 
             return context;
+        }
+
+        private void SetStaticContextItems(ResponseContext context)
+        {
+            if (StaticContextItems == null)
+                return;
+
+            foreach (var item in StaticContextItems)
+            {
+                context.Set(item.Key, item.Value);
+            }
         }
 
         protected ResponseContext CreateContext(
@@ -72,8 +91,26 @@ namespace pappab0t.Tests.Responders
                              || msg.Contains("pappab0t")
                              || msg.Contains("<@botUUID>"));
 
+            SetStaticContextItems(context);
             context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
             return context;
+        }
+
+        protected void ConfigureRavenDB()
+        {
+            Store = new EmbeddableDocumentStore
+            {
+                RunInMemory = true
+            };
+
+            Store.Initialize();
+
+            StaticContextItems.Add("ravenStore", Store);
+        }
+
+        ~ResponderTestsBase()
+        {
+            Store?.Dispose();
         }
     }
 }
