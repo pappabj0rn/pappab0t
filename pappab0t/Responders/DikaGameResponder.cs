@@ -46,11 +46,13 @@ namespace pappab0t.Responders
 
         public override BotMessage GetResponse(ResponseContext context)
         {
-            Context = context;
+            _maxGames = 1;
+            Init(context);
 
             if (CommandParser.Params.Count == 1)
             {
                 int.TryParse(CommandParser.Params.First().Value, out _maxGames);
+
                 if (_maxGames < 1)
                     _maxGames = 1;
             }

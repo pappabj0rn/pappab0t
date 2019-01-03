@@ -8,6 +8,7 @@ namespace pappab0t.Responders
 {
     public class CommandParser : ICommandParser
     {
+        public static string UnnamedParam = "unnamed";
         public static class Keys
         {
             public static string UserIdKey = "user";
@@ -58,43 +59,77 @@ namespace pappab0t.Responders
             Params = new Dictionary<string, string>();
         }
 
+        private string _currentKey;
+        private string _currentValue;
         private void ParseParameters()
         {
             TryAddNonKeyedUser();
 
             var paramWords = ParamsRaw.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
-            var currentKey = "";
-            var currentValue = "";
+
+            _currentKey = "";
+            _currentValue = "";
+            var multiValueStarted = false;
 
             foreach (string word in paramWords)
             {
                 if(word.StartsWith("--"))
                 {
-                    AddFoundKeyValue(currentKey, currentValue);
-                    currentKey = word.Substring(2);
+                    AddFoundKeyValue();
+                    _currentKey = word.Substring(2);
                 }
                 else if (word.StartsWith("-"))
                 {
-                    AddFoundKeyValue(currentKey, currentValue);
+                    AddFoundKeyValue();
                     string shortHand = word.Substring(1);
 
                     if (shortHand.Length > 1)
                         foreach (char c in shortHand)
                         {
-                            Params.Add(c.ToString(), "");
+                            if(!Params.ContainsKey(c.ToString()))
+                                Params.Add(c.ToString(), "");
                         }
                     else
-                        currentKey = ShorthandMap.ContainsKey(shortHand)
+                        _currentKey = ShorthandMap.ContainsKey(shortHand)
                             ? ShorthandMap[shortHand]
                             : shortHand;
                 }
+                else if (!multiValueStarted && _currentKey == "")
+                {
+                    _currentKey = UnnamedParam;
+                    multiValueStarted = true;
+                    _currentValue += " " + word;
+                }
                 else
                 {
-                    currentValue += " " + word;
+                    if (word.StartsWith("\""))
+                    {
+                        multiValueStarted = true;
+                        _currentValue += " " + word;
+                    }
+                    else if(word.EndsWith("\""))
+                    {
+                        multiValueStarted = false;
+                        _currentValue += " " + word;
+                        AddFoundKeyValue();
+                    }
+                    else
+                    {
+                        if (multiValueStarted)
+                            _currentValue += " " + word;
+                        else
+                        {
+                            _currentValue = word;
+                            AddFoundKeyValue();
+                        }
+                    }
                 }
             }
 
-            AddFoundKeyValue(currentKey, currentValue);
+            //if (_currentKey == string.Empty)
+            //    _currentKey = UnnamedParam;
+
+            AddFoundKeyValue();
             MapUser();
         }
 
@@ -112,10 +147,21 @@ namespace pappab0t.Responders
                 Params[Keys.UserIdKey] = Context.UserNameCache.First(x => x.Value == Params[Keys.UserIdKey]).Key;
         }
 
-        private void AddFoundKeyValue(string currentKey, string currentValue)
+        private void AddFoundKeyValue()
         {
-            if (currentKey != "")
-                Params.Add(currentKey, currentValue.Replace("\"","").Trim());
+            if (_currentKey == "")
+                return;
+
+            if (Params.ContainsKey(_currentKey))
+            {
+                Params[_currentKey] += _currentValue;
+                Params[_currentKey] = Params[_currentKey].Replace("\"", "").Trim();
+            }
+            else
+                Params.Add(_currentKey, _currentValue.Replace("\"","").Trim());
+
+            _currentKey = "";
+            _currentValue = "";
         }
 
         private void TryAddNonKeyedUser()

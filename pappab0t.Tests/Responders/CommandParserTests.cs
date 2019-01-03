@@ -192,6 +192,42 @@ namespace pappab0t.Tests.Responders
 
                 Assert.Equal("test test", _parser.Params["t"]);
             }
+
+            [Fact]
+            public void Should_group_multi_word_param_values_by_quotes()
+            {
+                var context = CreateContext("pbot cmd -t \"test test\" -x xyz");
+                CreateCommandParser(context);
+
+                _parser.Parse();
+
+                Assert.Contains("t", _parser.Params.Keys);
+                Assert.Contains("x", _parser.Params.Keys);
+
+                Assert.Equal("test test", _parser.Params["t"]);
+                Assert.Equal("xyz", _parser.Params["x"]);
+            }
+
+            [Theory]
+            [InlineData("test para", "para")]
+            [InlineData("test para1 para2", "para1 para2")]
+            [InlineData("test -t test para", "para")]
+            [InlineData("test -t \"test test\" para", "para")]
+            [InlineData("test -t \"test test\" para1 para2", "para1 para2")]
+            [InlineData("test --test \"test test\" para1 para2", "para1 para2")]
+            [InlineData("test -test \"test test\" para1 para2", "test test para1 para2")]
+            public void Should_group_unnamed_leftovers_into_unnamed_param(
+                string msg, string expectedUnnamedValue)
+            {
+                var context = CreateContext(msg, SlackChatHubType.DM);
+                CreateCommandParser(context);
+
+                _parser.Parse();
+
+                Assert.Contains(CommandParser.UnnamedParam, _parser.Params.Keys);
+
+                Assert.Equal(expectedUnnamedValue, _parser.Params[CommandParser.UnnamedParam]);
+            }
         }
 
         public class ParametersRaw : CommandParserTests
