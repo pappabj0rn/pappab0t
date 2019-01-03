@@ -11,13 +11,35 @@ namespace pappab0t.Models
             Protocol = "http";
         }
 
-        public virtual string Protocol { get; set; }
-        public virtual string Domain { get; set; }
-        public virtual string Path { get; set; }
-        public virtual string FileName { get; set; }
-        public virtual string Query { get; set; }
-        public virtual string Anchor { get; set; }
-        public virtual UrlTargetType TargetType { get; set; }
+        public UrlMatchData(UrlMatchData data)
+        {
+            Protocol = data.Protocol;
+            Domain = data.Domain;
+            Path = data.Path;
+            FileName = data.FileName;
+            Query = data.Query;
+            Anchor = data.Anchor;
+            TargetType = data.TargetType;
+        }
+
+        public string Protocol { get; set; }
+        public string Domain { get; set; }
+        public string Path { get; set; }
+        public string FileName { get; set; }
+        public string Query { get; set; }
+        public string Anchor { get; set; }
+        public UrlTargetType TargetType { get; set; }
+
+        public static UrlMatchData Empty => new UrlMatchData
+        {
+            Protocol = "",
+            Domain = "",
+            Path = "",
+            FileName = "",
+            Query = "",
+            Anchor = "",
+            TargetType = UrlTargetType.Other
+        };
 
         public bool Equals(UrlMatchData other)
         {

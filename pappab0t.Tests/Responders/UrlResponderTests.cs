@@ -89,6 +89,11 @@ namespace pappab0t.Tests.Responders
                     _phrasebookMock.Object);
             }
 
+            ~GetResponseBase()
+            {
+                Store.Dispose();
+            }
+
             protected void UseDefaultContext()
             {
                 ResponseContext = CreateResponseContext(
@@ -247,6 +252,7 @@ namespace pappab0t.Tests.Responders
                     SlackChatHubType.Channel,
                     mentionsBot: false,
                     staticContextItems: StaticContextItems);
+
                 TriggerResponder();
 
                 Assert.StartsWith(_phrasebookMock.Object.QuestionSimilarUrl(), Response.Text);

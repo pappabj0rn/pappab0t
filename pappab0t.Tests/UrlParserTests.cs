@@ -14,7 +14,7 @@ namespace pappab0t.Tests
             {
                 var result = _parser.Parse("imgur.com");
 
-                Assert.Equal(new EmptyUrlMatchData().GetType(), result.GetType());
+                Assert.Equal(UrlMatchData.Empty, result);
             }
 
             [Theory]

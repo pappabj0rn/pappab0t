@@ -38,6 +38,13 @@ namespace pappab0t.Tests.Responders
             Responder = new RandomUrlResponder(_phrasebookMock.Object, _documentStore);
         }
 
+
+
+        ~RandomUrlResponderTests()
+        {
+            _documentStore.Dispose();
+        }
+
         public class CanRespond : RandomUrlResponderTests
         {
             [Theory]

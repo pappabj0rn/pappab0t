@@ -43,7 +43,7 @@ namespace pappab0t.Responders
                     startOfUrl,
                     endOfUrl-startOfUrl));
 
-            return !(_urlMatchData is EmptyUrlMatchData);
+            return !(_urlMatchData == UrlMatchData.Empty);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -70,9 +70,23 @@ namespace pappab0t.Responders
                                 "OP")
                     };
 
+                var udSansQuery = new UrlMatchData(_urlMatchData)
+                {
+                    Query = null
+                };
+                existingPost = session
+                    .Query<UserUrlPost>()
+                    .FirstOrDefault(x => x.UrlMatchData == udSansQuery);
+
                 StorePostedData(context, session);
                 UpdateUserStats(context, session);
                 session.SaveChanges();
+
+                if (existingPost != null)
+                    return new BotMessage
+                    {
+                        Text = _phrasebook.QuestionSimilarUrl()
+                    };
             }
 
             return null;

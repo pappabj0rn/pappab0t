@@ -173,7 +173,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\IExposedCapability.cs" />
-    <Compile Include="EmptyUrlMatchData.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\SlackMessageExtensions.cs" />

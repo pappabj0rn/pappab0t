@@ -39,7 +39,7 @@ namespace pappab0t
             }
             catch (Exception)
             {
-                return new EmptyUrlMatchData();
+                return UrlMatchData.Empty;
             }
         }
 
