@@ -20,6 +20,7 @@ namespace pappab0t.Responders
 
         private List<string> _words = new List<string>();
         private int _cmdWordIndex;
+        private ResponseContext _context;
 
         public void Parse()
         {
@@ -40,7 +41,22 @@ namespace pappab0t.Responders
             ParseParameters();
         }
 
-        public ResponseContext Context { get; set; }
+        public ResponseContext Context
+        {
+            get => _context;
+            set
+            {
+                ResetParser();
+                _context = value;
+            }
+        }
+
+        private void ResetParser()
+        {
+            _words = new List<string>();
+            ParamsRaw = null;
+            Params = new Dictionary<string, string>();
+        }
 
         private void ParseParameters()
         {

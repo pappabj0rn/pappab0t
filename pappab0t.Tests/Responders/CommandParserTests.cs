@@ -221,5 +221,29 @@ namespace pappab0t.Tests.Responders
                 Assert.Equal(expectedParams, _parser.ParamsRaw);
             }
         }
+
+        public class Context : CommandParserTests
+        {
+            [Fact]
+            public void Setting_context_should_clear_previous_parsed_state()
+            {
+                var msg1 = "pbot cmd -t test";
+                var context1 = CreateContext(msg1);
+                var parser = new CommandParser
+                {
+                    Context = context1
+                };
+
+                parser.Parse();
+
+                var msg2 = "test";
+                var context2 = CreateContext(msg2);
+                parser.Context = context2;
+
+                Assert.Null(parser.Command);
+                Assert.Null(parser.ParamsRaw);
+                Assert.Empty(parser.Params);
+            }
+        }
     }
 }
