@@ -141,6 +141,7 @@
     <Compile Include="Modules\Common\DeckTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responders\CommandParserTests.cs" />
+    <Compile Include="Responders\DikagameResponderTests.cs" />
     <Compile Include="Responders\FeatureRequestResponderTests.cs" />
     <Compile Include="Responders\InventoryResponderTests.cs" />
     <Compile Include="Responders\RandomUrlResponderTests.cs" />

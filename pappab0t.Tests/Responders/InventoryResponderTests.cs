@@ -28,7 +28,7 @@ namespace pappab0t.Tests.Responders
 
             [Theory]
             [InlineData("i en tunna", SlackChatHubType.DM)]
-            [InlineData("i en tunna", SlackChatHubType.Channel)]//
+            [InlineData("i en tunna", SlackChatHubType.Channel)]
             [InlineData("pbot i en tunna", SlackChatHubType.Channel)]
             [InlineData("test pbot ost i ett hus", SlackChatHubType.Channel)]
             [InlineData("hej pbot", SlackChatHubType.Channel)]

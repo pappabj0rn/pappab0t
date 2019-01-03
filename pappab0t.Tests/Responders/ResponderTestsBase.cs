@@ -5,9 +5,14 @@ namespace pappab0t.Tests.Responders
 {
     public abstract class ResponderTestsBase
     {
-        protected Dictionary<string, string> _userNameCache;
+        protected Dictionary<string, string> UserNameCache;
 
-        protected static ResponseContext CreateResponseContext(
+        protected ResponderTestsBase()
+        {
+            UserNameCache = new Dictionary<string, string> { { "U06BH8WTT", "eriska" } };
+        }
+
+        protected ResponseContext CreateResponseContext(
             string text, 
             SlackChatHubType chatHubType, 
             bool mentionsBot = false, 
@@ -48,6 +53,8 @@ namespace pappab0t.Tests.Responders
                 }
             }
 
+            context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
+
             return context;
         }
 
@@ -65,7 +72,7 @@ namespace pappab0t.Tests.Responders
                              || msg.Contains("pappab0t")
                              || msg.Contains("<@botUUID>"));
 
-            context.UserNameCache = _userNameCache ?? new Dictionary<string, string>();
+            context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
             return context;
         }
     }

@@ -29,7 +29,7 @@ namespace pappab0t.Tests.Responders
             };
             _documentStore.Initialize();
 
-            _userNameCache = new Dictionary<string, string>
+            UserNameCache = new Dictionary<string, string>
             {
                 { "userUUID1","eriska" },
                 { "userUUID2","falfa" },
@@ -128,7 +128,7 @@ namespace pappab0t.Tests.Responders
             {
                 _otherPost1 = new UserUrlPost
                 {
-                    UserId = _userNameCache.First().Key,
+                    UserId = UserNameCache.First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "www.nu",
@@ -138,7 +138,7 @@ namespace pappab0t.Tests.Responders
 
                 _otherPost2 = new UserUrlPost
                 {
-                    UserId = _userNameCache.Skip(1).First().Key,
+                    UserId = UserNameCache.Skip(1).First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "dn.se",
@@ -148,7 +148,7 @@ namespace pappab0t.Tests.Responders
 
                 _videoPost1 = new UserUrlPost
                 {
-                    UserId = _userNameCache.First().Key,
+                    UserId = UserNameCache.First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "youtube.com",
@@ -158,7 +158,7 @@ namespace pappab0t.Tests.Responders
 
                 _videoPost2 = new UserUrlPost
                 {
-                    UserId = _userNameCache.Skip(1).First().Key,
+                    UserId = UserNameCache.Skip(1).First().Key,
                     UrlMatchData = new UrlMatchData
                     {
                         Domain = "vimeo.com",
@@ -264,7 +264,7 @@ namespace pappab0t.Tests.Responders
             {
                 Assert.Equal(
                     $"{post.Created:yy-MM-dd HH:mm} " +
-                    $"{_userNameCache[post.UserId]}: " +
+                    $"{UserNameCache[post.UserId]}: " +
                     $"{post.UrlMatchData}",
                     response.Text);
             }
@@ -300,22 +300,22 @@ namespace pappab0t.Tests.Responders
                 var used = AssertPostsUsed(context);
 
                 Assert.Equal(
-                    _userNameCache[_otherPost1.UserId]
+                    UserNameCache[_otherPost1.UserId]
                         .Equals(user,StringComparison.InvariantCultureIgnoreCase), 
                     used.Other1);
 
                 Assert.Equal(
-                    _userNameCache[_otherPost2.UserId]
+                    UserNameCache[_otherPost2.UserId]
                         .Equals(user, StringComparison.InvariantCultureIgnoreCase),
                     used.Other2);
 
                 Assert.Equal(
-                    _userNameCache[_videoPost1.UserId]
+                    UserNameCache[_videoPost1.UserId]
                         .Equals(user, StringComparison.InvariantCultureIgnoreCase),
                     used.Video1);
 
                 Assert.Equal(
-                    _userNameCache[_videoPost2.UserId]
+                    UserNameCache[_videoPost2.UserId]
                         .Equals(user, StringComparison.InvariantCultureIgnoreCase),
                     used.Video2);
             }

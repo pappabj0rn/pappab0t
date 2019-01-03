@@ -9,11 +9,6 @@ namespace pappab0t.Tests.Responders
     {
         private CommandParser _parser;
 
-        protected CommandParserTests()
-        {
-            _userNameCache = new Dictionary<string, string> { { "U06BH8WTT", "eriska" } };
-        }
-
         protected void CreateCommandParser(ResponseContext context)
         {
             _parser = new CommandParser {Context = context};
@@ -113,6 +108,18 @@ namespace pappab0t.Tests.Responders
                 _parser.Parse();
 
                 Assert.Null(_parser.Command);
+            }
+
+            [Fact]
+            public void Should_parse_commands_to_lower_case()
+            {
+                var cmd = "CMD";
+                var context = CreateContext(cmd, SlackChatHubType.DM);
+                CreateCommandParser(context);
+
+                _parser.Parse();
+
+                Assert.Equal(cmd.ToLower(), _parser.Command);
             }
         }
 

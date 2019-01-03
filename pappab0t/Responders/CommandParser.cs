@@ -117,7 +117,8 @@ namespace pappab0t.Responders
 
         public string Command => 
             _words
-                .FirstOrDefault(x=>!IsBotReference(x));
+                .FirstOrDefault(x=>!IsBotReference(x))
+                ?.ToLower();
 
         public string ParamsRaw { get; private set; }
         public Dictionary<string,string> Params { get; private set; }

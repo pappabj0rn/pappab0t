@@ -38,6 +38,11 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
+            Init(context);
+
+            return CommandParser.Command == "dg"
+                || CommandParser.Command == "dikagame";
+
             return context.Message.IsDirectMessage()
                    && Regex.IsMatch(context.Message.Text, DikaGameRegex, RegexOptions.IgnoreCase);
         }
