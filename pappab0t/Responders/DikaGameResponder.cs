@@ -31,30 +31,29 @@ namespace pappab0t.Responders
             {10,0.02m}
         };
 
-        private const string gameMaxCountKey = "gmc";
-        private const string DikaGameRegex = @"(?:\bdikagame\b|\bdg\b)(\s+(?<" + gameMaxCountKey + @">\w+))?";
-
         private int _maxGames = 1;
 
         public override bool CanRespond(ResponseContext context)
         {
             Init(context);
 
-            return CommandParser.Command == "dg"
-                || CommandParser.Command == "dikagame";
-
             return context.Message.IsDirectMessage()
-                   && Regex.IsMatch(context.Message.Text, DikaGameRegex, RegexOptions.IgnoreCase);
+                && (
+                    CommandParser.Command == "dg"
+                    || CommandParser.Command == "dikagame"
+                );
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
             Context = context;
 
-            var match = Regex.Match(Context.Message.Text, DikaGameRegex, RegexOptions.IgnoreCase);
-            int.TryParse(match.Groups[gameMaxCountKey].Value, out _maxGames);
-            if (_maxGames < 1)
-                _maxGames = 1;
+            if (CommandParser.Params.Count == 1)
+            {
+                int.TryParse(CommandParser.Params.First().Value, out _maxGames);
+                if (_maxGames < 1)
+                    _maxGames = 1;
+            }
             
 
             var invMan = new InventoryManager(Context);
@@ -137,7 +136,7 @@ namespace pappab0t.Responders
 
         public ExposedInformation Info => new ExposedInformation
         {
-            Usage = "dikagame|dg", 
+            Usage = "dikagame|dg [<int>antal]", 
             Explatation = $"Endast DM. Blandar upp en kortlek och kör en omgång DikaGame(tm). Ett spel kostar {GameCost}kr. Nyckel (ex. för hs): {GameKey}."
         };
     }

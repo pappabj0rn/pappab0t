@@ -38,6 +38,12 @@ namespace pappab0t.Tests.Responders
             [Theory]
             [InlineData("dg", SlackChatHubType.Channel)]
             [InlineData("DG", SlackChatHubType.Channel)]
+            [InlineData("dikagame", SlackChatHubType.Channel)]
+            [InlineData("pbot dikagame", SlackChatHubType.Channel)]
+            [InlineData("pbot Dikagame", SlackChatHubType.Channel)]
+            [InlineData("pbot dg", SlackChatHubType.Channel)]
+            [InlineData("pbot DG", SlackChatHubType.Channel)]
+
             [InlineData("hs dg", SlackChatHubType.Channel)]
             [InlineData("hs dg", SlackChatHubType.DM)]
             public void Should_return_false_for_the_given_scenarios(string msg, SlackChatHubType hubType)
