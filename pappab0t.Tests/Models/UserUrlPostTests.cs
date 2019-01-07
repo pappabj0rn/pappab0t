@@ -13,7 +13,8 @@ namespace pappab0t.Tests.Models
             {
                 var post = new UserUrlPost();
 
-                Assert.Equal(DateTime.Now, post.Created);
+                Assert.Equal(DateTime.Now.ToLongDateString(), post.Created.ToLongDateString());
+                Assert.Equal(DateTime.Now.ToLongTimeString(), post.Created.ToLongTimeString());
             }
         }
     }

@@ -76,18 +76,6 @@ namespace pappab0t.Tests.Responders
                 }
             }
 
-            protected void WaitForNonStaleMoneyPotByName()
-            {
-                using (var session = Store.OpenSession())
-                {
-                    // ReSharper disable once UnusedVariable
-                    var q = session
-                        .Query<MoneyPot>()
-                        .Customize(x => x.WaitForNonStaleResults())
-                        .FirstOrDefault(x => x.Name == "");
-                }
-            }
-
             [Fact]
             public void Should_list_all_stored_pots_when_no_pot_name_is_given()
             {
