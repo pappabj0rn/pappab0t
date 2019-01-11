@@ -13,28 +13,36 @@ namespace pappab0t.Responders
 {
     public class DerangementsGameResponder : ResponderBase, IExposedCapability
     {
+        private readonly IInventoryManager _invMan;
         private const decimal GameCost = 1;
         private const decimal PotPercentage = .75m;
         private const string GameKey = "DerangementsGame";
 
+        public DerangementsGameResponder(IInventoryManager invMan)
+        {
+            _invMan = invMan;
+        }
+
         public override bool CanRespond(ResponseContext context)
         {
+            return true;
             return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bderangements\b|\bdr\b|\bdrd\b)", RegexOptions.IgnoreCase);
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
+            return new BotMessage{Text = "Stängd tills vidare då en crach har noterats vid testkörning."};
             Context = context;
+            _invMan.Context = context;
 
             var enableDebugOutput = Regex.IsMatch(context.Message.Text, @"^(?:\bdrd\b)", RegexOptions.IgnoreCase);
-            var invMan = new InventoryManager(Context);
-            var userInv = invMan.GetUserInventory();
+            var userInv = _invMan.GetUserInventory();
 
             if (userInv.BEK < GameCost)
                 return new BotMessage { Text = PhraseBook.InsufficientFundsFormat().With(GameCost) };
 
             userInv.BEK -= GameCost;
-            invMan.Save(userInv);
+            _invMan.Save(userInv);
 
             var game = new Game
             {
@@ -82,7 +90,7 @@ namespace pappab0t.Responders
                 session.SaveChanges();
             }
 
-            invMan.Save(userInv);
+            _invMan.Save(userInv);
 
             var channelNames = context.Get<Dictionary<string, string>>(Keys.StaticContextKeys.ChannelsNameCache);
             SecondaryMessageResponder.Message = new BotMessage

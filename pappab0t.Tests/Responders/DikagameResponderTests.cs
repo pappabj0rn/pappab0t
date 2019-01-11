@@ -26,7 +26,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("dikagame 5")]
             public void Should_return_true_for_the_given_scenarios(string msg)
             {
-                var responder = new DikaGameResponder();
+                var responder = new DikaGameResponder(null);
 
                 var context = CreateContext(msg, SlackChatHubType.DM, false);
 
@@ -48,7 +48,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("hs dg", SlackChatHubType.DM)]
             public void Should_return_false_for_the_given_scenarios(string msg, SlackChatHubType hubType)
             {
-                var responder = new DikaGameResponder();
+                var responder = new DikaGameResponder(null);
 
                 var context = CreateContext(msg, hubType);
 

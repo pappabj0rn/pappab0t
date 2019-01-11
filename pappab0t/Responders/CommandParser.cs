@@ -8,12 +8,6 @@ namespace pappab0t.Responders
 {
     public class CommandParser : ICommandParser
     {
-        public static string UnnamedParam = "unnamed";
-        public static class Keys
-        {
-            public static string UserIdKey = "user";
-        }
-
         private Dictionary<string, string> ShorthandMap => new Dictionary<string, string>
         {
             {"u", "user"}
@@ -40,6 +34,16 @@ namespace pappab0t.Responders
 
             Params = new Dictionary<string, string>();
             ParseParameters();
+            FlagKnownUser();
+        }
+
+        private void FlagKnownUser()
+        {
+            if (Params.ContainsKey(Keys.CommandParser.UserIdKey)
+                && Context.UserNameCache.ContainsKey(Params[Keys.CommandParser.UserIdKey]))
+            {
+                Params.Add(Keys.CommandParser.UserKnownKey,"");
+            }
         }
 
         public ResponseContext Context
@@ -65,7 +69,12 @@ namespace pappab0t.Responders
         {
             TryAddNonKeyedUser();
 
-            var paramWords = ParamsRaw.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+            var paramWords = ParamsRaw
+                .Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            if(Params.ContainsKey(Keys.CommandParser.UserIdKey))
+                paramWords.RemoveAt(0);
 
             _currentKey = "";
             _currentValue = "";
@@ -96,7 +105,7 @@ namespace pappab0t.Responders
                 }
                 else if (!multiValueStarted && _currentKey == "")
                 {
-                    _currentKey = UnnamedParam;
+                    _currentKey = Keys.CommandParser.UnnamedParam;
                     multiValueStarted = true;
                     _currentValue += " " + word;
                 }
@@ -126,25 +135,22 @@ namespace pappab0t.Responders
                 }
             }
 
-            //if (_currentKey == string.Empty)
-            //    _currentKey = UnnamedParam;
-
             AddFoundKeyValue();
             MapUser();
         }
 
         private void MapUser()
         {
-            if (!Params.ContainsKey(Keys.UserIdKey))
+            if (!Params.ContainsKey(Keys.CommandParser.UserIdKey))
                 return;
 
-            Params[Keys.UserIdKey] = Params[Keys.UserIdKey].Trim();
+            Params[Keys.CommandParser.UserIdKey] = Params[Keys.CommandParser.UserIdKey].Trim();
 
-            if (Params[Keys.UserIdKey].StartsWith("<@"))
-                Params[Keys.UserIdKey] = Params[Keys.UserIdKey].Substring(2, 9);
+            if (Params[Keys.CommandParser.UserIdKey].StartsWith("<@"))
+                Params[Keys.CommandParser.UserIdKey] = Params[Keys.CommandParser.UserIdKey].Substring(2, 9);
 
-            else if (Context.UserNameCache.Any(x => x.Value == Params[Keys.UserIdKey]))
-                Params[Keys.UserIdKey] = Context.UserNameCache.First(x => x.Value == Params[Keys.UserIdKey]).Key;
+            else if (Context.UserNameCache.Any(x => x.Value == Params[Keys.CommandParser.UserIdKey]))
+                Params[Keys.CommandParser.UserIdKey] = Context.UserNameCache.First(x => x.Value == Params[Keys.CommandParser.UserIdKey]).Key;
         }
 
         private void AddFoundKeyValue()
@@ -167,11 +173,15 @@ namespace pappab0t.Responders
         private void TryAddNonKeyedUser()
         {
             if (ParamsRaw.StartsWith("<@"))
-                Params.Add(Keys.UserIdKey, ParamsRaw.Substring(2, 9));
+            {
+                Params.Add(Keys.CommandParser.UserIdKey, ParamsRaw.Substring(2, 9));
+            }
 
             else if (_words.Count > _cmdWordIndex + 1
                      && Context.UserNameCache.Any(x => x.Value == _words[_cmdWordIndex + 1]))
-                Params.Add(Keys.UserIdKey, Context.UserNameCache.First(x => x.Value == _words[_cmdWordIndex + 1]).Key);
+            {
+                Params.Add(Keys.CommandParser.UserIdKey, Context.UserNameCache.First(x => x.Value == _words[_cmdWordIndex + 1]).Key);
+            }
         }
 
         public bool ToBot => Context.Message.MentionsBot

@@ -13,6 +13,7 @@ namespace pappab0t.Responders
 {
     public class DikaGameResponder : ResponderBase, IExposedCapability
     {
+        private readonly IInventoryManager _invMan;
         private const decimal GameCost = 1;
         private const decimal PotPercentage = .75m;
         private const string GameKey = "DikaGame";
@@ -33,6 +34,11 @@ namespace pappab0t.Responders
 
         private int _maxGames = 1;
 
+        public DikaGameResponder(IInventoryManager invMan)
+        {
+            _invMan = invMan;
+        }
+
         public override bool CanRespond(ResponseContext context)
         {
             Init(context);
@@ -48,6 +54,7 @@ namespace pappab0t.Responders
         {
             _maxGames = 1;
             Init(context);
+            _invMan.Context = context;
 
             if (CommandParser.Params.Count == 1)
             {
@@ -58,8 +65,7 @@ namespace pappab0t.Responders
             }
             
 
-            var invMan = new InventoryManager(Context);
-            var userInv = invMan.GetUserInventory();
+            var userInv = _invMan.GetUserInventory();
 
             var outcome = 0;
             var losses = 0;
@@ -80,7 +86,7 @@ namespace pappab0t.Responders
                 }
 
                 userInv.BEK -= GameCost;
-                invMan.Save(userInv);
+                _invMan.Save(userInv);
                 
                 var score = game.Play();
 
@@ -110,7 +116,7 @@ namespace pappab0t.Responders
                         session.Store(pot);
                         session.Store(highScore);
                         session.SaveChanges();
-                        invMan.Save(userInv);
+                        _invMan.Save(userInv);
                         break;
                     }
                 }

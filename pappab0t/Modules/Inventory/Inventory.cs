@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using pappab0t.Modules.Inventory.Items;
 
 namespace pappab0t.Modules.Inventory
 {

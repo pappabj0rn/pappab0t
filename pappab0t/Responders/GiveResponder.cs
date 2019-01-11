@@ -1,118 +1,293 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Text;
 using MargieBot;
+using Newtonsoft.Json;
 using pappab0t.Abstractions;
-using pappab0t.Extensions;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 
 namespace pappab0t.Responders
 {
-    //todo: ge ören
-    //todo: ge med @
-
     public class GiveResponder : ResponderBase, IExposedCapability
     {
-        private const string UserKey = "user";
-        private const string AmountKey = "amount";
-        private const string IndexKey = "index";
-        private const string MoneyRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\s+(?<" + AmountKey + @">[0-9]+)kr";
-        private const string ItemRegex = @"\bge\b\s(?<" + UserKey + @">\w+)\s+item_(?<" + IndexKey + @">[0-9]+)";
+        private readonly IInventoryManager _invMan;
+        private readonly IPhrasebook _phrasebook;
+        private const string MoneyParamKey = "p";
+        private const string ItemParamKey = "s";
+        private const string CreateItemParamKey = "c";
 
-        private string _targetUsername;
-        private string _targetUserId;
-        private int _amount, _itemIndex;
-        private bool _moneyTransfer;
+        private GiveMode _mode = GiveMode.NotSet;
+        private BotMessage _returnMsg;
+
+        public GiveResponder(IInventoryManager invMan, IPhrasebook phrasebook, ICommandParser commandParser)
+            : base(commandParser)
+        {
+            _invMan = invMan;
+            _phrasebook = phrasebook;
+        }
 
         public override bool CanRespond(ResponseContext context)
         {
-            //return CommandInfo.ToBot && CommandInfo.Command == "ge"
-            return (
-                    context.Message.MentionsBot 
-                    || context.Message.IsDirectMessage()
-                   ) 
-                   &&
-                   (
-                       Regex.IsMatch(context.Message.Text, MoneyRegex, RegexOptions.IgnoreCase)
-                       || Regex.IsMatch(context.Message.Text, ItemRegex, RegexOptions.IgnoreCase)
-                   );
+            Init(context);
+
+            return CommandParser.ToBot
+                   && CommandParser.Command == "ge";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
-            Context = context;
-            CollectParams();
-            
-            _targetUserId = context.UserNameCache
-                                  .FirstOrDefault(x => x.Value.Equals(_targetUsername, StringComparison.InvariantCultureIgnoreCase))
-                                  .Key;
+            Init(context);
+            _invMan.Context = context;
+            _returnMsg = null;
 
-            if(_targetUserId.IsNullOrEmpty())
-                return new BotMessage { Text = "{0} {1}"
-                                                .With(PhraseBook.OpenAppology(), PhraseBook.IDontKnowXxxNamedYyyFormat()
-                                                                                                .With("nån användare",_targetUsername)) };
-
-            var invMan = new InventoryManager(Context);
-            var userInventory = invMan.GetUserInventory();
-            var targetInventory = invMan.GetUserInventory(_targetUserId);
-
-            string msgText;
-            if (_moneyTransfer)
+            if (CommandParser.Params.ContainsKey("?"))
             {
-                if(userInventory.BEK < _amount)
-                    return new BotMessage { Text = "Du kan inte ge nån mer pengar än du har." };
+                var sb = new StringBuilder();
+                sb.AppendLine("Beskrivning av kommando: ge");
+                sb.AppendLine("Ger en användare pengar eller saker.");
+                sb.AppendLine("ex pengar: ge nisse 10,5kr");
+                sb.AppendLine("ex pengar: ge nisse -p 10,5");
+                sb.AppendLine("ex sak: ge nisse sak 1");
+                sb.AppendLine("ex sak: ge nisse -s 1");
+                sb.AppendLine("Parametrar:");
+                sb.AppendLine("p: [decimal], ");
+                sb.AppendLine("s: [sak nr], för att se vad du har för saker att ge, använd kommando i.");
 
-                userInventory.BEK -= _amount;
-                targetInventory.BEK += _amount;
+                if (CommandParser.Params.ContainsKey("a"))
+                    sb.AppendLine("c: [typ] {json-data}");
 
-                msgText = "{0}kr överlämnade.".With(_amount);
-            }
-            else
-            {
-                if(userInventory.Items.Count<_itemIndex)
-                    return new BotMessage { Text = "Du har inte så många saker." };
+                sb.AppendLine("?: Hjälp (denna text)");
 
-                var item = userInventory.Items[_itemIndex - 1];
-                userInventory.Items.Remove(item);
-                targetInventory.Items.Add(item);
-
-                msgText = "{0} överlämnad.".With(item.Name);
-            }
-
-            invMan.Save(new[] {userInventory, targetInventory});
-            
-            return new BotMessage{Text = msgText};
-        }
-
-        private void CollectParams()
-        {
-            var match = Regex.Match(Context.Message.Text, MoneyRegex);
-            if (match.Success)
-            {
-                _amount = int.Parse(match.Groups[AmountKey].Value);
-                _moneyTransfer = true;
-            }
-            else
-            {
-                match = Regex.Match(Context.Message.Text, ItemRegex);
-                _itemIndex = int.Parse(match.Groups[IndexKey].Value);
-                _moneyTransfer = false;
-            }
-
-            _targetUsername = match.Groups[UserKey].Value;
-        }
-
-        public ExposedInformation Info
-        {
-            get
-            {
-                return new ExposedInformation
+                return new BotMessage
                 {
-                    Usage = "ge <användare> {Xkr|item_X}",
-                    Explatation = "Ger X pengar eller sak X till given användare."
+                    Text = sb.ToString()
                 };
             }
+
+            if (!CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey)
+                || !CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey))
+            {
+                var unknown = CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey) 
+                              && !CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey)
+                    ? CommandParser.Params[Keys.CommandParser.UserIdKey]
+                    : CommandParser.ParamsRaw.Split(' ')[0];
+
+                return new BotMessage { Text = _phrasebook.IDontKnowXxxNamedYyy("nån",unknown) };
+            }
+
+            var saveInventories = SaveMode.None;
+            var userInventory = _invMan.GetUserInventory();
+            var targetInventory = _invMan.GetUserInventory(CommandParser.Params[Keys.CommandParser.UserIdKey]);
+
+            SetMode();
+
+            switch (_mode)
+            {
+                case GiveMode.GiveMoney:
+                    var amount = GetAmount();
+                    if (_returnMsg != null)
+                        break;
+
+                    if (amount < 0)
+                    {
+                        _returnMsg = new BotMessage { Text = _phrasebook.Impossible() };
+                        break;
+                    }
+                    if (userInventory.BEK < amount)
+                    {
+                        _returnMsg = new BotMessage { Text = _phrasebook.MoneyTransferInsufficientFunds() };
+                        break;
+                    }
+
+                    userInventory.BEK -= amount;
+                    targetInventory.BEK += amount;
+                    saveInventories = SaveMode.Both;
+                    _returnMsg = new BotMessage { Text = _phrasebook.MoneyTransfered(amount) };
+                    break;
+                case GiveMode.GiveItem:
+                    var itemIndex = GetItemIndex();
+                    if (_returnMsg != null)
+                        break;
+
+                    if (itemIndex == -1)
+                    {
+                        _returnMsg = new BotMessage { Text = _phrasebook.Impossible() };
+                        break;
+                    }
+
+                    if (itemIndex > userInventory.Items.Count-1)
+                    {
+                        _returnMsg = new BotMessage { Text= _phrasebook.ItemTransferToFewItems() };
+                        break;
+                    }
+
+                    if (userInventory.Items[itemIndex].SoulBound)
+                    {
+                        _returnMsg = new BotMessage { Text = _phrasebook.CantMoveSoulboundItems() };
+                        break;
+                    }
+
+                    targetInventory.Items.Add(userInventory.Items[itemIndex]);
+                    userInventory.Items.RemoveAt(itemIndex);
+                    saveInventories = SaveMode.Both;
+                    _returnMsg = new BotMessage { Text = _phrasebook.ItemTransfered(targetInventory.Items.Last().Name) };
+                    break;
+                case GiveMode.CreateItem:
+                    var item = CreateItem();
+
+                    if (item is null)
+                    {
+                        CreateIdidntUnderstandMessage();
+                        break;
+                    }
+
+                    targetInventory.Items.Add(item);
+                    saveInventories = SaveMode.Target;
+                    _returnMsg = new BotMessage { Text = _phrasebook.ItemCreated(item.Name) };
+                    break;
+                case GiveMode.NotSet:
+                    CreateIdidntUnderstandMessage();
+                    break;
+            }
+
+            switch (saveInventories)
+            {
+                case SaveMode.Current:
+                    _invMan.Save(userInventory);
+                    break;
+                case SaveMode.Target:
+                    _invMan.Save(targetInventory);
+                    break;
+                case SaveMode.Both:
+                    _invMan.Save(new[] { userInventory, targetInventory });
+                    break;
+            }
+
+            return _returnMsg;
+        }
+
+        private Item CreateItem()
+        {
+            var itemData = CommandParser
+                .Params[CreateItemParamKey]
+                .Split(new[]{' '}, 2);
+
+            if (itemData.Length != 2)
+                return null;
+
+            var type = typeof(GiveResponder)
+                .GetTypeInfo()
+                .Assembly
+                .GetTypes()
+                .FirstOrDefault(x => x.Name == itemData[0]);
+
+            if (type is null)
+                return null;
+
+            try
+            {
+                return JsonConvert.DeserializeObject(itemData[1], type) as Item;
+            }
+            catch (Exception)
+            {
+                //todo craete exception viewer/log
+                return null;
+            }
+        }
+
+        private int GetItemIndex()
+        {
+            var index = -1;
+
+            if (CommandParser.Params.ContainsKey(ItemParamKey))
+            {
+                if (!int.TryParse(CommandParser.Params[ItemParamKey], out index))
+                {
+                    CreateIdidntUnderstandMessage();
+                }
+
+                index--;
+            }
+            else if (CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+            {
+                if (!int.TryParse(CommandParser.Params[Keys.CommandParser.UnnamedParam].Replace("sak ", ""),
+                    out index))
+                {
+                    CreateIdidntUnderstandMessage();
+                }
+
+                index--;
+            }
+
+            return index;
+        }
+
+        private void CreateIdidntUnderstandMessage()
+        {
+            _returnMsg = new BotMessage {Text = _phrasebook.IDidntUnderstand()};
+        }
+
+        private decimal GetAmount()
+        {
+            decimal amount = -1;
+
+            if (CommandParser.Params.ContainsKey(MoneyParamKey))
+            {
+                if (!decimal.TryParse(CommandParser.Params[MoneyParamKey], out amount))
+                {
+                    CreateIdidntUnderstandMessage();
+                }
+            }
+            else if(CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+            {
+                if (!decimal.TryParse(CommandParser.Params[Keys.CommandParser.UnnamedParam].Replace("kr",""), 
+                    out amount))
+                {
+                    CreateIdidntUnderstandMessage();
+                }
+            }
+
+            return amount;
+        }
+
+        private void SetMode()
+        {
+            if (CommandParser.Params.ContainsKey(MoneyParamKey)
+                || CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
+                && CommandParser.Params[Keys.CommandParser.UnnamedParam].Contains("kr"))
+                _mode = GiveMode.GiveMoney;
+
+            else if(CommandParser.Params.ContainsKey(ItemParamKey)
+                    || CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
+                    && CommandParser.Params[Keys.CommandParser.UnnamedParam].Contains("sak "))
+                _mode = GiveMode.GiveItem;
+
+            else if (CommandParser.Params.ContainsKey(CreateItemParamKey))
+                _mode = GiveMode.CreateItem;
+        }
+        public ExposedInformation Info => new ExposedInformation
+        {
+            Usage = "ge <användare> <Xkr|item_X>",
+            Explatation = "Ger X pengar eller sak X till given användare."
+        };
+
+        enum GiveMode
+        {
+            NotSet,
+            GiveMoney,
+            GiveItem,
+            CreateItem
+        }
+
+        enum SaveMode
+        {
+            None,
+            Current,
+            Target,
+            Both
         }
     }
 }

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using MargieBot;
 using Moq;
 using pappab0t.Models;
+using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Embedded;
 
@@ -14,17 +16,28 @@ namespace pappab0t.Tests.Responders
         protected IDocumentStore Store;
 
         protected Mock<IPhrasebook> PhraseBookMock;
+        protected ICommandParser CommandParser;
+
+        protected IResponder Responder;
 
         protected ResponderTestsBase()
         {
-            UserNameCache = new Dictionary<string, string> {{"U06BH8WTT", "eriska"}};
+            UserNameCache = new Dictionary<string, string>
+            {
+                {"U06BHPNJG", "pappabj0rn"},
+                {"U06BH8WTT", "eriska"}
+            };
+
             StaticContextItems = new Dictionary<string, object>();
 
-            PhraseBookMock = new Mock<IPhrasebook>();
-            PhraseBookMock.SetupAllProperties();
+
+            SetupPhrasebookToReturnMethodNames();
+
             StaticContextItems.Add(
                 Keys.StaticContextKeys.Phrasebook, 
                 PhraseBookMock.Object);
+
+            CommandParser = new CommandParser();
         }
 
         protected ResponseContext CreateResponseContext(
@@ -49,7 +62,7 @@ namespace pappab0t.Tests.Responders
                     Text = text,
                     User = new SlackUser
                     {
-                        ID = userUUID ?? "userUUID"
+                        ID = userUUID ?? UserNameCache.First().Key
                     },
                     MentionsBot = mentionsBot
                 }
@@ -112,5 +125,21 @@ namespace pappab0t.Tests.Responders
         {
             Store?.Dispose();
         }
+
+        protected void SetupPhrasebookToReturnMethodNames()
+        {
+            PhraseBookMock = new Mock<IPhrasebook>
+            {
+                DefaultValueProvider = new MethodNameDefaultValueProvider()
+            };
+        }
+    }
+}
+
+internal class MethodNameDefaultValueProvider : LookupOrFallbackDefaultValueProvider
+{
+    public MethodNameDefaultValueProvider()
+    {
+        Register(typeof(string), (type, mock) => mock.Invocations.Last().Method.Name);
     }
 }

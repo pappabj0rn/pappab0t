@@ -31,7 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -194,15 +194,16 @@
     <Compile Include="Modules\Common\Deck.cs" />
     <Compile Include="Modules\Common\Suit.cs" />
     <Compile Include="Modules\Derangements\Game.cs" />
+    <Compile Include="Modules\Inventory\IInventoryManager.cs" />
     <Compile Include="Modules\Inventory\Inventory.cs" />
     <Compile Include="Modules\Inventory\InventoryManager.cs" />
-    <Compile Include="Modules\Inventory\Item.cs" />
+    <Compile Include="Modules\Inventory\Items\Item.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />
     <Compile Include="Modules\DikaGame\DikaCard.cs" />
     <Compile Include="Modules\DikaGame\DikaDeck.cs" />
     <Compile Include="Modules\DikaGame\Game.cs" />
-    <Compile Include="Modules\Inventory\Token.cs" />
+    <Compile Include="Modules\Inventory\Items\Tokens\Note.cs" />
     <Compile Include="ObjectFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

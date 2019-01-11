@@ -4,5 +4,7 @@
     {
         public string Usage { get; set; }
         public string Explatation { get; set; }
+
+        //todo Man
     }
 }

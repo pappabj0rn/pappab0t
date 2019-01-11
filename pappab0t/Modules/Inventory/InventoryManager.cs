@@ -5,33 +5,33 @@ using Raven.Client;
 
 namespace pappab0t.Modules.Inventory
 {
-    public class InventoryManager
+    public class InventoryManager : IInventoryManager
     {
-        private readonly ResponseContext _context;
+        private readonly IDocumentStore _documentStore;
+        public ResponseContext Context { get; set; }
 
-        public InventoryManager(ResponseContext context)
+        public InventoryManager(IDocumentStore documentStore)
         {
-            _context = context;
+            _documentStore = documentStore;
         }
 
         public Inventory GetUserInventory()
         {
-            return GetUserInventory(_context.Message.User.ID);
+            return GetUserInventory(Context.Message.User.ID);
         }
 
         public Inventory GetUserInventory(string targetUserId)
         {
-            var ravenStore = _context.Get<IDocumentStore>();
-            using (var session = ravenStore.OpenSession())
+            using (var session = _documentStore.OpenSession())
             {
                 var inv = session.Query<Inventory>().SingleOrDefault(x => x.UserId == targetUserId);
 
-                if (inv == null)
-                {
-                    inv = new Inventory { UserId = targetUserId, BEK = 100 };
-                    session.Store(inv);
-                    session.SaveChanges();
-                }
+                if (inv != null)
+                    return inv;
+
+                inv = new Inventory { UserId = targetUserId, BEK = 100 };
+                session.Store(inv);
+                session.SaveChanges();
 
                 return inv;
             }
@@ -39,8 +39,7 @@ namespace pappab0t.Modules.Inventory
 
         public void Save(IEnumerable<Inventory> inventories)
         {
-            var ravenStore = _context.Get<IDocumentStore>();
-            using (var session = ravenStore.OpenSession())
+            using (var session = _documentStore.OpenSession())
             {
                 foreach (var inventory in inventories)
                 {

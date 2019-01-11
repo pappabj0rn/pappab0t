@@ -11,6 +11,12 @@ namespace pappab0t.Responders
 {
     public class InventoryResponder : ResponderBase, IExposedCapability
     {
+        private readonly IInventoryManager _invMan;
+
+        public InventoryResponder(IInventoryManager invMan)
+        {
+            _invMan = invMan;
+        }
         public override bool CanRespond(ResponseContext context)
         {
             Init(context);
@@ -22,8 +28,9 @@ namespace pappab0t.Responders
         public override BotMessage GetResponse(ResponseContext context)
         {
             Context = context;
+            _invMan.Context = context;
 
-            var inv = new InventoryManager(context).GetUserInventory();
+            var inv = _invMan.GetUserInventory();
 
             return new BotMessage
             {

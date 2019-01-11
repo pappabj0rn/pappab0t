@@ -9,9 +9,9 @@ namespace pappab0t.Tests.Responders
     {
         private CommandParser _parser;
 
-        protected void CreateCommandParser(ResponseContext context)
+        protected CommandParserTests()
         {
-            _parser = new CommandParser {Context = context};
+            _parser = new CommandParser();
         }
 
         public class ToBot : CommandParserTests
@@ -20,7 +20,7 @@ namespace pappab0t.Tests.Responders
             public void Should_return_true_when_bot_is_mentioned()
             {
                 var context = CreateContext("pbot ge mig mat");
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -31,7 +31,7 @@ namespace pappab0t.Tests.Responders
             public void Should_return_true_when_message_is_dm()
             {
                 var context = CreateContext("ge mig mat", SlackChatHubType.DM);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -42,7 +42,7 @@ namespace pappab0t.Tests.Responders
             public void Should_return_true_when_bot_is_mentioned_and_message_is_dm()
             {
                 var context = CreateContext("pbot ge mig mat", SlackChatHubType.DM);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -53,7 +53,7 @@ namespace pappab0t.Tests.Responders
             public void Should_return_false_when_message_is_not_dm_and_bot_is_not_mentioned()
             {
                 var context = CreateContext("ge mig mat");
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -86,7 +86,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType type = SlackChatHubType.Channel)
             {
                 var context = CreateContext(msg, type);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -103,7 +103,7 @@ namespace pappab0t.Tests.Responders
                 bool mentionsBot)
             {
                 var context = CreateContext(msg, type, mentionsBot);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -115,7 +115,7 @@ namespace pappab0t.Tests.Responders
             {
                 var cmd = "CMD";
                 var context = CreateContext(cmd, SlackChatHubType.DM);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -135,7 +135,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType type = SlackChatHubType.Channel)
             {
                 var context = CreateContext(msg, type);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -155,7 +155,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType type = SlackChatHubType.Channel)
             {
                 var context = CreateContext(msg, type);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -164,10 +164,22 @@ namespace pappab0t.Tests.Responders
             }
 
             [Fact]
+            public void Should_exclude_user_reference_from_unnamed_params_when_sucesfully_parsed()
+            {
+                var context = CreateContext("pbot ge eriska 5kr");
+                _parser.Context = context;
+
+                _parser.Parse();
+
+                Assert.Contains(Keys.CommandParser.UnnamedParam, _parser.Params.Keys);
+                Assert.Equal("5kr", _parser.Params[Keys.CommandParser.UnnamedParam]);
+            }
+
+            [Fact]
             public void Should_parse_multiple_flags_into_separate_params()
             {
                 var context = CreateContext("pbot cmd -xyz");
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -184,7 +196,7 @@ namespace pappab0t.Tests.Responders
             public void Should_not_include_quotes_on_multi_word_param_values()
             {
                 var context = CreateContext("pbot cmd -t \"test test\"");
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -197,7 +209,7 @@ namespace pappab0t.Tests.Responders
             public void Should_group_multi_word_param_values_by_quotes()
             {
                 var context = CreateContext("pbot cmd -t \"test test\" -x xyz");
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
@@ -220,13 +232,47 @@ namespace pappab0t.Tests.Responders
                 string msg, string expectedUnnamedValue)
             {
                 var context = CreateContext(msg, SlackChatHubType.DM);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 
-                Assert.Contains(CommandParser.UnnamedParam, _parser.Params.Keys);
+                Assert.Contains(Keys.CommandParser.UnnamedParam, _parser.Params.Keys);
 
-                Assert.Equal(expectedUnnamedValue, _parser.Params[CommandParser.UnnamedParam]);
+                Assert.Equal(expectedUnnamedValue, _parser.Params[Keys.CommandParser.UnnamedParam]);
+            }
+
+            [Theory]
+            [InlineData("pbot cmd -u eriska")]
+            [InlineData("pbot cmd -u <@U06BH8WTT>")]
+            [InlineData("pbot cmd eriska")]
+            [InlineData("pbot cmd <@U06BH8WTT>")]
+
+            public void Should_include_UserKnown_param_when_a_user_is_known(
+                string msg)
+            {
+                var context = CreateContext(msg);
+
+                _parser.Context = context;
+
+                _parser.Parse();
+
+                Assert.Contains(Keys.CommandParser.UserKnownKey, _parser.Params.Keys);
+            }
+
+            [Theory]
+            [InlineData("pbot cmd -u nisse")]
+            [InlineData("pbot cmd nisse")]
+
+            public void Should_not_include_UserKnown_param_when_a_user_is_not_known(
+                string msg)
+            {
+                var context = CreateContext(msg);
+
+                _parser.Context = context;
+
+                _parser.Parse();
+
+                Assert.DoesNotContain(Keys.CommandParser.UserKnownKey, _parser.Params.Keys);
             }
         }
 
@@ -250,7 +296,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType type = SlackChatHubType.Channel)
             {
                 var context = CreateContext(msg, type);
-                CreateCommandParser(context);
+                _parser.Context = context;
 
                 _parser.Parse();
 

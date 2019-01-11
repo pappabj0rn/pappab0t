@@ -28,6 +28,13 @@
             }
         }
 
+        public static class CommandParser
+        {
+            public const string UserIdKey = "user";
+            public const string UserKnownKey = "userKnown";
+            public const string UnnamedParam = "unnamed";
+        }
+
         public static class Slack
         {
             public static class MessageJson

@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using pappab0t.Extensions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
+using pappab0t.Modules.Inventory;
 using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Document;
@@ -25,6 +26,7 @@ namespace pappab0t
         private static string _slackKey;
         private static string[] _botAliases;
         private static IDocumentStore _ravenStore;
+        private static IInventoryManager _inventoryManager;
         private static Dictionary<string, string> _userNameCache;
         private static Dictionary<string, string> _channelsNameCache;
         private static List<IMessageHandler> _messageHandlers;
@@ -97,9 +99,20 @@ namespace pappab0t
         private static void Init()
         {
             _ravenStore = CreateStore();
+            _inventoryManager = new InventoryManager(_ravenStore);
+
             ObjectFactory.Container.Configure(
-                x=>x.For<IDocumentStore>()
-                .Use(_ravenStore));
+                x=>
+                {
+                    x.For<IDocumentStore>()
+                        .Use(_ravenStore);
+
+                    x.For<IInventoryManager>()
+                        .Use(_inventoryManager);
+
+                    x.For<ICommandParser>()
+                        .Use<CommandParser>();
+                });
 
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
             
@@ -307,9 +320,9 @@ namespace pappab0t
             {
                 DataDirectory = "Data",
                 //UseEmbeddedHttpServer = true,
-                DefaultDatabase = "pbot"
+                DefaultDatabase = "pbot",
+                //Configuration = {Port = 8090}
             };
-            //eds.Configuration.Port = 8090;
             eds.Initialize();
 
             return eds;

@@ -180,6 +180,15 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string IDontKnowXxxNamedYyy(string xxx, string yyy)
+        {
+            return new[]{
+                $"jag känner inte till {xxx} som heter {yyy}",
+                $"jag har inte koll på {xxx} som heter {yyy}",
+                $"mina böcker nämner inte {xxx} vid namn {yyy}"
+            }.Random();
+        }
+
         public string IDidntUnderstand()
         {
             return new[]{
@@ -207,6 +216,11 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string PlayInsufficientFunds(decimal required)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string DidntMakeHighScoreFormat()
         {
             return new[]{
@@ -216,12 +230,108 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string PlayDidntMakeHighScore(int points)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string DidntMakeHighScoreInCountFormat()
         {
             return new[]{
                 "Du fick som mest {0}p över {1} spel, vilket tyvärr inte tar dig in på highscore-listan :(",
                 "{0}p ({1} spel)! Tyvärr räcker det inte.",
                 "{0}p över {1} spel, bättre lycka nästa gång!"
+            }.Random();
+        }
+
+        public string DidntMakeHighScoreInCount(int points, int turns)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string MoneyTransfered(decimal amount)
+        {
+            return new[]{
+                $"{amount:C} överlämnade.",
+                $"{amount:C} tadda o gädda.",
+                $"{amount:C} transfererade.",
+                $"{amount:C} borta.",
+                $"Du har blivit {amount:C} fattigare.",
+                $"Du är nu {amount:C} fattigare.",
+                $"Minns du de där {amount:C} du hade? Inte jag heller."
+            }.Random();
+        }
+
+        public string MoneyTransferInsufficientFunds()
+        {
+            return new[]{
+                "Du har inte så mycket pengar.",
+                "Du måste ha så mycket pengar för att kunna ge bort dem.",
+                "du kan'te ge mer än du har, robin.",
+                "det funkar inte så.",
+                "det är mer än du har..."
+            }.Random();
+        }
+
+        public string ItemTransfered(string item)
+        {
+            return new[]{
+                $"{item} överlämnad.",
+                $"{item} har bytt ägare.",
+                $"{item} är inte längre i din ägo.",
+                "Din väska blev just lättare.",
+                "Din börda blev just lättare.",
+                "Visst är det skönt att göra sig av med saker?"
+            }.Random();
+        }
+
+        public string ItemCreated(string item)
+        {
+            return new[]{
+                $"{item} skapad.",
+                $"{item} skapades.",
+                $"{item} frammanad.",
+                $"{item} framtrixad."
+            }.Random();
+        }
+
+        public string ItemTransferToFewItems()
+        {
+            return new[]{
+                "du har inte så många grejer",
+                "Tips: du kan kolla vad för saker du har med i-kommandot.",
+                "Du kan inte ge bort saker du inte har.",
+                "Jag skulle verkligen vilja hjälpa dig, men att flytta nåt du inte har klarar jag inte.",
+                "Vad har vi här? Ett litet OutOfRangeException? Hur kommer det sig, tror du?"
+            }.Random();
+        }
+
+        public string Impossible()
+        {
+            return new[]{
+                "Så kan man inte göra.",
+                "Så kan man inte göra, fast det visste du säkert.",
+                "Nej",
+                "Den gubben går inte!",
+                "Ömpösibbl!",
+                "Vissa saker går, andra går inte. Det där gick inte.",
+                "Men, det är ju omöjligt!",
+                "asså, ja, nej, det går inte att göra.",
+                "... hur?",
+                "jo tjena",
+                "du vet att man inte kan göra så.",
+                "Trodde du att det skulle gå?"
+            }.Random();
+        }
+
+        public string CantMoveSoulboundItems()
+        {
+            return new[]{
+                "Överföring av själabundna saker låter sig ikke göras!",
+                "Nej, den är din för evigt.",
+                "Nej, den är din för evigt. Ja, om det nu inte går att koppla loss den från din själv på nå sätt, men jag vet inte ja'.",
+                "Nej, den är en del av dig.",
+                "Själabunden."
             }.Random();
         }
 
@@ -234,6 +344,11 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string PotPayout(decimal money)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string NewHighscoreFormat()
         {
             return new[]{
@@ -243,13 +358,20 @@ namespace pappab0t.Models
             }.Random();
         }
 
+        public string NewHighscore(string hsName, string player, int position)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string NoPoints()
         {
             return new[]{
                 "Tyvärr, inga poäng denna gång :(",
                 "Det här var inte din gång :/",
                 "Prova igen!",
-                "Rackarns! Inga poäng."
+                "Rackarns! Inga poäng.",
+                "zéro point",
+                "pas des point",
             }.Random();
         }
 
@@ -283,6 +405,11 @@ namespace pappab0t.Models
                 "<@{0}>, {1}.",
                 "{1}, <@{0}>."
             }.Random();
+        }
+
+        public string CreditUserBecauseFormat(string userUuid, string reason)
+        {
+            throw new System.NotImplementedException();
         }
 
         public string QuestionAction()

@@ -18,6 +18,7 @@ namespace pappab0t.Responders
     /// </summary>
     public class ScoreResponder : IResponder, IExposedCapability
     {
+        private readonly IInventoryManager _invMan;
         private const string ScoreRegex = @"((?<formattedUserID><@(?<userID>U[a-zA-Z0-9]+)>)[\s,:]*)+?\+\s*1";
         private const decimal TargetCashPayout = 10.0m;
         private const decimal SourceCashPayout = 3.0m;
@@ -28,6 +29,11 @@ namespace pappab0t.Responders
         // and then connected to a different team.
         private Scorebook Scorebook { get; set; }
         private string TeamID { get; set; }
+
+        public ScoreResponder(IInventoryManager invMan)
+        {
+            _invMan = invMan;
+        }
 
         public bool CanRespond(ResponseContext context)
         {
@@ -45,6 +51,7 @@ namespace pappab0t.Responders
 
         public BotMessage GetResponse(ResponseContext context)
         {
+            _invMan.Context = context;
             // perform scoring
             var scoringResults = new List<ScoringResult>();
 
@@ -154,21 +161,19 @@ namespace pappab0t.Responders
                 }
             }
 
-            var invMan = new InventoryManager(context);
-            
-            var sourceUserInv = invMan.GetUserInventory();
+            var sourceUserInv = _invMan.GetUserInventory();
             sourceUserInv.BEK += SourceCashPayout;
 
             var userInventories = new List<Inventory>{sourceUserInv};
 
             foreach (var userId in scoringUsers)
             {
-                var targetInv = invMan.GetUserInventory(userId);
+                var targetInv = _invMan.GetUserInventory(userId);
                 targetInv.BEK += TargetCashPayout;
                 userInventories.Add(targetInv);
             }
 
-            invMan.Save(userInventories);
+            _invMan.Save(userInventories);
 
             return new BotMessage {Text = responseBuilder.ToString().Trim()};
         }

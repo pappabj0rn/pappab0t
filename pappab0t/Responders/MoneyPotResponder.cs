@@ -25,8 +25,8 @@ namespace pappab0t.Responders
             Init(context);
 
             _potName = "";
-            if (CommandParser.Params.ContainsKey(Responders.CommandParser.UnnamedParam))
-                _potName = CommandParser.Params[Responders.CommandParser.UnnamedParam];
+            if (CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+                _potName = CommandParser.Params[Keys.CommandParser.UnnamedParam];
 
             if(_potName == "")
                 using (var session = DocumentStore.OpenSession())

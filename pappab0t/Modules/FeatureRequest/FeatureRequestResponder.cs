@@ -9,21 +9,12 @@ namespace pappab0t.Responders
     {
         public override bool CanRespond(ResponseContext context)
         {
-            return context.Message.ChatHub.Type == SlackChatHubType.DM
-                   && (
-                    context.Message.Text.Equals("fr") 
-                    || context.Message.Text.StartsWith("fr ")
-                   )
-                   || context.Message.MentionsBot
-                   && (
-                       context.Message.Text.EndsWith(" fr")
-                       || context.Message.Text.Contains(" fr ")
-                   );
+            return CommandParser.Command == "fr";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
         {
-            throw new NotImplementedException();
+            return new BotMessage{Text = "not implemented" };
         }
 
         public ExposedInformation Info { get; }

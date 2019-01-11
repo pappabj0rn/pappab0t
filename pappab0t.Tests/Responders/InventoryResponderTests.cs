@@ -17,7 +17,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType hubType, 
                 bool mentionsBot = false)
             {
-                var responder = new InventoryResponder();
+                var responder = new InventoryResponder(null);
 
                 var context = CreateResponseContext(msg, hubType, mentionsBot);
 
@@ -34,7 +34,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("hej pbot", SlackChatHubType.Channel)]
             public void Should_return_false_for_the_given_scenarios(string msg, SlackChatHubType hubType)
             {
-                var responder = new InventoryResponder();
+                var responder = new InventoryResponder(null);
 
                 var context = CreateContext(msg, hubType);
 
