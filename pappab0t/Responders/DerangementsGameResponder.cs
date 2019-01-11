@@ -25,7 +25,6 @@ namespace pappab0t.Responders
 
         public override bool CanRespond(ResponseContext context)
         {
-            return true;
             return context.Message.IsDirectMessage() && Regex.IsMatch(context.Message.Text, @"^(?:\bderangements\b|\bdr\b|\bdrd\b)", RegexOptions.IgnoreCase);
         }
 
