@@ -35,8 +35,22 @@ namespace pappab0t
         {
             try
             {
-                var t = MainAsync();
-                t.Wait();
+                Init();
+
+                _bot.Aliases = _botAliases;
+
+                foreach (var value in GetStaticResponseContextData())
+                {
+                    _bot.ResponseContext.Add(value.Key, value.Value);
+                }
+
+                _bot.Responders.AddRange(GetResponders());
+
+                _bot.ConnectionStatusChanged += OnBotOnConnectionStatusChanged;
+
+                _bot.MessageReceived += _bot_MessageReceived;
+
+                ConnectToSlackIfDisconnected(false);
 
                 var run = true;
                 Console.WriteLine("Press X to exit.");
@@ -57,43 +71,33 @@ namespace pappab0t
             }
         }
 
-        private static void Error(Exception ex)
+        private static async void OnBotOnConnectionStatusChanged(bool isConnected)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(ex);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        static async Task MainAsync()
-        {
-            Init();
-
-            _bot.Aliases = _botAliases;
-
-            foreach (var value in GetStaticResponseContextData())
+            if (!isConnected)
             {
-                _bot.ResponseContext.Add(value.Key, value.Value);
+                Console.WriteLine("Disconnected.");
+                return;
             }
 
-            _bot.Responders.AddRange(GetResponders());
+            Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
+            await PopulateUsernameCache();
+            await PopulateChannelsCache();
+        }
 
-            _bot.ConnectionStatusChanged += async isConnected =>
-            {
-                if (!isConnected)
-                {
-                    Console.WriteLine("Disconnected.");
-                    return;
-                }
+        private static void Error(Exception ex)
+        {
+            var prevColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(ex);
+            Console.ForegroundColor = prevColor;
+        }
 
-                Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
-                await PopulateUsernameCache();
-                await PopulateChannelsCache();
-            };
-
-            _bot.MessageReceived += _bot_MessageReceived;
-
-            //await _bot.Connect(_slackKey);
-            await ConnectToSlackIfDisconnectedAsync(false);
+        private static void Error(string msg)
+        {
+            var prevColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(msg);
+            Console.ForegroundColor = prevColor;
         }
 
         private static void Init()
@@ -126,31 +130,22 @@ namespace pappab0t
             _bot.ConnectionStatusChanged += ConnectToSlackIfDisconnected;
         }
 
-        private static async void ConnectToSlackIfDisconnected(bool isConnected)
+        private static void ConnectToSlackIfDisconnected(bool isConnected)
         {
-            Console.WriteLine("info: void connect");
-            await ConnectToSlackIfDisconnectedAsync(isConnected);
-        }
-
-        private static async Task ConnectToSlackIfDisconnectedAsync(bool isConnected)
-        {
-            Console.WriteLine("info: task connect, "+isConnected);
             if (!isConnected)
             {
-                await Task.Factory.StartNew(async () =>
+                Task.Factory.StartNew(async () =>
                 {
-                    Console.WriteLine("info: start new");
                     while (!_bot.IsConnected)
                     {
-                        Console.WriteLine("info: not connected, while");
                         try
                         {
-                            Console.Error.WriteLine("Trying to connect to Slack...");
+                            Console.WriteLine("Trying to connect to Slack...");
                             await _bot.Connect(_slackKey);
                         }
                         catch (Exception ex)
                         {
-                            Error(ex);
+                            Error(ex.InnerException?.Message ?? ex.Message);
                             Thread.Sleep(TimeSpan.FromSeconds(10));
                         }
                     }
