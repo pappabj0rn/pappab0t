@@ -197,6 +197,7 @@
     <Compile Include="Modules\Inventory\IInventoryManager.cs" />
     <Compile Include="Modules\Inventory\Inventory.cs" />
     <Compile Include="Modules\Inventory\InventoryManager.cs" />
+    <Compile Include="Modules\Inventory\Items\IDescribable.cs" />
     <Compile Include="Modules\Inventory\Items\Item.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
     <Compile Include="Responders\CommandParser.cs" />
     <Compile Include="Responders\DerangementsGameResponder.cs" />
+    <Compile Include="Responders\DescribeResponder.cs" />
     <Compile Include="Responders\DikaGameResponder.cs" />
     <Compile Include="Modules\FeatureRequest\FeatureRequestResponder.cs" />
     <Compile Include="Responders\GiveResponder.cs" />

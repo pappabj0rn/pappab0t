@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using pappab0t.Extensions;
 
 namespace pappab0t.Models
@@ -218,7 +219,7 @@ namespace pappab0t.Models
 
         public string PlayInsufficientFunds(decimal required)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string DidntMakeHighScoreFormat()
@@ -232,7 +233,7 @@ namespace pappab0t.Models
 
         public string PlayDidntMakeHighScore(int points)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string DidntMakeHighScoreInCountFormat()
@@ -246,7 +247,7 @@ namespace pappab0t.Models
 
         public string DidntMakeHighScoreInCount(int points, int turns)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string MoneyTransfered(decimal amount)
@@ -270,6 +271,22 @@ namespace pappab0t.Models
                 "du kan'te ge mer än du har, robin.",
                 "det funkar inte så.",
                 "det är mer än du har..."
+            }.Random();
+        }
+
+        public string ItemDescription(string typeName, string description)
+        {
+            return new[]{
+                $"Sak: {typeName.ToLower()}. \r\n\"Beskrivning: {description}\"",
+                $"{typeName.ToLower()}; \r\n\"{description}\"",
+                $"{description} (typ: {typeName.ToLower()})",
+                $"Låt mig beskriva saken ({typeName.ToLower()}) så här:\r\n{description}",
+                $"{description}",
+                $"{description}",
+                $"{description}",
+                $"{description}",
+                $"{description}",
+                $"{description}"
             }.Random();
         }
 
@@ -346,7 +363,7 @@ namespace pappab0t.Models
 
         public string PotPayout(decimal money)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string NewHighscoreFormat()
@@ -360,7 +377,7 @@ namespace pappab0t.Models
 
         public string NewHighscore(string hsName, string player, int position)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string NoPoints()
@@ -407,9 +424,39 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string CreditUserBecauseFormat(string userUuid, string reason)
+        public string CreditUserBecause(string userUuid, string reason)
         {
-            throw new System.NotImplementedException();
+            return new[]{
+                "All hail, <@{0}>, {1}!",
+                "cred till <@{0}>, {1}.",
+                "<@{0}>, {1}.",
+                "{1}, <@{0}>."
+            }.Random();
+        }
+
+        public string DesribeItemToFewItems()
+        {
+            return new[]{
+                "Du har inte så många grejer",
+                "Tips: du kan kolla vad för saker du har med i-kommandot.",
+                "Jag kan bara föreställa mig vad det skulle kunna vara.",
+                "Ptja, det skulle kunna vara en fisk.",
+                "Det är ett s.k. Out of range exception.",
+                "Vad har vi här? Ett litet OutOfRangeException? Hur kommer det sig, tror du?"
+            }.Random();
+        }
+
+        public string DescribeUser()
+        {
+            return new[]{
+                "Jag vet inte var jag ska börja.",
+                "Det är en användare.",
+                "Det är en användare av bästa sort.",
+                "Det är en användare i sina bästa år.",
+                "Hen är väl kul.",
+                "Jag har inget ont att säga om den personen.",
+                "Hen är helt ok."
+            }.Random();
         }
 
         public string QuestionAction()

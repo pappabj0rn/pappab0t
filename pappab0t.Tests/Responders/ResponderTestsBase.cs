@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MargieBot;
 using Moq;
 using pappab0t.Models;
+using pappab0t.Modules.Inventory;
 using pappab0t.Responders;
 using Raven.Client;
 using Raven.Client.Embedded;
@@ -16,9 +18,15 @@ namespace pappab0t.Tests.Responders
         protected IDocumentStore Store;
 
         protected Mock<IPhrasebook> PhraseBookMock;
+        protected Mock<IInventoryManager> InventoryManagerMock;
         protected ICommandParser CommandParser;
 
+        // ReSharper disable once InconsistentNaming
+        protected Inventory Pappabj0rnInvetory;
+        protected Inventory EriskaInvetory;
+
         protected IResponder Responder;
+        protected bool InventoryManagerContextSet;
 
         protected ResponderTestsBase()
         {
@@ -30,8 +38,9 @@ namespace pappab0t.Tests.Responders
 
             StaticContextItems = new Dictionary<string, object>();
 
-
             SetupPhrasebookToReturnMethodNames();
+
+            SetupInventoryManagerAndDefaultInventories();
 
             StaticContextItems.Add(
                 Keys.StaticContextKeys.Phrasebook, 
@@ -40,6 +49,49 @@ namespace pappab0t.Tests.Responders
             CommandParser = new CommandParser();
         }
 
+        private void SetupInventoryManagerAndDefaultInventories()
+        {
+            Pappabj0rnInvetory = new Inventory
+            {
+                Id = "Inventories/1",
+                UserId = UserNameCache.First().Key,
+                BEK = 100M
+            };
+
+            EriskaInvetory = new Inventory
+            {
+                Id = "Inventories/2",
+                UserId = UserNameCache.Last().Key,
+                BEK = 100M
+            };
+
+            InventoryManagerMock = new Mock<IInventoryManager>();
+
+            InventoryManagerContextSet = false;
+
+            InventoryManagerMock
+                .SetupSet(x => x.Context = It.IsAny<ResponseContext>())
+                .Callback(() => InventoryManagerContextSet = true);
+
+            InventoryManagerMock
+                .Setup(x => x.GetUserInventory())
+                .Callback(() =>
+                {
+                    if(!InventoryManagerContextSet)
+                        throw new Exception("Context not set.");
+                })
+                .Returns(Pappabj0rnInvetory);
+
+            InventoryManagerMock
+                .Setup(x => x.GetUserInventory(Pappabj0rnInvetory.UserId))
+                .Returns(Pappabj0rnInvetory);
+
+            InventoryManagerMock
+                .Setup(x => x.GetUserInventory(EriskaInvetory.UserId))
+                .Returns(EriskaInvetory);
+        }
+
+        //todo merge
         protected ResponseContext CreateResponseContext(
             string text, 
             SlackChatHubType chatHubType, 

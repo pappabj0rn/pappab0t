@@ -149,8 +149,10 @@
     <Compile Include="Models\UrlMatchDataTests.cs" />
     <Compile Include="Models\UserUrlPostTests.cs" />
     <Compile Include="Modules\Common\DeckTests.cs" />
+    <Compile Include="Modules\Inventory\Items\NoteTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responders\CommandParserTests.cs" />
+    <Compile Include="Responders\DescribeResponderTests.cs" />
     <Compile Include="Responders\DikagameResponderTests.cs" />
     <Compile Include="Responders\FeatureRequestResponderTests.cs" />
     <Compile Include="Responders\GiveResponderTests.cs" />

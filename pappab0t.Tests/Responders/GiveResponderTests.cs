@@ -4,7 +4,6 @@ using MargieBot;
 using Moq;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
-using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Tokens;
 using pappab0t.Responders;
 using Xunit;
@@ -13,11 +12,9 @@ namespace pappab0t.Tests.Responders
 {
     public abstract class GiveResponderTests : ResponderTestsBase
     {
-        protected Mock<IInventoryManager> InvManMock = new Mock<IInventoryManager>();
-
         protected GiveResponderTests()
         {
-            Responder = new GiveResponder(InvManMock.Object, PhraseBookMock.Object, CommandParser);
+            Responder = new GiveResponder(InventoryManagerMock.Object, PhraseBookMock.Object, CommandParser);
         }
 
         public class CanRespond : GiveResponderTests
@@ -113,29 +110,18 @@ namespace pappab0t.Tests.Responders
                 decimal expectedAmount,
                 SlackChatHubType hubType = SlackChatHubType.Channel)
             {
-                var currentInv = new Inventory { UserId = UserNameCache.First().Key, BEK = 100 };
-                var eriskaInv = new Inventory { UserId = UserNameCache.Last().Key, BEK = 100 };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaInv.UserId))
-                    .Returns(eriskaInv);
-
                 var context = CreateContext(msg, hubType);
 
                 Responder.GetResponse(context);
 
-                InvManMock.Verify(x=>x.GetUserInventory(),Times.Once);
-                InvManMock.Verify(x=>x.GetUserInventory(eriskaInv.UserId),Times.Once);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == currentInv.UserId)), Times.Never);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == eriskaInv.UserId)), Times.Never);
-                InvManMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
+                InventoryManagerMock.Verify(x=>x.GetUserInventory(),Times.Once);
+                InventoryManagerMock.Verify(x=>x.GetUserInventory(EriskaInvetory.UserId),Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == EriskaInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
 
-                Assert.Equal(100 - expectedAmount, currentInv.BEK);
-                Assert.Equal(100 + expectedAmount, eriskaInv.BEK);
+                Assert.Equal(100 - expectedAmount, Pappabj0rnInvetory.BEK);
+                Assert.Equal(100 + expectedAmount, EriskaInvetory.BEK);
             }
 
             [Theory]
@@ -153,37 +139,20 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType hubType = SlackChatHubType.Channel)
             {
                 var testItem = new Note {Name = "test"};
-                var currentInv = new Inventory
-                {
-                    UserId = UserNameCache.First().Key,
-                    Items = new List<Item>
-                    {
-                        testItem
-                    }
-                };
-
-                var eriskaInv = new Inventory { UserId = UserNameCache.Last().Key };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaInv.UserId))
-                    .Returns(eriskaInv);
+                Pappabj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg, hubType);
 
                 Responder.GetResponse(context);
 
-                InvManMock.Verify(x => x.GetUserInventory(), Times.Once);
-                InvManMock.Verify(x => x.GetUserInventory(eriskaInv.UserId), Times.Once);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == currentInv.UserId)), Times.Never);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == eriskaInv.UserId)), Times.Never);
-                InvManMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
+                InventoryManagerMock.Verify(x => x.GetUserInventory(), Times.Once);
+                InventoryManagerMock.Verify(x => x.GetUserInventory(EriskaInvetory.UserId), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == EriskaInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
 
-                Assert.Empty(currentInv.Items);
-                Assert.Contains(testItem, eriskaInv.Items);
+                Assert.Empty(Pappabj0rnInvetory.Items);
+                Assert.Contains(testItem, EriskaInvetory.Items);
             }
 
             [Theory]
@@ -196,36 +165,21 @@ namespace pappab0t.Tests.Responders
                 string msg,
                 SlackChatHubType hubType = SlackChatHubType.Channel)
             {
-                var currentInv = new Inventory {UserId = UserNameCache.First().Key };
-                var eriskaInv = new Inventory { UserId = UserNameCache.Last().Key };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(UserNameCache.First().Key))
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaInv.UserId))
-                    .Returns(eriskaInv);
-
                 var context = CreateContext(msg, hubType);
 
                 Responder.GetResponse(context);
 
-                InvManMock.Verify(x => x.GetUserInventory(), Times.Once);
-                InvManMock.Verify(x => x.GetUserInventory(eriskaInv.UserId), Times.Once);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == currentInv.UserId)), Times.Never);
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == eriskaInv.UserId)), Times.Once);
-                InvManMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
+                InventoryManagerMock.Verify(x => x.GetUserInventory(), Times.Once);
+                InventoryManagerMock.Verify(x => x.GetUserInventory(EriskaInvetory.UserId), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == EriskaInvetory.UserId)), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
-                Assert.Empty(currentInv.Items);
-                Assert.NotEmpty(eriskaInv.Items);
+                Assert.Empty(Pappabj0rnInvetory.Items);
+                Assert.NotEmpty(EriskaInvetory.Items);
 
-                Assert.Equal(typeof(Note), eriskaInv.Items[0].GetType());
-                Assert.Equal("test", eriskaInv.Items[0].Name);
+                Assert.Equal(typeof(Note), EriskaInvetory.Items[0].GetType());
+                Assert.Equal("test", EriskaInvetory.Items[0].Name);
             }
 
             [Theory]
@@ -235,61 +189,26 @@ namespace pappab0t.Tests.Responders
                 string msg,
                 SlackChatHubType hubType = SlackChatHubType.DM)
             {
-                var currentInv = new Inventory { UserId = UserNameCache.First().Key };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(currentInv.UserId))
-                    .Returns(currentInv);
-
                 var context = CreateContext(msg, hubType);
 
                 Responder.GetResponse(context);
 
-                InvManMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == currentInv.UserId)), Times.Once);
-                InvManMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == Pappabj0rnInvetory.UserId)), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
-                Assert.NotEmpty(currentInv.Items);
-                Assert.Equal(typeof(Note), currentInv.Items[0].GetType());
-                Assert.Equal("test", currentInv.Items[0].Name);
+                Assert.NotEmpty(Pappabj0rnInvetory.Items);
+                Assert.Equal(typeof(Note), Pappabj0rnInvetory.Items[0].GetType());
+                Assert.Equal("test", Pappabj0rnInvetory.Items[0].Name);
             }
 
             [Fact]
             public void Should_set_context_on_inventory_manager_before_loding_user_inventory()
             {
-                var contextSet = false;
-                var getUserInventoryCalled = false;
-                var getUserInventoryCalledBeforeContext = false;
-
-                InvManMock
-                    .SetupSet(x => x.Context = It.IsAny<ResponseContext>())
-                    .Callback(() =>
-                    {
-                        contextSet = true;
-                        if (getUserInventoryCalled)
-                            getUserInventoryCalledBeforeContext = true;
-                    });
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Callback(() => getUserInventoryCalled = true)
-                    .Returns(new Inventory { Id = "testUuid1", BEK = 100 });
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(It.IsAny<string>()))
-                    .Returns(new Inventory { Id = "testUuid2", BEK = 100 });
-
                 var context = CreateContext("pbot ge eriska 0kr");
 
                 Responder.GetResponse(context);
 
-                Assert.True(contextSet);
-                Assert.True(getUserInventoryCalled);
-
-                Assert.False(getUserInventoryCalledBeforeContext);
+                Assert.True(InventoryManagerContextSet);
             }
 
             [Theory]
@@ -325,21 +244,8 @@ namespace pappab0t.Tests.Responders
                 string expectedPhParam1 = null,
                 string expectedPhParam2 = null)
             {
-                var eriskaUuid = UserNameCache
-                    .First(x => x.Value == "eriska")
-                    .Key;
-
                 var testItem = new Note {Name = "Test"};
-                var currentInv = new Inventory { UserId = UserNameCache.First().Key, BEK = 100, Items = new List<Item>{testItem}};
-                var eriskaInv = new Inventory { UserId = eriskaUuid, BEK = 100 };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaUuid))
-                    .Returns(eriskaInv);
+                Pappabj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg);
 
@@ -357,80 +263,36 @@ namespace pappab0t.Tests.Responders
             [Fact]
             public void Should_not_transfer_souldbound_items()
             {
-                var eriskaUuid = UserNameCache
-                    .First(x => x.Value == "eriska")
-                    .Key;
-
                 var testItem = new Note { Name = "test", SoulBound = true };
-                var currentInv = new Inventory
-                {
-                    UserId = UserNameCache.First().Key,
-                    Items = new List<Item>
-                    {
-                        testItem
-                    }
-                };
-
-                var eriskaInv = new Inventory { UserId = eriskaUuid };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaUuid))
-                    .Returns(eriskaInv);
-
+                Pappabj0rnInvetory.Items.Add(testItem);
+                
                 var expectedPhrasebookCall = nameof(IPhrasebook.CantMoveSoulboundItems);
 
                 var context = CreateContext("pbot ge eriska sak 1");
 
                 var response = Responder.GetResponse(context);
 
-                InvManMock.Verify(x=>x.Save(It.IsAny<Inventory>()), Times.Never);
-                InvManMock.Verify(x=>x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
+                InventoryManagerMock.Verify(x=>x.Save(It.IsAny<Inventory>()), Times.Never);
+                InventoryManagerMock.Verify(x=>x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
                 Assert.Equal(expectedPhrasebookCall, response?.Text);
 
-                Assert.Empty(eriskaInv.Items);
-                Assert.Contains(testItem, currentInv.Items);
+                Assert.Empty(EriskaInvetory.Items);
+                Assert.Contains(testItem, Pappabj0rnInvetory.Items);
             }
 
             [Theory]
             [InlineData("pbot ge eriska sak 1")]
-            public void Should_not_store_responses_between_calls(
-                string msg
-                )
+            public void Should_not_store_responses_between_calls(string msg)
             {
                 var context = CreateContext("pbot ge eriska sak 1");
 
                 var pbCall1 = "call 1";
                 var pbCall2 = "call 2";
 
-                var eriskaUuid = UserNameCache
-                    .First(x => x.Value == "eriska")
-                    .Key;
-
                 var testItem = new Note { Name = "test", SoulBound = true };
-                var currentInv = new Inventory
-                {
-                    UserId = UserNameCache.First().Key,
-                    Items = new List<Item>
-                    {
-                        testItem
-                    }
-                };
-
-                var eriskaInv = new Inventory { UserId = eriskaUuid };
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory())
-                    .Returns(currentInv);
-
-                InvManMock
-                    .Setup(x => x.GetUserInventory(eriskaUuid))
-                    .Returns(eriskaInv);
-
+                Pappabj0rnInvetory.Items.Add(testItem);
+                
                 PhraseBookMock
                     .Setup(x => x.CantMoveSoulboundItems())
                     .Returns(pbCall1);

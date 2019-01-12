@@ -6,13 +6,11 @@ namespace pappab0t.Models
     {
         string Affirmation();
 
-        string ThankYou();
+        string AttentionResponse(string input);
 
         string Exclamation();
 
         string MutedExclamation();
-
-        string AttentionResponse(string input);
 
         string ScoreboardHype();
 
@@ -80,7 +78,10 @@ namespace pappab0t.Models
 
         string Noted();
 
-        string TauntOld();
+        string QuestionAction();
+        string QuestionSimilarUrl();
+
+        string CantMoveSoulboundItems();
 
         /// <summary>
         /// Format string
@@ -91,12 +92,11 @@ namespace pappab0t.Models
         [Obsolete("use CreditUserBecause(string, string)")]
         string CreditUserBecauseFormat();
 
-        string CreditUserBecauseFormat(string userUuid, string reason);
+        string CreditUserBecause(string userUuid, string reason);
 
-        string QuestionAction();
+        string DesribeItemToFewItems();
 
-        string NoDataFound();
-        string QuestionSimilarUrl();
+        string DescribeUser();
 
         [Obsolete("use DidntMakeHighScoreInCount(int, int)")]
         string DidntMakeHighScoreInCountFormat();
@@ -110,10 +110,18 @@ namespace pappab0t.Models
         string MoneyTransfered(decimal amount);
 
         string MoneyTransferInsufficientFunds();
-        string ItemTransfered(string item);
+
+        string NoDataFound();
+
         string ItemCreated(string item);
+        string ItemDescription(string typeName, string description);
+        string ItemTransfered(string item);
         string ItemTransferToFewItems();
+
         string Impossible();
-        string CantMoveSoulboundItems();
+
+        string TauntOld();
+
+        string ThankYou();
     }
 }
