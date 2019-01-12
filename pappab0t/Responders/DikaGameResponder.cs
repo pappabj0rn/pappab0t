@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Extensions;
@@ -66,10 +65,10 @@ namespace pappab0t.Responders
             
 
             var userInv = _invMan.GetUserInventory();
+            var botInv = _invMan.GetUserInventory(Bot.UserID);
 
             var outcome = 0;
             var losses = 0;
-            var broke = false;
             var maxScore = 0;
             decimal payout = 0M;
             var game = new Game();
@@ -81,12 +80,12 @@ namespace pappab0t.Responders
                     if(i==0)
                         return new BotMessage { Text = PhraseBook.InsufficientFundsFormat().With(GameCost) };
 
-                    broke = true;
                     break;
                 }
 
                 userInv.BEK -= GameCost;
-                _invMan.Save(userInv);
+                botInv.BEK += (1 - PotPercentage) * GameCost;
+                _invMan.Save(new []{userInv, botInv});
                 
                 var score = game.Play();
 
