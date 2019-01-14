@@ -15,8 +15,8 @@ namespace pappab0t.Responders
 
         private BotMessage _returnMsg;
 
-        public DescribeResponder(IInventoryManager invMan, IPhrasebook phrasebook, ICommandParser commandParser)
-            : base(commandParser)
+        public DescribeResponder(IInventoryManager invMan, IPhrasebook phrasebook, ICommandDataParser commandDataParser)
+            : base(commandDataParser)
         {
             _invMan = invMan;
             _phrasebook = phrasebook;
@@ -26,7 +26,7 @@ namespace pappab0t.Responders
         {
             Init(context);
 
-            return CommandParser.Command == "beskriv";
+            return CommandData.Command == "beskriv";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -35,7 +35,7 @@ namespace pappab0t.Responders
             _invMan.Context = context;
 
             //todo refactor help into base. some interface for the responder which enables -? and --help in base
-            if (CommandParser.Params.ContainsKey("?"))
+            if (CommandData.Params.ContainsKey("?"))
             {
                 var sb = new StringBuilder();
                 sb.AppendLine("Beskrivning av kommando: beskriv");
@@ -45,7 +45,7 @@ namespace pappab0t.Responders
                 sb.AppendLine("Parametrar:");
                 sb.AppendLine("s: [sak nr], för att se vad du har för saker, använd kommando i.");
 
-                if (CommandParser.Params.ContainsKey("a"))
+                if (CommandData.Params.ContainsKey("a"))
                     sb.AppendLine("u: <user>");
 
                 sb.AppendLine("?: Hjälp (denna text)");
@@ -96,35 +96,35 @@ namespace pappab0t.Responders
 
         private string UserParam()
         {
-            return CommandParser.Params[Keys.CommandParser.UserIdKey];
+            return CommandData.Params[Keys.CommandParser.UserIdKey];
         }
 
         private bool KnownUserSpecified()
         {
-            return CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey)
-                   && CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey);
+            return CommandData.Params.ContainsKey(Keys.CommandParser.UserIdKey)
+                   && CommandData.Params.ContainsKey(Keys.CommandParser.UserKnownKey);
         }
 
         private bool KnownUserSpecifiedButNoItem()
         {
             return KnownUserSpecified()
-                   && !(CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
-                        || CommandParser.Params.ContainsKey(ItemParamKey));
+                   && !(CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
+                        || CommandData.Params.ContainsKey(ItemParamKey));
         }
 
         private bool UnknownUserSpecified()
         {
-            return CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey)
-                   && !CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey);
+            return CommandData.Params.ContainsKey(Keys.CommandParser.UserIdKey)
+                   && !CommandData.Params.ContainsKey(Keys.CommandParser.UserKnownKey);
         }
 
         private int GetItemIndex()
         {
             var index = -1;
 
-            if (CommandParser.Params.ContainsKey(ItemParamKey))
+            if (CommandData.Params.ContainsKey(ItemParamKey))
             {
-                if (!int.TryParse(CommandParser.Params[ItemParamKey], out index))
+                if (!int.TryParse(CommandData.Params[ItemParamKey], out index))
                 {
                     CreateIdidntUnderstandMessage();
                 }
@@ -147,12 +147,12 @@ namespace pappab0t.Responders
 
         private string UnnamedParam()
         {
-            return CommandParser.Params[Keys.CommandParser.UnnamedParam];
+            return CommandData.Params[Keys.CommandParser.UnnamedParam];
         }
 
         private bool UnnamedParamSpecified()
         {
-            return CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam);
+            return CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam);
         }
 
         private void CreateIdidntUnderstandMessage()

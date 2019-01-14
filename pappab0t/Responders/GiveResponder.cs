@@ -22,8 +22,8 @@ namespace pappab0t.Responders
         private GiveMode _mode = GiveMode.NotSet;
         private BotMessage _returnMsg;
 
-        public GiveResponder(IInventoryManager invMan, IPhrasebook phrasebook, ICommandParser commandParser)
-            : base(commandParser)
+        public GiveResponder(IInventoryManager invMan, IPhrasebook phrasebook, ICommandDataParser commandDataParser)
+            : base(commandDataParser)
         {
             _invMan = invMan;
             _phrasebook = phrasebook;
@@ -33,8 +33,8 @@ namespace pappab0t.Responders
         {
             Init(context);
 
-            return CommandParser.ToBot
-                   && CommandParser.Command == "ge";
+            return CommandData.ToBot
+                   && CommandData.Command == "ge";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -43,7 +43,7 @@ namespace pappab0t.Responders
             _invMan.Context = context;
             _returnMsg = null;
 
-            if (CommandParser.Params.ContainsKey("?"))
+            if (CommandData.Params.ContainsKey("?"))
             {
                 var sb = new StringBuilder();
                 sb.AppendLine("Beskrivning av kommando: ge");
@@ -56,7 +56,7 @@ namespace pappab0t.Responders
                 sb.AppendLine("p: [decimal], ");
                 sb.AppendLine("s: [sak nr], för att se vad du har för saker att ge, använd kommando i.");
 
-                if (CommandParser.Params.ContainsKey("a"))
+                if (CommandData.Params.ContainsKey("a"))
                     sb.AppendLine("c: [typ] {json-data}");
 
                 sb.AppendLine("?: Hjälp (denna text)");
@@ -67,20 +67,20 @@ namespace pappab0t.Responders
                 };
             }
 
-            if (!CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey)
-                || !CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey))
+            if (!CommandData.Params.ContainsKey(Keys.CommandParser.UserIdKey)
+                || !CommandData.Params.ContainsKey(Keys.CommandParser.UserKnownKey))
             {
-                var unknown = CommandParser.Params.ContainsKey(Keys.CommandParser.UserIdKey) 
-                              && !CommandParser.Params.ContainsKey(Keys.CommandParser.UserKnownKey)
-                    ? CommandParser.Params[Keys.CommandParser.UserIdKey]
-                    : CommandParser.ParamsRaw.Split(' ')[0];
+                var unknown = CommandData.Params.ContainsKey(Keys.CommandParser.UserIdKey) 
+                              && !CommandData.Params.ContainsKey(Keys.CommandParser.UserKnownKey)
+                    ? CommandData.Params[Keys.CommandParser.UserIdKey]
+                    : CommandData.ParamsRaw.Split(' ')[0];
 
                 return new BotMessage { Text = _phrasebook.IDontKnowXxxNamedYyy("nån",unknown) };
             }
 
             var saveInventories = SaveMode.None;
             var userInventory = _invMan.GetUserInventory();
-            var targetInventory = _invMan.GetUserInventory(CommandParser.Params[Keys.CommandParser.UserIdKey]);
+            var targetInventory = _invMan.GetUserInventory(CommandData.Params[Keys.CommandParser.UserIdKey]);
 
             SetMode();
 
@@ -171,7 +171,7 @@ namespace pappab0t.Responders
 
         private Item CreateItem()
         {
-            var itemData = CommandParser
+            var itemData = CommandData
                 .Params[CreateItemParamKey]
                 .Split(new[]{' '}, 2);
 
@@ -202,18 +202,18 @@ namespace pappab0t.Responders
         {
             var index = -1;
 
-            if (CommandParser.Params.ContainsKey(ItemParamKey))
+            if (CommandData.Params.ContainsKey(ItemParamKey))
             {
-                if (!int.TryParse(CommandParser.Params[ItemParamKey], out index))
+                if (!int.TryParse(CommandData.Params[ItemParamKey], out index))
                 {
                     CreateIdidntUnderstandMessage();
                 }
 
                 index--;
             }
-            else if (CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+            else if (CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
             {
-                if (!int.TryParse(CommandParser.Params[Keys.CommandParser.UnnamedParam].Replace("sak ", ""),
+                if (!int.TryParse(CommandData.Params[Keys.CommandParser.UnnamedParam].Replace("sak ", ""),
                     out index))
                 {
                     CreateIdidntUnderstandMessage();
@@ -234,16 +234,16 @@ namespace pappab0t.Responders
         {
             decimal amount = -1;
 
-            if (CommandParser.Params.ContainsKey(MoneyParamKey))
+            if (CommandData.Params.ContainsKey(MoneyParamKey))
             {
-                if (!decimal.TryParse(CommandParser.Params[MoneyParamKey], out amount))
+                if (!decimal.TryParse(CommandData.Params[MoneyParamKey], out amount))
                 {
                     CreateIdidntUnderstandMessage();
                 }
             }
-            else if(CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+            else if(CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
             {
-                if (!decimal.TryParse(CommandParser.Params[Keys.CommandParser.UnnamedParam].Replace("kr",""), 
+                if (!decimal.TryParse(CommandData.Params[Keys.CommandParser.UnnamedParam].Replace("kr",""), 
                     out amount))
                 {
                     CreateIdidntUnderstandMessage();
@@ -255,17 +255,17 @@ namespace pappab0t.Responders
 
         private void SetMode()
         {
-            if (CommandParser.Params.ContainsKey(MoneyParamKey)
-                || CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
-                && CommandParser.Params[Keys.CommandParser.UnnamedParam].Contains("kr"))
+            if (CommandData.Params.ContainsKey(MoneyParamKey)
+                || CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
+                && CommandData.Params[Keys.CommandParser.UnnamedParam].Contains("kr"))
                 _mode = GiveMode.GiveMoney;
 
-            else if(CommandParser.Params.ContainsKey(ItemParamKey)
-                    || CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
-                    && CommandParser.Params[Keys.CommandParser.UnnamedParam].Contains("sak "))
+            else if(CommandData.Params.ContainsKey(ItemParamKey)
+                    || CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
+                    && CommandData.Params[Keys.CommandParser.UnnamedParam].Contains("sak "))
                 _mode = GiveMode.GiveItem;
 
-            else if (CommandParser.Params.ContainsKey(CreateItemParamKey))
+            else if (CommandData.Params.ContainsKey(CreateItemParamKey))
                 _mode = GiveMode.CreateItem;
         }
         public ExposedInformation Info => new ExposedInformation

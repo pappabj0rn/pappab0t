@@ -16,8 +16,8 @@ namespace pappab0t.Responders
         {
             Init(context);
 
-            return CommandParser.Command == "pott"
-                   || CommandParser.Command == "p";
+            return CommandData.Command == "pott"
+                   || CommandData.Command == "p";
         }
 
         public override BotMessage GetResponse(ResponseContext context)
@@ -25,8 +25,8 @@ namespace pappab0t.Responders
             Init(context);
 
             _potName = "";
-            if (CommandParser.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
-                _potName = CommandParser.Params[Keys.CommandParser.UnnamedParam];
+            if (CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam))
+                _potName = CommandData.Params[Keys.CommandParser.UnnamedParam];
 
             if(_potName == "")
                 using (var session = DocumentStore.OpenSession())

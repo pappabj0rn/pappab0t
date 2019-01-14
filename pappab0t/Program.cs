@@ -114,8 +114,8 @@ namespace pappab0t
                     x.For<IInventoryManager>()
                         .Use(_inventoryManager);
 
-                    x.For<ICommandParser>()
-                        .Use<CommandParser>();
+                    x.For<ICommandDataParser>()
+                        .Use<CommandDataParser>();
                 });
 
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];

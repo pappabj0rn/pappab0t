@@ -6,7 +6,7 @@ using pappab0t.Extensions;
 
 namespace pappab0t.Responders
 {
-    public class CommandParser : ICommandParser
+    public class CommandDataParser : ICommandDataParser
     {
         private Dictionary<string, string> ShorthandMap => new Dictionary<string, string>
         {
@@ -17,10 +17,10 @@ namespace pappab0t.Responders
         private int _cmdWordIndex;
         private ResponseContext _context;
 
-        public void Parse()
+        public CommandData Parse()
         {
             if (!ToBot)
-                return;
+                return new CommandData();
 
             _words = Context.Message.Text.Split(' ').ToList();
 
@@ -35,6 +35,14 @@ namespace pappab0t.Responders
             Params = new Dictionary<string, string>();
             ParseParameters();
             FlagKnownUser();
+
+            return new CommandData
+            {
+                ToBot = ToBot,
+                Command = Command,
+                Params =  Params,
+                ParamsRaw = ParamsRaw
+            };
         }
 
         private void FlagKnownUser()
@@ -192,8 +200,8 @@ namespace pappab0t.Responders
                 .FirstOrDefault(x=>!IsBotReference(x))
                 ?.ToLower();
 
-        public string ParamsRaw { get; private set; }
-        public Dictionary<string,string> Params { get; private set; }
+        public string ParamsRaw { get; set; }
+        public Dictionary<string,string> Params { get; set; }
 
         private bool IsBotReference(string str)
         {
@@ -201,7 +209,7 @@ namespace pappab0t.Responders
                 || str == Context.BotUserName)
                 return true;
 
-            var bot = Context.Get<Bot>(pappab0t.Keys.StaticContextKeys.Bot);
+            var bot = Context.Get<Bot>(Keys.StaticContextKeys.Bot);
             return bot.Aliases.Contains(str);
         }
     }

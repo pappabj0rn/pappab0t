@@ -5,16 +5,17 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class CommandParserTests : ResponderTestsBase
+    //todo drop public props on CDP. use CD from Parse()
+    public abstract class CommandDataParserTests : ResponderTestsBase
     {
-        private CommandParser _parser;
+        private CommandDataParser _parser;
 
-        protected CommandParserTests()
+        protected CommandDataParserTests()
         {
-            _parser = new CommandParser();
+            _parser = new CommandDataParser();
         }
 
-        public class ToBot : CommandParserTests
+        public class ToBot : CommandDataParserTests
         {
             [Fact]
             public void Should_return_true_when_bot_is_mentioned()
@@ -61,7 +62,7 @@ namespace pappab0t.Tests.Responders
             }
         }
 
-        public class Command : CommandParserTests
+        public class Command : CommandDataParserTests
         {
             [Theory]
             [InlineData("<@botUUID> ge nisse 5kr", "ge")]
@@ -123,7 +124,7 @@ namespace pappab0t.Tests.Responders
             }
         }
 
-        public class Parameters : CommandParserTests
+        public class Parameters : CommandDataParserTests
         {
             [Theory]
             [InlineData("pbot ge eriska 5kr", "user", "U06BH8WTT")]
@@ -276,7 +277,7 @@ namespace pappab0t.Tests.Responders
             }
         }
 
-        public class ParametersRaw : CommandParserTests
+        public class ParametersRaw : CommandDataParserTests
         {
             [Theory]
             [InlineData("pbot ge nisse 5kr", "nisse 5kr")]
@@ -304,14 +305,14 @@ namespace pappab0t.Tests.Responders
             }
         }
 
-        public class Context : CommandParserTests
+        public class Context : CommandDataParserTests
         {
             [Fact]
             public void Setting_context_should_clear_previous_parsed_state()
             {
                 var msg1 = "pbot cmd -t test";
                 var context1 = CreateContext(msg1);
-                var parser = new CommandParser
+                var parser = new CommandDataParser
                 {
                     Context = context1
                 };

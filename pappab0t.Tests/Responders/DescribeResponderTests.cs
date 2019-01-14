@@ -16,7 +16,7 @@ namespace pappab0t.Tests.Responders
             Responder = new DescribeResponder(
                 InventoryManagerMock.Object, 
                 PhraseBookMock.Object, 
-                CommandParser);
+                CommandDataParser);
         }
 
         public class CanRespond : DescribeResponderTests

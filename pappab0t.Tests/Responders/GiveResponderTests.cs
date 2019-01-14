@@ -14,7 +14,7 @@ namespace pappab0t.Tests.Responders
     {
         protected GiveResponderTests()
         {
-            Responder = new GiveResponder(InventoryManagerMock.Object, PhraseBookMock.Object, CommandParser);
+            Responder = new GiveResponder(InventoryManagerMock.Object, PhraseBookMock.Object, CommandDataParser);
         }
 
         public class CanRespond : GiveResponderTests

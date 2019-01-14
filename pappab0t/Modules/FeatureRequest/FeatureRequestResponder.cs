@@ -1,5 +1,4 @@
-﻿using System;
-using MargieBot;
+﻿using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.Models;
 
@@ -9,7 +8,9 @@ namespace pappab0t.Responders
     {
         public override bool CanRespond(ResponseContext context)
         {
-            return CommandParser.Command == "fr";
+            Init(context);
+
+            return CommandData.Command == "fr";
         }
 
         public override BotMessage GetResponse(ResponseContext context)

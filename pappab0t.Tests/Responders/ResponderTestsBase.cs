@@ -19,7 +19,7 @@ namespace pappab0t.Tests.Responders
 
         protected Mock<IPhrasebook> PhraseBookMock;
         protected Mock<IInventoryManager> InventoryManagerMock;
-        protected ICommandParser CommandParser;
+        protected ICommandDataParser CommandDataParser;
 
         // ReSharper disable once InconsistentNaming
         protected Inventory Pappabj0rnInvetory;
@@ -46,7 +46,7 @@ namespace pappab0t.Tests.Responders
                 Keys.StaticContextKeys.Phrasebook, 
                 PhraseBookMock.Object);
 
-            CommandParser = new CommandParser();
+            CommandDataParser = new CommandDataParser();
         }
 
         private void SetupInventoryManagerAndDefaultInventories()

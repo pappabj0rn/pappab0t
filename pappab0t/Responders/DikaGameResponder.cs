@@ -44,8 +44,8 @@ namespace pappab0t.Responders
 
             return context.Message.IsDirectMessage()
                 && (
-                    CommandParser.Command == "dg"
-                    || CommandParser.Command == "dikagame"
+                    CommandData.Command == "dg"
+                    || CommandData.Command == "dikagame"
                 );
         }
 
@@ -55,9 +55,9 @@ namespace pappab0t.Responders
             Init(context);
             _invMan.Context = context;
 
-            if (CommandParser.Params.Count == 1)
+            if (CommandData.Params.Count == 1)
             {
-                int.TryParse(CommandParser.Params.First().Value, out _maxGames);
+                int.TryParse(CommandData.Params.First().Value, out _maxGames);
 
                 if (_maxGames < 1)
                     _maxGames = 1;

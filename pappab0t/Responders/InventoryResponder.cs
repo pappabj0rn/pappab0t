@@ -21,8 +21,8 @@ namespace pappab0t.Responders
         {
             Init(context);
 
-            return CommandParser.Command == "i"
-                   && CommandParser.ParamsRaw.IsNullOrEmpty();
+            return CommandData.Command == "i"
+                   && CommandData.ParamsRaw.IsNullOrEmpty();
         }
 
         public override BotMessage GetResponse(ResponseContext context)
