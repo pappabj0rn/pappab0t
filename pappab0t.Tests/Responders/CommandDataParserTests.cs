@@ -5,10 +5,9 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    //todo drop public props on CDP. use CD from Parse()
     public abstract class CommandDataParserTests : ResponderTestsBase
     {
-        private CommandDataParser _parser;
+        private readonly CommandDataParser _parser;
 
         protected CommandDataParserTests()
         {
@@ -23,9 +22,20 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot ge mig mat");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.True(_parser.ToBot);
+                Assert.True(data.ToBot);
+            }
+
+            [Fact]
+            public void Should_return_true_when_bot_is_mentioned_regardless_of_casing()
+            {
+                var context = CreateContext("Pbot ge mig mat");
+                _parser.Context = context;
+
+                var data = _parser.Parse();
+
+                Assert.True(data.ToBot);
             }
 
             [Fact]
@@ -34,9 +44,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("ge mig mat", SlackChatHubType.DM);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.True(_parser.ToBot);
+                Assert.True(data.ToBot);
             }
 
             [Fact]
@@ -45,9 +55,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot ge mig mat", SlackChatHubType.DM);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.True(_parser.ToBot);
+                Assert.True(data.ToBot);
             }
 
             [Fact]
@@ -56,9 +66,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("ge mig mat");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.False(_parser.ToBot);
+                Assert.False(data.ToBot);
             }
         }
 
@@ -89,9 +99,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, type);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Equal(expectedCommand, _parser.Command);
+                Assert.Equal(expectedCommand, data.Command);
             }
 
             [Theory]
@@ -106,9 +116,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, type, mentionsBot);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Null(_parser.Command);
+                Assert.Null(data.Command);
             }
 
             [Fact]
@@ -118,9 +128,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(cmd, SlackChatHubType.DM);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Equal(cmd.ToLower(), _parser.Command);
+                Assert.Equal(cmd.ToLower(), data.Command);
             }
         }
 
@@ -138,10 +148,10 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, type);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains(expectedKey, _parser.Params.Keys);
-                Assert.Equal(expectedValue, _parser.Params[expectedKey]);
+                Assert.Contains(expectedKey, data.Params.Keys);
+                Assert.Equal(expectedValue, data.Params[expectedKey]);
             }
 
             [Theory]
@@ -158,10 +168,10 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, type);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains(expectedKey, _parser.Params.Keys);
-                Assert.Equal(expectedValue, _parser.Params[expectedKey]);
+                Assert.Contains(expectedKey, data.Params.Keys);
+                Assert.Equal(expectedValue, data.Params[expectedKey]);
             }
 
             [Fact]
@@ -170,10 +180,10 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot ge eriska 5kr");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains(Keys.CommandParser.UnnamedParam, _parser.Params.Keys);
-                Assert.Equal("5kr", _parser.Params[Keys.CommandParser.UnnamedParam]);
+                Assert.Contains(Keys.CommandParser.UnnamedParam, data.Params.Keys);
+                Assert.Equal("5kr", data.Params[Keys.CommandParser.UnnamedParam]);
             }
 
             [Fact]
@@ -182,14 +192,14 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot cmd -xyz");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
                 var expectedParams = new[] { "x", "y", "z" };
                 foreach (string expectedParam in expectedParams)
                 {
-                    Assert.Contains(expectedParam, _parser.Params.Keys);
+                    Assert.Contains(expectedParam, data.Params.Keys);
 
-                    Assert.Equal("", _parser.Params[expectedParam]);
+                    Assert.Equal("", data.Params[expectedParam]);
                 }
             }
 
@@ -199,11 +209,11 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot cmd -t \"test test\"");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains("t", _parser.Params.Keys);
+                Assert.Contains("t", data.Params.Keys);
 
-                Assert.Equal("test test", _parser.Params["t"]);
+                Assert.Equal("test test", data.Params["t"]);
             }
 
             [Fact]
@@ -212,13 +222,13 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext("pbot cmd -t \"test test\" -x xyz");
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains("t", _parser.Params.Keys);
-                Assert.Contains("x", _parser.Params.Keys);
+                Assert.Contains("t", data.Params.Keys);
+                Assert.Contains("x", data.Params.Keys);
 
-                Assert.Equal("test test", _parser.Params["t"]);
-                Assert.Equal("xyz", _parser.Params["x"]);
+                Assert.Equal("test test", data.Params["t"]);
+                Assert.Equal("xyz", data.Params["x"]);
             }
 
             [Theory]
@@ -235,11 +245,11 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, SlackChatHubType.DM);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains(Keys.CommandParser.UnnamedParam, _parser.Params.Keys);
+                Assert.Contains(Keys.CommandParser.UnnamedParam, data.Params.Keys);
 
-                Assert.Equal(expectedUnnamedValue, _parser.Params[Keys.CommandParser.UnnamedParam]);
+                Assert.Equal(expectedUnnamedValue, data.Params[Keys.CommandParser.UnnamedParam]);
             }
 
             [Theory]
@@ -255,9 +265,9 @@ namespace pappab0t.Tests.Responders
 
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Contains(Keys.CommandParser.UserKnownKey, _parser.Params.Keys);
+                Assert.Contains(Keys.CommandParser.UserKnownKey, data.Params.Keys);
             }
 
             [Theory]
@@ -271,9 +281,9 @@ namespace pappab0t.Tests.Responders
 
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.DoesNotContain(Keys.CommandParser.UserKnownKey, _parser.Params.Keys);
+                Assert.DoesNotContain(Keys.CommandParser.UserKnownKey, data.Params.Keys);
             }
         }
 
@@ -299,9 +309,9 @@ namespace pappab0t.Tests.Responders
                 var context = CreateContext(msg, type);
                 _parser.Context = context;
 
-                _parser.Parse();
+                var data = _parser.Parse();
 
-                Assert.Equal(expectedParams, _parser.ParamsRaw);
+                Assert.Equal(expectedParams, data.ParamsRaw);
             }
         }
 
@@ -317,15 +327,17 @@ namespace pappab0t.Tests.Responders
                     Context = context1
                 };
 
-                parser.Parse();
+                var data1 = parser.Parse();
 
                 var msg2 = "test";
                 var context2 = CreateContext(msg2);
                 parser.Context = context2;
 
-                Assert.Null(parser.Command);
-                Assert.Null(parser.ParamsRaw);
-                Assert.Empty(parser.Params);
+                var data2 = parser.Parse();
+
+                Assert.NotEqual(data1.Command, data2.Command);
+                Assert.NotEqual(data1.ParamsRaw, data2.ParamsRaw);
+                Assert.NotEqual(data1.Params, data2.Params);
             }
         }
     }

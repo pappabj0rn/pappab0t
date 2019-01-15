@@ -151,10 +151,10 @@ namespace pappab0t.Tests.Responders
                 msg,
                 hubType,
                 mentionsBot: mentionsBot 
-                             ?? msg.Contains("pbot")
-                             || msg.Contains("pb0t")
-                             || msg.Contains("pappab0t")
-                             || msg.Contains("<@botUUID>"));
+                             ?? msg.ToLower().Contains("pbot")
+                             || msg.ToLower().Contains("pb0t")
+                             || msg.ToLower().Contains("pappab0t")
+                             || msg.ToLower().Contains("<@botUUID>"));
 
             SetStaticContextItems(context);
             context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();

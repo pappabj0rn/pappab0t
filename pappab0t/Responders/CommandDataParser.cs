@@ -192,16 +192,16 @@ namespace pappab0t.Responders
             }
         }
 
-        public bool ToBot => Context.Message.MentionsBot
+        private bool ToBot => Context.Message.MentionsBot
                              || Context.Message.IsDirectMessage();
 
-        public string Command => 
+        private string Command => 
             _words
                 .FirstOrDefault(x=>!IsBotReference(x))
                 ?.ToLower();
 
-        public string ParamsRaw { get; set; }
-        public Dictionary<string,string> Params { get; set; }
+        private string ParamsRaw { get; set; }
+        private Dictionary<string,string> Params { get; set; }
 
         private bool IsBotReference(string str)
         {
@@ -210,7 +210,7 @@ namespace pappab0t.Responders
                 return true;
 
             var bot = Context.Get<Bot>(Keys.StaticContextKeys.Bot);
-            return bot.Aliases.Contains(str);
+            return bot.Aliases.Contains(str.ToLower());
         }
     }
 }
