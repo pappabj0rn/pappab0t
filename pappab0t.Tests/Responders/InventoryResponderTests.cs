@@ -10,16 +10,15 @@ namespace pappab0t.Tests.Responders
         {
             [Theory]
             [InlineData("i", SlackChatHubType.DM)]
-            [InlineData("pappab0t i", SlackChatHubType.Channel, true)]
-            [InlineData("pb0t i", SlackChatHubType.Channel, true)]
+            [InlineData("pappab0t i", SlackChatHubType.Channel)]
+            [InlineData("pb0t i", SlackChatHubType.Channel)]
             public void Should_return_true_for_the_given_scenarios(
                 string msg, 
-                SlackChatHubType hubType, 
-                bool mentionsBot = false)
+                SlackChatHubType hubType)
             {
                 var responder = new InventoryResponder(null);
 
-                var context = CreateResponseContext(msg, hubType, mentionsBot);
+                var context = CreateContext(msg, hubType);
 
                 var canRespond = responder.CanRespond(context);
 

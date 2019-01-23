@@ -149,7 +149,9 @@
     <Compile Include="Models\UrlMatchDataTests.cs" />
     <Compile Include="Models\UserUrlPostTests.cs" />
     <Compile Include="Modules\Common\DeckTests.cs" />
+    <Compile Include="Modules\PingPong\PingTaskTests.cs" />
     <Compile Include="Modules\Inventory\Items\NoteTests.cs" />
+    <Compile Include="Modules\PingPong\PongResponderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Responders\CommandDataParserTests.cs" />
     <Compile Include="Responders\CommandResponderTests.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Responders\RandomUrlResponderTests.cs" />
     <Compile Include="Responders\ResponderTestsBase.cs" />
     <Compile Include="Responders\UrlResponderTests.cs" />
+    <Compile Include="SchedulerTests.cs" />
     <Compile Include="UrlParserTests.cs" />
   </ItemGroup>
   <ItemGroup>

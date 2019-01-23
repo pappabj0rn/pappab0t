@@ -42,9 +42,7 @@ namespace pappab0t.Tests.Responders
             [InlineData("<http://www.nu|www.nu>", true)]
             public void Should_handle_theory_data(string msg, bool expectedResult)
             {
-                var context = CreateResponseContext(
-                    msg,
-                    SlackChatHubType.Channel);
+                var context = CreateContext(msg);
 
                 var canRespond = _responder.CanRespond(context);
 
@@ -81,10 +79,7 @@ namespace pappab0t.Tests.Responders
 
             protected void UseDefaultContext()
             {
-                ResponseContext = CreateResponseContext(
-                    "<http://www.nu/folder1/folder2/ost.jpg>", 
-                    SlackChatHubType.Channel,
-                    mentionsBot: false);
+                ResponseContext = CreateContext("<http://www.nu/folder1/folder2/ost.jpg>");
             }
 
             protected void TriggerResponder()
@@ -231,10 +226,7 @@ namespace pappab0t.Tests.Responders
                     TargetType = UrlTargetType.Image
                 };
 
-                ResponseContext = CreateResponseContext(
-                    "<http://www.nu/folder1/folder2/ost.jpg?test=true>",
-                    SlackChatHubType.Channel,
-                    mentionsBot: false);
+                ResponseContext = CreateContext("<http://www.nu/folder1/folder2/ost.jpg?test=true>");
 
                 TriggerResponder();
 

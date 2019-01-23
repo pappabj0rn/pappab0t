@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MargieBot;
+using pappab0t.Abstractions;
 
 namespace pappab0t.Responders
 {

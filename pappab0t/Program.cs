@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Bazam.Http;
 using MargieBot;
 using Newtonsoft.Json.Linq;
+using pappab0t.Abstractions;
 using pappab0t.Extensions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
@@ -30,6 +31,7 @@ namespace pappab0t
         private static Dictionary<string, string> _userNameCache;
         private static Dictionary<string, string> _channelsNameCache;
         private static List<IMessageHandler> _messageHandlers;
+        private static IScheduler _scheduler;
        
         private static void Main()
         {
@@ -46,11 +48,12 @@ namespace pappab0t
 
                 _bot.Responders.AddRange(GetResponders());
 
-                _bot.ConnectionStatusChanged += OnBotOnConnectionStatusChanged;
-
                 _bot.MessageReceived += _bot_MessageReceived;
 
                 ConnectToSlackIfDisconnected(false);
+
+                _scheduler.Interval = 10 * 1000;
+                _scheduler.Run();
 
                 var run = true;
                 Console.WriteLine("Press X to exit.");
@@ -71,19 +74,6 @@ namespace pappab0t
             }
         }
 
-        private static async void OnBotOnConnectionStatusChanged(bool isConnected)
-        {
-            if (!isConnected)
-            {
-                Console.WriteLine("Disconnected.");
-                return;
-            }
-
-            Console.WriteLine("UserName: {0}\nUserId: {1}\nConnected at: {2}", _bot.UserName, _bot.UserID, _bot.ConnectedSince);
-            await PopulateUsernameCache();
-            await PopulateChannelsCache();
-        }
-
         private static void Error(Exception ex)
         {
             var prevColor = Console.ForegroundColor;
@@ -102,8 +92,10 @@ namespace pappab0t
 
         private static void Init()
         {
+            _bot = new Bot();
+            _bot.ConnectionStatusChanged += ConnectToSlackIfDisconnected;
+
             _ravenStore = CreateStore();
-            _inventoryManager = new InventoryManager(_ravenStore);
 
             ObjectFactory.Container.Configure(
                 x=>
@@ -111,11 +103,14 @@ namespace pappab0t
                     x.For<IDocumentStore>()
                         .Use(_ravenStore);
 
-                    x.For<IInventoryManager>()
-                        .Use(_inventoryManager);
+                    
 
                     x.For<ICommandDataParser>()
                         .Use<CommandDataParser>();
+
+                    x.For<IBot>().Use(() => new BotWrapper(_bot));
+
+                    
                 });
 
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
@@ -126,8 +121,9 @@ namespace pappab0t
 
             _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
 
-            _bot = new Bot();
-            _bot.ConnectionStatusChanged += ConnectToSlackIfDisconnected;
+            
+
+            _scheduler = new Scheduler(new TimerAdapter(), ObjectFactory.Container.GetAllInstances<ScheduledTask>());
         }
 
         private static void ConnectToSlackIfDisconnected(bool isConnected)
@@ -149,7 +145,14 @@ namespace pappab0t
                             Thread.Sleep(TimeSpan.FromSeconds(10));
                         }
                     }
+
+                    await PopulateUsernameCache();
+                    await PopulateChannelsCache();
                 });
+            }
+            else
+            {
+                Console.WriteLine("Connected!");
             }
         }
 
@@ -205,6 +208,8 @@ namespace pappab0t
 
         private static async Task PopulateUsernameCache()
         {
+            _userNameCache = new Dictionary<string, string>();
+
             var client = new NoobWebClient();
 
             var values = new List<string>
@@ -223,6 +228,8 @@ namespace pappab0t
 
         private static async Task PopulateChannelsCache()
         {
+            _channelsNameCache = new Dictionary<string, string>();
+
             var client = new NoobWebClient();
 
             var values = new List<string>
@@ -243,7 +250,7 @@ namespace pappab0t
         static void _bot_MessageReceived(string json)
         {
             //Copied from MargieBot source and modified to allow all messages
-            ConsoleDebugLog(json);
+            //ConsoleDebugLog(json);
 
             var jObject = JObject.Parse(json);
             if (jObject[Keys.Slack.MessageJson.Type].Value<string>() != "message") return;

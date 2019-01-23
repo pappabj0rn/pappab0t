@@ -2,6 +2,7 @@
 using System.Linq;
 using MargieBot;
 using Moq;
+using pappab0t.Abstractions;
 using pappab0t.Responders;
 using Xunit;
 

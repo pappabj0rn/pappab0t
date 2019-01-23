@@ -1,7 +1,7 @@
 ﻿using MargieBot;
 using pappab0t.Responders;
 
-namespace pappab0t
+namespace pappab0t.Abstractions
 {
     public abstract class Command
     {

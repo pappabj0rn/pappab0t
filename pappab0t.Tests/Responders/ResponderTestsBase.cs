@@ -91,11 +91,10 @@ namespace pappab0t.Tests.Responders
                 .Returns(EriskaInvetory);
         }
 
-        //todo merge
-        protected ResponseContext CreateResponseContext(
-            string text, 
-            SlackChatHubType chatHubType, 
-            bool mentionsBot = false,
+        protected ResponseContext CreateContext(
+            string msg, 
+            SlackChatHubType hubType = SlackChatHubType.Channel,
+            bool? mentionsBot = null,
             string userUUID = null)
         {
             var context = new ResponseContext
@@ -109,19 +108,24 @@ namespace pappab0t.Tests.Responders
                     {
                         ID = "hubID",
                         Name = "hubName",
-                        Type = chatHubType
+                        Type = hubType
                     },
-                    Text = text,
+                    Text = msg,
                     User = new SlackUser
                     {
                         ID = userUUID ?? UserNameCache.First().Key
                     },
                     MentionsBot = mentionsBot
+                                  ?? msg.ToLower().Contains("pbot")
+                                  || msg.ToLower().Contains("pb0t")
+                                  || msg.ToLower().Contains("pappab0t")
+                                  || msg.ToLower().Contains("<@botUUID>")
                 }
             };
+
             context.Set(Keys.StaticContextKeys.Bot, new Bot
             {
-                Aliases = new []{"pbot","pb0t"}
+                Aliases = new[] { "pbot", "pb0t" }
             });
 
             SetStaticContextItems(context);
@@ -140,25 +144,6 @@ namespace pappab0t.Tests.Responders
             {
                 context.Set(item.Key, item.Value);
             }
-        }
-
-        protected ResponseContext CreateContext(
-            string msg, 
-            SlackChatHubType hubType = SlackChatHubType.Channel,
-            bool? mentionsBot = null)
-        {
-            var context = CreateResponseContext(
-                msg,
-                hubType,
-                mentionsBot: mentionsBot 
-                             ?? msg.ToLower().Contains("pbot")
-                             || msg.ToLower().Contains("pb0t")
-                             || msg.ToLower().Contains("pappab0t")
-                             || msg.ToLower().Contains("<@botUUID>"));
-
-            SetStaticContextItems(context);
-            context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
-            return context;
         }
 
         protected void ConfigureRavenDB()
