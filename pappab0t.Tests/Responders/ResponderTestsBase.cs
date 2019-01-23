@@ -119,7 +119,7 @@ namespace pappab0t.Tests.Responders
                                   ?? msg.ToLower().Contains("pbot")
                                   || msg.ToLower().Contains("pb0t")
                                   || msg.ToLower().Contains("pappab0t")
-                                  || msg.ToLower().Contains("<@botUUID>")
+                                  || msg.ToLower().Contains("<@botuuid>")
                 }
             };
 

@@ -1,4 +1,5 @@
-﻿using MargieBot;
+﻿using System;
+using MargieBot;
 using pappab0t.Modules.PingPong;
 using pappab0t.Tests.Responders;
 using Xunit;
@@ -83,16 +84,27 @@ namespace pappab0t.Tests.Modules.PingPong
             public GetResponse()
             {
                 _context = CreateContext("Hi!", SlackChatHubType.DM, userUUID: "USLACKBOT");
+
+                PingPongStats.LastFailedPing = DateTime.MinValue.AddMilliseconds(0021);
+                PingPongStats.LastPingTime = SystemTime.Now().AddSeconds(-1);
+                PingPongStats.LastPongTime = DateTime.MinValue.AddMilliseconds(0022);
+                PingPongStats.PingsSent = 1;
+                PingPongStats.LastResponse = null;
+
+                PingPongStatus.WaitingForPong = true;
+
+                SystemTime.Now = () => new DateTime(2019, 1, 23, 22, 43, 22);
             }
 
             [Fact]
-            public void Should_update_pinpongstatus_to_not_waiting_for_pong()
+            public void Should_update_status_and_stats()
             {
-                PingPongStatus.WaitingForPong = true;
-
                 Responder.GetResponse(_context);
 
                 Assert.False(PingPongStatus.WaitingForPong);
+
+                Assert.Equal(SystemTime.Now(), PingPongStats.LastPongTime);
+                Assert.Equal(_context.Message.Text, PingPongStats.LastResponse);
             }
         }
     }

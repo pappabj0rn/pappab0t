@@ -75,6 +75,16 @@ namespace pappab0t.Tests.Modules.PingPong
 
         public class Execute : PingTaskTests
         {
+            public Execute()
+            {
+                PingPongStats.LastFailedPing = DateTime.MinValue.AddMilliseconds(0011);
+                PingPongStats.LastPingTime = DateTime.MinValue.AddMilliseconds(0012);
+                PingPongStats.LastPongTime = DateTime.MinValue.AddMilliseconds(0013);
+                PingPongStats.PingsSent = 0;
+                PingPongStats.LastResponse = null;
+
+                PingPongStatus.WaitingForPong = false;
+            }
 
             [Fact]
             public void Should_return_false_when_execute_is_called_before_interval_has_past()
@@ -140,22 +150,37 @@ namespace pappab0t.Tests.Modules.PingPong
             [Fact]
             public void Should_update_pingpongstatus()
             {
-                PingPongStatus.PingSent = DateTime.MinValue;
-                PingPongStatus.WaitingForPong = false;
-
                 _task.Execute();
 
-                Assert.Equal(SystemTime.Now(), PingPongStatus.PingSent);
                 Assert.True(PingPongStatus.WaitingForPong);
             }
 
             [Fact]
-            public void Should_reconnect_and_reset_pingpongstatus_when_pingpongstatus_is_set_to_waiting_for_pong()
+            public void Should_update_pingpongstats()
             {
-                PingPongStatus.PingSent = DateTime.MinValue;
-                PingPongStatus.WaitingForPong = true;
+                _task.Execute();
+
+                var newTime = SystemTime.Now().AddMilliseconds(_task.Interval+1);
+                SystemTime.Now = () => newTime;
+                PingPongStatus.WaitingForPong = false;
 
                 _task.Execute();
+
+                Assert.Equal(SystemTime.Now(), PingPongStats.LastPingTime);
+                Assert.Equal(2, PingPongStats.PingsSent);
+            }
+
+            [Fact]
+            public void Should_reset_connection_and_updat_status_and_stats_when_pingpongstatus_is_set_to_waiting_for_pong()
+            {
+                PingPongStats.PingsSent = 1;
+                PingPongStatus.WaitingForPong = true;
+
+                var success = _task.Execute();
+
+                Assert.Equal(SystemTime.Now(), PingPongStats.LastFailedPing);
+                Assert.Equal(1, PingPongStats.PingsSent);
+                Assert.False(success);
 
                 _botMock.VerifySet(x => x.ConnectedSince = null);
             }
@@ -166,8 +191,6 @@ namespace pappab0t.Tests.Modules.PingPong
                 _botMock
                     .Setup(x => x.ConnectedSince)
                     .Returns((DateTime?)null);
-
-                PingPongStatus.WaitingForPong = false;
 
                 _task.Execute();
 

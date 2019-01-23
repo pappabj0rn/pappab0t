@@ -33,13 +33,14 @@ namespace pappab0t.Modules.PingPong
             if (!IsDue()
             || !_bot.ConnectedSince.HasValue)
                 return false;
-
-
+            
             _lastRun = SystemTime.Now();
 
             if (PingPongStatus.WaitingForPong)
             {
                 _bot.ConnectedSince = null;
+                PingPongStats.LastFailedPing = SystemTime.Now();
+                return false;
             }
 
             var dm = _bot.ConnectedDMs.FirstOrDefault(x => x.Name.ToLower() == AtSlackbot);
@@ -49,10 +50,10 @@ namespace pappab0t.Modules.PingPong
             }
 
             var sbHub = _bot.ConnectedDMs.FirstOrDefault(x=>x.Name == AtSlackbot);
-            Console.WriteLine("Ping " + SystemTime.Now());
             _bot.Say(new BotMessage {Text = "hello", ChatHub = sbHub});
 
-            PingPongStatus.PingSent = SystemTime.Now();
+            PingPongStats.LastPingTime = SystemTime.Now();
+            PingPongStats.PingsSent++;
             PingPongStatus.WaitingForPong = true;
 
             return true;

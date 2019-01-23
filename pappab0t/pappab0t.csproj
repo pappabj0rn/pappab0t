@@ -245,6 +245,8 @@
     <Compile Include="Modules\Common\Deck.cs" />
     <Compile Include="Modules\Common\Suit.cs" />
     <Compile Include="Modules\Derangements\Game.cs" />
+    <Compile Include="Modules\PingPong\PingPongStats.cs" />
+    <Compile Include="Modules\PingPong\PingPongStatsCommand.cs" />
     <Compile Include="Modules\PingPong\PingPongStatus.cs" />
     <Compile Include="Modules\PingPong\PingTask.cs" />
     <Compile Include="Modules\Inventory\IInventoryManager.cs" />

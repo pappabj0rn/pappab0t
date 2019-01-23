@@ -16,7 +16,9 @@ namespace pappab0t.Modules.PingPong
         public override BotMessage GetResponse(ResponseContext context)
         {
             PingPongStatus.WaitingForPong = false;
-            Console.WriteLine("Pong " + SystemTime.Now());
+
+            PingPongStats.LastPongTime = SystemTime.Now();
+            PingPongStats.LastResponse = context.Message.Text;
 
             return null;
         }

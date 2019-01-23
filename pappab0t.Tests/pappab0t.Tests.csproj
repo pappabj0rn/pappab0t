@@ -149,6 +149,7 @@
     <Compile Include="Models\UrlMatchDataTests.cs" />
     <Compile Include="Models\UserUrlPostTests.cs" />
     <Compile Include="Modules\Common\DeckTests.cs" />
+    <Compile Include="Modules\PingPong\PingPongStatsCommandTests.cs" />
     <Compile Include="Modules\PingPong\PingTaskTests.cs" />
     <Compile Include="Modules\Inventory\Items\NoteTests.cs" />
     <Compile Include="Modules\PingPong\PongResponderTests.cs" />
