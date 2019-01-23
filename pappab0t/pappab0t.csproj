@@ -222,7 +222,7 @@
     <Compile Include="Abstractions\ITimer.cs" />
     <Compile Include="Abstractions\ScheduledTask.cs" />
     <Compile Include="BotAdapter.cs" />
-    <Compile Include="HttpClientAdaptor.cs" />
+    <Compile Include="HttpClientAdapter.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\SlackMessageExtensions.cs" />
