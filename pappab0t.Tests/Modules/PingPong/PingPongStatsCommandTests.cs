@@ -1,5 +1,4 @@
 ﻿using System;
-using pappab0t.Abstractions;
 using pappab0t.Modules.PingPong;
 using Xunit;
 
@@ -29,7 +28,7 @@ namespace pappab0t.Tests.Modules.PingPong
 
                 var response = _ppsCmd.GetResponse();
 
-                Assert.Contains($"Ping sent: {PingPongStats.PingsSent}\r\n", response.Text);
+                Assert.Contains($"Pings sent: {PingPongStats.PingsSent}\r\n", response.Text);
                 Assert.Contains($"Last ping: {PingPongStats.LastPingTime:G}\r\n", response.Text);
                 Assert.Contains($"Last duration: {PingPongStats.LastPongTime - PingPongStats.LastPingTime:g}\r\n", response.Text);
                 Assert.Contains($"Last failed ping: {PingPongStats.LastFailedPing:G}\r\n", response.Text);

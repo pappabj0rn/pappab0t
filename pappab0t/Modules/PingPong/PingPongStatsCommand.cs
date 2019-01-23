@@ -12,7 +12,7 @@ namespace pappab0t.Modules.PingPong
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Ping sent: {PingPongStats.PingsSent}");
+            sb.AppendLine($"Pings sent: {PingPongStats.PingsSent}");
             sb.AppendLine($"Last ping: {PingPongStats.LastPingTime:G}");
             sb.AppendLine($"Last duration: {PingPongStats.LastPongTime - PingPongStats.LastPingTime:g}");
             sb.AppendLine($"Last failed ping: {PingPongStats.LastFailedPing:G}");
