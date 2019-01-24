@@ -6,13 +6,13 @@ namespace pappab0t.Tests.Modules.PingPong
 {
     public abstract class PingPongStatsCommandTests
     {
-        private readonly PingPongStatsCommand _ppsCmd;
+        private readonly PingPongStatsCommand _cmd;
 
         protected PingPongStatsCommandTests()
         {
             SystemTime.Now = () => new DateTime(2019, 1, 23, 21, 51, 9);
 
-            _ppsCmd = new PingPongStatsCommand();
+            _cmd = new PingPongStatsCommand();
         }
 
         public class GetResponse : PingPongStatsCommandTests
@@ -26,7 +26,7 @@ namespace pappab0t.Tests.Modules.PingPong
                 PingPongStats.LastResponse = "Greetings!";
                 PingPongStats.PingsSent = 1337;
 
-                var response = _ppsCmd.GetResponse();
+                var response = _cmd.GetResponse();
 
                 Assert.Contains($"Pings sent: {PingPongStats.PingsSent}\r\n", response.Text);
                 Assert.Contains($"Last ping: {PingPongStats.LastPingTime:G}\r\n", response.Text);
@@ -43,7 +43,7 @@ namespace pappab0t.Tests.Modules.PingPong
             [InlineData("pps")]
             public void Should_respond_to_pingpongstats_and_aliases(string cmd)
             {
-                var respondTo = _ppsCmd.RespondsTo(cmd);
+                var respondTo = _cmd.RespondsTo(cmd);
 
                 Assert.True(respondTo);
             }
