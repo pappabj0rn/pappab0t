@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pappab0t", "pappab0t.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pappab0t.Tests", "..\pappab0t.Tests\pappab0t.Tests.csproj", "{83DDF2ED-01BC-41E8-999D-5BE51CE52424}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pappab0t.launcher", "..\pappab0t.launcher\pappab0t.launcher.csproj", "{285E0A47-8B1C-4F8A-B41F-21050784AD04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{83DDF2ED-01BC-41E8-999D-5BE51CE52424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83DDF2ED-01BC-41E8-999D-5BE51CE52424}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83DDF2ED-01BC-41E8-999D-5BE51CE52424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{285E0A47-8B1C-4F8A-B41F-21050784AD04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{285E0A47-8B1C-4F8A-B41F-21050784AD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{285E0A47-8B1C-4F8A-B41F-21050784AD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{285E0A47-8B1C-4F8A-B41F-21050784AD04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C19BB6D8-8D6A-4457-BDF7-0F4E30EC7B2C}
 	EndGlobalSection
 EndGlobal

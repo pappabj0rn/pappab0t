@@ -21,7 +21,7 @@ using Raven.Client.Embedded;
 
 namespace pappab0t
 {
-    internal class Program
+    public class PappaBot
     {
         private static Bot _bot;
         private static string _slackKey;
@@ -32,62 +32,36 @@ namespace pappab0t
         private static Dictionary<string, string> _channelsNameCache;
         private static List<IMessageHandler> _messageHandlers;
         private static IScheduler _scheduler;
-       
-        private static void Main()
+
+        public PappaBot()
         {
-            try
-            {
-                Init();
-
-                _bot.Aliases = _botAliases;
-
-                foreach (var value in GetStaticResponseContextData())
-                {
-                    _bot.ResponseContext.Add(value.Key, value.Value);
-                }
-
-                _bot.Responders.AddRange(GetResponders());
-
-                _bot.MessageReceived += _bot_MessageReceived;
-
-                ConnectToSlackIfDisconnected(false);
-
-                _scheduler.Interval = 10 * 1000;
-                _scheduler.Run();
-
-                var run = true;
-                Console.WriteLine("Press X to exit.");
-                while (run)
-                {
-                    var consoleKeyInfo = Console.ReadKey();
-
-                    if (consoleKeyInfo.Key == ConsoleKey.X)
-                    {
-                        run = false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Error(ex);
-                Console.ReadKey();
-            }
+            //TODO: refacor and test bot core.
         }
 
-        private static void Error(Exception ex)
+        public void Configure()
         {
-            var prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(ex);
-            Console.ForegroundColor = prevColor;
+            Init();
+
+            _bot.Aliases = _botAliases;
+
+            foreach (var value in GetStaticResponseContextData())
+            {
+                _bot.ResponseContext.Add(value.Key, value.Value);
+            }
+
+            _bot.Responders.AddRange(GetResponders());
+
+            _bot.MessageReceived += _bot_MessageReceived;
+
+
+            _scheduler.Interval = 10 * 1000;
+            
         }
 
-        private static void Error(string msg)
+        public void Start()
         {
-            var prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(msg);
-            Console.ForegroundColor = prevColor;
+            ConnectToSlackIfDisconnected(false);
+            _scheduler.Run();
         }
 
         private static void Init()
@@ -102,8 +76,6 @@ namespace pappab0t
                 {
                     x.For<IDocumentStore>()
                         .Use(_ravenStore);
-
-                    
 
                     x.For<ICommandDataParser>()
                         .Use<CommandDataParser>();
@@ -141,7 +113,7 @@ namespace pappab0t
                         }
                         catch (Exception ex)
                         {
-                            Error(ex.InnerException?.Message ?? ex.Message);
+                            //Error(ex.InnerException?.Message ?? ex.Message);
                             Thread.Sleep(TimeSpan.FromSeconds(10));
                         }
                     }
@@ -302,17 +274,6 @@ namespace pappab0t
             {
                 handler.Execute(context);
             }
-        }
-
-        private static void ConsoleDebugLog(string json)
-        {
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine();
-            Console.WriteLine(json);
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.White;
-
         }
 
         private static IDocumentStore CreateStore()
