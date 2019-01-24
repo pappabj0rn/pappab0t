@@ -40,6 +40,7 @@ namespace pappab0t.Modules.PingPong
             {
                 _bot.ConnectedSince = null;
                 PingPongStats.LastFailedPing = SystemTime.Now();
+                PingPongStatus.WaitingForPong = false;
                 return false;
             }
 

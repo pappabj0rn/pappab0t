@@ -180,6 +180,7 @@ namespace pappab0t.Tests.Modules.PingPong
 
                 Assert.Equal(SystemTime.Now(), PingPongStats.LastFailedPing);
                 Assert.Equal(1, PingPongStats.PingsSent);
+                Assert.False(PingPongStatus.WaitingForPong);
                 Assert.False(success);
 
                 _botMock.VerifySet(x => x.ConnectedSince = null);
