@@ -5,7 +5,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class CommandDataParserTests : ResponderTestsBase
+    public abstract class CommandDataParserTests : ResponderTestsContext
     {
         private readonly CommandDataParser _parser;
 

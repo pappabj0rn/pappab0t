@@ -219,12 +219,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\IBot.cs" />
+    <Compile Include="Abstractions\IEventHandler.cs" />
     <Compile Include="Abstractions\IExposedCapability.cs" />
     <Compile Include="Abstractions\Command.cs" />
     <Compile Include="Abstractions\IHttpClient.cs" />
     <Compile Include="Abstractions\ITimer.cs" />
     <Compile Include="Abstractions\ScheduledTask.cs" />
     <Compile Include="BotAdapter.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="HttpClientAdapter.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
@@ -235,6 +238,10 @@
     <Compile Include="Keys.cs" />
     <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
+    <Compile Include="Modules\BombGame\TimedBombEventHandler.cs" />
+    <Compile Include="Modules\BombGame\TimedBombTask.cs" />
+    <Compile Include="Modules\BombGame\Items\TimedBomb.cs" />
+    <Compile Include="Modules\BombGame\TimedBombCommand.cs" />
     <Compile Include="Modules\FeatureRequest\Models\FeatureRequest.cs" />
     <Compile Include="Modules\FeatureRequest\Models\FeatureRequestComment.cs" />
     <Compile Include="Models\HighScore.cs" />
@@ -248,6 +255,14 @@
     <Compile Include="Modules\Common\Deck.cs" />
     <Compile Include="Modules\Common\Suit.cs" />
     <Compile Include="Modules\Derangements\Game.cs" />
+    <Compile Include="Modules\Highscore\HighScoreManager.cs" />
+    <Compile Include="Modules\Highscore\IHighScoreManager.cs" />
+    <Compile Include="RavenDbManager.cs" />
+    <Compile Include="Modules\Inventory\ItemMoveMessage.cs" />
+    <Compile Include="Modules\Inventory\Items\Modifiers\Expires.cs" />
+    <Compile Include="Modules\Inventory\Items\Modifiers\HandlerLog.cs" />
+    <Compile Include="Modules\Inventory\Items\Modifiers\Modifier.cs" />
+    <Compile Include="Modules\Inventory\Items\Modifiers\Soulbound.cs" />
     <Compile Include="Modules\Meta\VersionCommand.cs" />
     <Compile Include="Modules\PingPong\PingPongStats.cs" />
     <Compile Include="Modules\PingPong\PingPongStatsCommand.cs" />

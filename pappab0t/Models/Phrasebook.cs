@@ -6,6 +6,13 @@ namespace pappab0t.Models
 {
     public class Phrasebook : IPhrasebook
     {
+        private readonly Random _random;
+
+        public Phrasebook(Random random)
+        {
+            _random = random;
+        }
+
         public string Affirmation()
         {
             return new[]{
@@ -217,9 +224,17 @@ namespace pappab0t.Models
             }.Random();
         }
 
-        public string PlayInsufficientFunds(decimal required)
+        public string PlayInsufficientFunds(decimal reqMoney)
         {
-            throw new NotImplementedException();
+            return _random.SelectOne(
+                new[]
+                {
+                    $"För lite pengar i plånkan, Du behöver {reqMoney}kr.",
+                    $"Det kostart {reqMoney}kr att göra det där, vilket du inte har.",
+                    $"Återkom när du har minst {reqMoney}kr.",
+                    $"{reqMoney}kr först, sen kan vi prata.",
+                    $"Inga rabatter, {reqMoney}kr kostar det."
+                });
         }
 
         public string DidntMakeHighScoreFormat()
@@ -492,6 +507,24 @@ namespace pappab0t.Models
                 "Urlsch!",
                 "Urlaberla"
             }.Random();
+        }
+
+        public string TimedBombExpired()
+        {
+            return _random.SelectOne(new[]
+            {
+                "Poff!",
+                "Thatsa one spicy ex bomb!",
+                "Var det nån som fes, eller var det en bomb som small? Det var en bomb.",
+                "*poff*",
+                "pläpp!",
+                "*sad trombone* :boom:",
+                ":mindblown:",
+                ":bomb:",
+                ":boom:",
+                "la bomba",
+                ":fireworks:"
+            });
         }
     }
 }

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-   public abstract class DikagameResponderTests : ResponderTestsBase
+   public abstract class DikagameResponderTests : ResponderTestsContext
     {
         public class CanRespond : DikagameResponderTests
         {

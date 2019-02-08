@@ -13,7 +13,7 @@ using Xunit.Sdk;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class RandomUrlResponderTests : ResponderTestsBase
+    public abstract class RandomUrlResponderTests : ResponderTestsContext
     {
         protected readonly RandomUrlResponder Responder;
 

@@ -1,34 +1,33 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using MargieBot;
 using Moq;
+using pappab0t.Abstractions;
 using pappab0t.Models;
+using pappab0t.Modules.Highscore;
 using pappab0t.Modules.Inventory;
-using pappab0t.Responders;
-using Raven.Client;
-using Raven.Client.Embedded;
 
-namespace pappab0t.Tests.Responders
+namespace pappab0t.Tests
 {
-    public abstract class ResponderTestsBase
+    public abstract class TestContext
     {
         protected Dictionary<string, string> UserNameCache;
-        protected Dictionary<string, object> StaticContextItems;
-        protected IDocumentStore Store;
+        protected string PappaBj0rnUserId => UserNameCache.First().Key;
+        protected string EriskaUserId => UserNameCache.Last().Key;
 
-        protected Mock<IPhrasebook> PhraseBookMock;
+        protected Mock<IPhrasebook> PhrasebookMock = new Mock<IPhrasebook>();
         protected Mock<IInventoryManager> InventoryManagerMock;
-        protected ICommandDataParser CommandDataParser;
+        protected Mock<IHighScoreManager> HightscoreManagerMock;
+        protected Mock<IBot> BotMock;
 
         // ReSharper disable once InconsistentNaming
         protected Inventory Pappabj0rnInvetory;
         protected Inventory EriskaInvetory;
-
-        protected IResponder Responder;
         protected bool InventoryManagerContextSet;
+        protected readonly Mock<Random> RandomMock;
 
-        protected ResponderTestsBase()
+        protected TestContext()
         {
             UserNameCache = new Dictionary<string, string>
             {
@@ -36,17 +35,20 @@ namespace pappab0t.Tests.Responders
                 {"U06BH8WTT", "eriska"}
             };
 
-            StaticContextItems = new Dictionary<string, object>();
-
             SetupPhrasebookToReturnMethodNames();
-
             SetupInventoryManagerAndDefaultInventories();
+            SetupHighscoreManager();
+            SetupBot();
 
-            StaticContextItems.Add(
-                Keys.StaticContextKeys.Phrasebook, 
-                PhraseBookMock.Object);
+            RandomMock = new Mock<Random>();
+        }
 
-            CommandDataParser = new CommandDataParser();
+        protected void SetupPhrasebookToReturnMethodNames()
+        {
+            PhrasebookMock = new Mock<IPhrasebook>
+            {
+                DefaultValueProvider = new MethodNameDefaultValueProvider()
+            };
         }
 
         private void SetupInventoryManagerAndDefaultInventories()
@@ -54,14 +56,14 @@ namespace pappab0t.Tests.Responders
             Pappabj0rnInvetory = new Inventory
             {
                 Id = "Inventories/1",
-                UserId = UserNameCache.First().Key,
+                UserId = PappaBj0rnUserId,
                 BEK = 100M
             };
 
             EriskaInvetory = new Inventory
             {
                 Id = "Inventories/2",
-                UserId = UserNameCache.Last().Key,
+                UserId = EriskaUserId,
                 BEK = 100M
             };
 
@@ -77,25 +79,61 @@ namespace pappab0t.Tests.Responders
                 .Setup(x => x.GetUserInventory())
                 .Callback(() =>
                 {
-                    if(!InventoryManagerContextSet)
+                    if (!InventoryManagerContextSet)
                         throw new Exception("Context not set.");
                 })
-                .Returns(Pappabj0rnInvetory);
+                .Returns(() => Pappabj0rnInvetory.Clone());
 
             InventoryManagerMock
                 .Setup(x => x.GetUserInventory(Pappabj0rnInvetory.UserId))
-                .Returns(Pappabj0rnInvetory);
+                .Returns(() => Pappabj0rnInvetory.Clone());
 
             InventoryManagerMock
                 .Setup(x => x.GetUserInventory(EriskaInvetory.UserId))
-                .Returns(EriskaInvetory);
+                .Returns(() => EriskaInvetory.Clone());
+
+            InventoryManagerMock
+                .Setup(x => x.GetAll())
+                .Returns(() => new[] {Pappabj0rnInvetory.Clone(), EriskaInvetory.Clone() });
+
+            InventoryManagerMock
+                .Setup(x => x.Save(It.Is<Inventory>(i => i.Id == Pappabj0rnInvetory.Id)))
+                .Callback<Inventory>(x => Pappabj0rnInvetory = x);
+
+            InventoryManagerMock
+                .Setup(x => x.Save(It.Is<Inventory>(i => i.Id == EriskaInvetory.Id)))
+                .Callback<Inventory>(x => EriskaInvetory = x);
+
+            InventoryManagerMock
+                .Setup(x => x.Save(It.IsAny<IEnumerable<Inventory>>()))
+                .Callback<IEnumerable<Inventory>>(x =>
+                {
+                    foreach (var i in x)
+                    {
+                        if (i.Id == Pappabj0rnInvetory.Id)
+                            Pappabj0rnInvetory = i;
+
+                        if (i.Id == EriskaInvetory.Id)
+                            EriskaInvetory = i;
+                    }
+                });
+        }
+
+        private void SetupHighscoreManager()
+        {
+            HightscoreManagerMock = new Mock<IHighScoreManager>();
+        }
+
+        private void SetupBot()
+        {
+            BotMock = new Mock<IBot>();
         }
 
         protected ResponseContext CreateContext(
-            string msg, 
+            string msg,
             SlackChatHubType hubType = SlackChatHubType.Channel,
             bool? mentionsBot = null,
-            string userUUID = null)
+            string userUuid = null)
         {
             var context = new ResponseContext
             {
@@ -113,7 +151,7 @@ namespace pappab0t.Tests.Responders
                     Text = msg,
                     User = new SlackUser
                     {
-                        ID = userUUID ?? UserNameCache.First().Key
+                        ID = userUuid ?? UserNameCache.First().Key
                     },
                     MentionsBot = mentionsBot
                                   ?? msg.ToLower().Contains("pbot")
@@ -127,56 +165,10 @@ namespace pappab0t.Tests.Responders
             {
                 Aliases = new[] { "pbot", "pb0t" }
             });
-
-            SetStaticContextItems(context);
-
+            
             context.UserNameCache = UserNameCache ?? new Dictionary<string, string>();
 
             return context;
         }
-
-        private void SetStaticContextItems(ResponseContext context)
-        {
-            if (StaticContextItems == null)
-                return;
-
-            foreach (var item in StaticContextItems)
-            {
-                context.Set(item.Key, item.Value);
-            }
-        }
-
-        protected void ConfigureRavenDB()
-        {
-            Store = new EmbeddableDocumentStore
-            {
-                RunInMemory = true
-            };
-
-            Store.Initialize();
-
-            StaticContextItems.Add("ravenStore", Store);
-        }
-
-        ~ResponderTestsBase()
-        {
-            Store?.Dispose();
-        }
-
-        protected void SetupPhrasebookToReturnMethodNames()
-        {
-            PhraseBookMock = new Mock<IPhrasebook>
-            {
-                DefaultValueProvider = new MethodNameDefaultValueProvider()
-            };
-        }
-    }
-}
-
-internal class MethodNameDefaultValueProvider : LookupOrFallbackDefaultValueProvider
-{
-    public MethodNameDefaultValueProvider()
-    {
-        Register(typeof(string), (type, mock) => mock.Invocations.Last().Method.Name);
     }
 }

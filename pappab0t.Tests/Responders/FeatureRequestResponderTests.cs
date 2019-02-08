@@ -4,7 +4,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class FeatureRequestResponderTests : ResponderTestsBase
+    public abstract class FeatureRequestResponderTests : ResponderTestsContext
     {
         public class CanRespond : FeatureRequestResponderTests
         {

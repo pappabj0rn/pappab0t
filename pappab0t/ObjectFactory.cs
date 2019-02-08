@@ -4,6 +4,7 @@ using MargieBot;
 using pappab0t.Abstractions;
 using pappab0t.MessageHandler;
 using pappab0t.Models;
+using pappab0t.Modules.Highscore;
 using pappab0t.Modules.Inventory;
 using pappab0t.Responders;
 using pappab0t.SlackApis;
@@ -24,17 +25,20 @@ namespace pappab0t
             {
                 x.For<IInventoryManager>().Use<InventoryManager>();
                 x.For<ICommandDataParser>().Use<CommandDataParser>();
+                x.For<IPhrasebook>().Use<Phrasebook>();
+                x.For<IUrlParser>().Use<UrlParser>();
+                x.For<IHighScoreManager>().Use<HighScoreManager>();
 
                 x.For<ISlackDMApi>().Use<SlackDMApi>();
+                x.For<Random>().Use(() => new Random());
 
                 x.Scan(y =>
                 {
                     y.AddAllTypesOf<IResponder>();
                     y.AddAllTypesOf<IMessageHandler>();
+                    y.AddAllTypesOf<IEventHandler>();
                     y.AddAllTypesOf<Command>();
                     y.AddAllTypesOf<ScheduledTask>();
-                    y.AddAllTypesOf<IUrlParser>();
-                    y.AddAllTypesOf<IPhrasebook>();
                     y.AssemblyContainingType(typeof(IExposedCapability));
                 });
             });

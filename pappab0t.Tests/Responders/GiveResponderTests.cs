@@ -10,7 +10,9 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class GiveResponderTests : ResponderTestsBase
+    //todo bugg eriska: ge @papapbjorn 3 => crash. se skärmdump från 190205
+    //todo bugg ge x y != ge x sak y. ändra så default blir sak.
+    public abstract class GiveResponderTests : ResponderTestsContext
     {
         protected GiveResponderTests()
         {
@@ -116,11 +118,11 @@ namespace pappab0t.Tests.Responders
 
                 InventoryManagerMock.Verify(x=>x.GetUserInventory(),Times.Once);
                 InventoryManagerMock.Verify(x=>x.GetUserInventory(EriskaInvetory.UserId),Times.Once);
-                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == PappaBj0rnInvetory.UserId)), Times.Never);
                 InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == EriskaInvetory.UserId)), Times.Never);
                 InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
 
-                Assert.Equal(100 - expectedAmount, Pappabj0rnInvetory.BEK);
+                Assert.Equal(100 - expectedAmount, PappaBj0rnInvetory.BEK);
                 Assert.Equal(100 + expectedAmount, EriskaInvetory.BEK);
             }
 
@@ -139,7 +141,7 @@ namespace pappab0t.Tests.Responders
                 SlackChatHubType hubType = SlackChatHubType.Channel)
             {
                 var testItem = new Note {Name = "test"};
-                Pappabj0rnInvetory.Items.Add(testItem);
+                PappaBj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg, hubType);
 
@@ -147,11 +149,13 @@ namespace pappab0t.Tests.Responders
 
                 InventoryManagerMock.Verify(x => x.GetUserInventory(), Times.Once);
                 InventoryManagerMock.Verify(x => x.GetUserInventory(EriskaInvetory.UserId), Times.Once);
-                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.MoveItemByIndex(0, EriskaUserId),Times.Once);
+                //shouldn't call save explicitly as it's handled by MoveItemById
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == PappaBj0rnInvetory.UserId)), Times.Never);
                 InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i => i.UserId == EriskaInvetory.UserId)), Times.Never);
-                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
-                Assert.Empty(Pappabj0rnInvetory.Items);
+                Assert.Empty(PappaBj0rnInvetory.Items);
                 Assert.Contains(testItem, EriskaInvetory.Items);
             }
 
@@ -171,11 +175,11 @@ namespace pappab0t.Tests.Responders
 
                 InventoryManagerMock.Verify(x => x.GetUserInventory(), Times.Once);
                 InventoryManagerMock.Verify(x => x.GetUserInventory(EriskaInvetory.UserId), Times.Once);
-                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == Pappabj0rnInvetory.UserId)), Times.Never);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == PappaBj0rnInvetory.UserId)), Times.Never);
                 InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == EriskaInvetory.UserId)), Times.Once);
                 InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
-                Assert.Empty(Pappabj0rnInvetory.Items);
+                Assert.Empty(PappaBj0rnInvetory.Items);
                 Assert.NotEmpty(EriskaInvetory.Items);
 
                 Assert.Equal(typeof(Note), EriskaInvetory.Items[0].GetType());
@@ -193,12 +197,12 @@ namespace pappab0t.Tests.Responders
 
                 Responder.GetResponse(context);
 
-                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == Pappabj0rnInvetory.UserId)), Times.Once);
+                InventoryManagerMock.Verify(x => x.Save(It.Is<Inventory>(i=>i.UserId == PappaBj0rnInvetory.UserId)), Times.Once);
                 InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
-                Assert.NotEmpty(Pappabj0rnInvetory.Items);
-                Assert.Equal(typeof(Note), Pappabj0rnInvetory.Items[0].GetType());
-                Assert.Equal("test", Pappabj0rnInvetory.Items[0].Name);
+                Assert.NotEmpty(PappaBj0rnInvetory.Items);
+                Assert.Equal(typeof(Note), PappaBj0rnInvetory.Items[0].GetType());
+                Assert.Equal("test", PappaBj0rnInvetory.Items[0].Name);
             }
 
             [Fact]
@@ -245,7 +249,7 @@ namespace pappab0t.Tests.Responders
                 string expectedPhParam2 = null)
             {
                 var testItem = new Note {Name = "Test"};
-                Pappabj0rnInvetory.Items.Add(testItem);
+                PappaBj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg);
 
@@ -264,7 +268,7 @@ namespace pappab0t.Tests.Responders
             public void Should_not_transfer_souldbound_items()
             {
                 var testItem = new Note { Name = "test", SoulBound = true };
-                Pappabj0rnInvetory.Items.Add(testItem);
+                PappaBj0rnInvetory.Items.Add(testItem);
                 
                 var expectedPhrasebookCall = nameof(IPhrasebook.CantMoveSoulboundItems);
 
@@ -278,7 +282,7 @@ namespace pappab0t.Tests.Responders
                 Assert.Equal(expectedPhrasebookCall, response?.Text);
 
                 Assert.Empty(EriskaInvetory.Items);
-                Assert.Contains(testItem, Pappabj0rnInvetory.Items);
+                Assert.Contains(testItem, PappaBj0rnInvetory.Items);
             }
 
             [Theory]
@@ -291,7 +295,7 @@ namespace pappab0t.Tests.Responders
                 var pbCall2 = "call 2";
 
                 var testItem = new Note { Name = "test", SoulBound = true };
-                Pappabj0rnInvetory.Items.Add(testItem);
+                PappaBj0rnInvetory.Items.Add(testItem);
                 
                 PhraseBookMock
                     .Setup(x => x.CantMoveSoulboundItems())

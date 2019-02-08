@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using pappab0t.Extensions;
 using pappab0t.Modules.Inventory.Items;
 
 namespace pappab0t.Modules.Inventory
@@ -13,6 +14,15 @@ namespace pappab0t.Modules.Inventory
         public Inventory()
         {
             Items = new List<Item>();
+        }
+
+        public Inventory Clone()
+        {
+            var copy = (Inventory) MemberwiseClone();
+            copy.Id = string.Copy(Id);
+            copy.UserId = string.Copy(UserId);
+            copy.Items = new List<Item>(Items);
+            return copy;
         }
     }
 }

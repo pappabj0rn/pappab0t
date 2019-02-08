@@ -7,7 +7,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class MoneyPotResponderTests : ResponderTestsBase
+    public abstract class MoneyPotResponderTests : ResponderTestsContext
     {
         protected readonly MoneyPotResponder Responder;
 

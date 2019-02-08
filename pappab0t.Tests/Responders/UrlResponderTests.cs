@@ -11,7 +11,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class UrlResponderTests : ResponderTestsBase
+    public abstract class UrlResponderTests : ResponderTestsContext
     {
         private readonly Mock<IUrlParser> _urlParserMock;
         private readonly Mock<IPhrasebook> _phrasebookMock;

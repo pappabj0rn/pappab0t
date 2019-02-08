@@ -9,7 +9,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class DescribeResponderTests : ResponderTestsBase
+    public abstract class DescribeResponderTests : ResponderTestsContext
     {
         protected DescribeResponderTests()
         {
@@ -122,7 +122,7 @@ namespace pappab0t.Tests.Responders
                 itemE.Setup(x => x.GetFriendlyTypeName())
                     .Returns(itemFriendlyTypeName + eriska);
 
-                Pappabj0rnInvetory.Items.Add(itemP.Object);
+                PappaBj0rnInvetory.Items.Add(itemP.Object);
                 EriskaInvetory.Items.Add(itemE.Object);
 
                 var context = CreateContext(msg);
@@ -163,7 +163,7 @@ namespace pappab0t.Tests.Responders
                 item.Setup(x => x.GetFriendlyTypeName())
                     .Returns(itemFriendlyTypeName);
 
-                Pappabj0rnInvetory.Items.Add(item.Object);
+                PappaBj0rnInvetory.Items.Add(item.Object);
                 EriskaInvetory.Items.Add(item.Object);
 
                 var context = CreateContext(msg);

@@ -56,7 +56,7 @@ namespace pappab0t.Responders
             foreach (var item in inv.Items)
             {
                 i++;
-                sb.AppendFormat("{0}. {1}\n", i, item.Name);
+                sb.AppendFormat("{0}. {1}\n", i, item.Name ?? item.GetFriendlyTypeName());//todo test
             }
 
             return sb.ToString();

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Responders
 {
-    public abstract class CommandResponderTests : ResponderTestsBase
+    public abstract class CommandResponderTests : ResponderTestsContext
     {
         protected Mock<Command> CmdMock1;
         protected Mock<Command> CmdMock2;
@@ -81,6 +81,20 @@ namespace pappab0t.Tests.Responders
                        && d.Params.ContainsKey("d")));
 
                 Assert.Equal(cmd.Object.GetResponse(), response);
+            }
+
+            [Fact]
+            public void Should_set_context_on_command()
+            {
+                var cmd = "cmd_t1";
+                var context = CreateContext($"{cmd} -d data", SlackChatHubType.DM);
+                Responder.CanRespond(context);
+
+                Responder.GetResponse(context);
+
+                var cmdMock = CommandMocks.First(x => x.Object.RespondsTo(cmd));
+
+                cmdMock.VerifySet(x => x.Context = context);
             }
         }
     }

@@ -130,10 +130,10 @@ namespace pappab0t.Responders
                         break;
                     }
 
-                    targetInventory.Items.Add(userInventory.Items[itemIndex]);
-                    userInventory.Items.RemoveAt(itemIndex);
-                    saveInventories = SaveMode.Both;
-                    _returnMsg = new BotMessage { Text = _phrasebook.ItemTransfered(targetInventory.Items.Last().Name) };
+                    var itemName = userInventory.Items[itemIndex].Name;
+                    _invMan.MoveItemByIndex(itemIndex,targetInventory.UserId);
+                    saveInventories = SaveMode.None;
+                    _returnMsg = new BotMessage { Text = _phrasebook.ItemTransfered(itemName) };//todo should look at events instad as move could be canceled in the future
                     break;
                 case GiveMode.CreateItem:
                     var item = CreateItem();
@@ -270,7 +270,7 @@ namespace pappab0t.Responders
         }
         public ExposedInformation Info => new ExposedInformation
         {
-            Usage = "ge <användare> <Xkr|item_X>",
+            Usage = "ge <användare> <Xkr|sak X>",
             Explatation = "Ger X pengar eller sak X till given användare."
         };
 

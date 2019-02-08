@@ -6,7 +6,7 @@ using Xunit;
 
 namespace pappab0t.Tests.Modules.PingPong
 {
-    public abstract class PongResponderTests : ResponderTestsBase
+    public abstract class PongResponderTests : ResponderTestsContext
     {
         protected PongResponderTests()
         {

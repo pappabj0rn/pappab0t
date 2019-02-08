@@ -123,5 +123,7 @@ namespace pappab0t.Models
         string TauntOld();
 
         string ThankYou();
+
+        string TimedBombExpired();
     }
 }

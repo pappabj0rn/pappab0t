@@ -22,12 +22,6 @@ namespace pappab0t.Modules.PingPong
             _bot = bot;
             _dmApi = dmApi;
         }
-
-        public override bool IsDue()
-        {
-            return _lastRun.AddMilliseconds(Interval) < SystemTime.Now();
-        }
-
         public override bool Execute()
         {
             if (!IsDue()

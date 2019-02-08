@@ -31,6 +31,7 @@ namespace pappab0t.Responders
                 .First(x => x.RespondsTo(_commandData.Command));
 
             cmd.CommandData = _commandData;
+            cmd.Context = context;
 
             return cmd.GetResponse();
         }

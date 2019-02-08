@@ -27,7 +27,6 @@ namespace pappab0t
         private static string _slackKey;
         private static string[] _botAliases;
         private static IDocumentStore _ravenStore;
-        private static IInventoryManager _inventoryManager;
         private static Dictionary<string, string> _userNameCache;
         private static Dictionary<string, string> _channelsNameCache;
         private static List<IMessageHandler> _messageHandlers;
@@ -81,8 +80,6 @@ namespace pappab0t
                         .Use<CommandDataParser>();
 
                     x.For<IBot>().Use(() => new BotWrapper(_bot));
-
-                    
                 });
 
             _slackKey = ConfigurationManager.AppSettings[Keys.AppSettings.SlackKey];
@@ -93,7 +90,10 @@ namespace pappab0t
 
             _botAliases = ConfigurationManager.AppSettings[Keys.AppSettings.BotAliases].Split(',');
 
-            
+            foreach (var eventHandler in ObjectFactory.Container.GetAllInstances<IEventHandler>())
+            {
+                eventHandler.Initialize();
+            }
 
             _scheduler = new Scheduler(new TimerAdapter(), ObjectFactory.Container.GetAllInstances<ScheduledTask>());
         }
@@ -132,7 +132,7 @@ namespace pappab0t
         {
             return new Dictionary<string, object>
             {
-                {Keys.StaticContextKeys.Phrasebook, new Phrasebook()},
+                {Keys.StaticContextKeys.Phrasebook, new Phrasebook(null)}, //TODO inject one random
                 {Keys.StaticContextKeys.Bot,_bot},
                 {Keys.StaticContextKeys.RavenStore,_ravenStore},
                 {Keys.StaticContextKeys.ChannelsNameCache,_channelsNameCache}
