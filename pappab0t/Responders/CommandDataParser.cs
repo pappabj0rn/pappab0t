@@ -24,7 +24,7 @@ namespace pappab0t.Responders
 
             _words = Context.Message.Text.Split(' ').ToList();
 
-            _cmdWordIndex = _words.FindIndex(x => x == Command);
+            _cmdWordIndex = _words.FindIndex(x => x.Equals(Command,StringComparison.InvariantCultureIgnoreCase));
 
             ParamsRaw = 
                 _words

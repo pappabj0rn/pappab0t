@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MargieBot;
+﻿using MargieBot;
 using pappab0t.Responders;
 using Xunit;
 
@@ -131,6 +130,7 @@ namespace pappab0t.Tests.Responders
                 var data = _parser.Parse();
 
                 Assert.Equal(cmd.ToLower(), data.Command);
+                Assert.Empty(data.Params);
             }
         }
 
