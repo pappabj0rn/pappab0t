@@ -151,7 +151,6 @@
   <ItemGroup>
     <Compile Include="Models\UrlMatchDataTests.cs" />
     <Compile Include="Models\UserUrlPostTests.cs" />
-    <Compile Include="Modules\BombGame\IEventHandler.cs" />
     <Compile Include="Modules\BombGame\TimedBombEventHandlerTests.cs" />
     <Compile Include="Modules\HighScore\HighScoreManagerTests.cs" />
     <Compile Include="Modules\Inventory\Items\ItemStorabilityTests.cs" />
