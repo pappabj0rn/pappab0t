@@ -52,7 +52,7 @@ namespace pappab0t.Responders
                 return pot == null 
                     ? new BotMessage
                     {
-                        Text = PhraseBook.IDontKnowXxxNamedYyyFormat().With("nån pott", _potName)
+                        Text = PhraseBook.IDontKnowXxxNamedYyy("nån pott", _potName)
                     } 
                     : new BotMessage
                     {

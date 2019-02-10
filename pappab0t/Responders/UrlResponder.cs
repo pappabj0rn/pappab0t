@@ -65,7 +65,7 @@ namespace pappab0t.Responders
                         Text = 
                             _phrasebook.TauntOld() 
                             + " "
-                            + _phrasebook.CreditUserBecauseFormat().With(
+                            + _phrasebook.CreditUserBecause(
                                 existingPost.UserId,
                                 "OP")
                     };

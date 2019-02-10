@@ -81,7 +81,7 @@ namespace pappab0t.Responders
 
             if (itemIndex > userInventory.Items.Count - 1)
             {
-                return new BotMessage { Text = _phrasebook.DesribeItemToFewItems() };
+                return new BotMessage { Text = _phrasebook.DescribeItemToFewItems() };
             }
 
             var item = userInventory.Items[itemIndex];

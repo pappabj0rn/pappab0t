@@ -139,7 +139,7 @@ namespace pappab0t.Tests.Responders
             }
 
             [Theory]
-            [InlineData("pbot beskriv sak 2",nameof(IPhrasebook.DesribeItemToFewItems))]
+            [InlineData("pbot beskriv sak 2",nameof(IPhrasebook.DescribeItemToFewItems))]
             [InlineData("pbot beskriv eriska",nameof(IPhrasebook.DescribeUser))]
             [InlineData("pbot beskriv -u nisse",nameof(IPhrasebook.IDontKnowXxxNamedYyy),"nån","nisse")]
             [InlineData("pbot beskriv eriska sak 1",nameof(IPhrasebook.ItemDescription))]

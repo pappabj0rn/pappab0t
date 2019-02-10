@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using MargieBot;
+using Moq;
 using pappab0t.Models;
 using pappab0t.Responders;
 using Raven.Client.Document;
@@ -108,13 +109,10 @@ namespace pappab0t.Tests.Responders
                 var potName = "nonextpot";
                 var context = CreateContext($"pott {potName}", SlackChatHubType.DM);
 
-                PhraseBookMock
-                    .Setup(x => x.IDontKnowXxxNamedYyyFormat())
-                    .Returns("{0} {1}");
-
                 var response = Responder.GetResponse(context);
 
-                Assert.Equal($"nån pott {potName}", response.Text);
+                Assert.Equal(nameof(IPhrasebook.IDontKnowXxxNamedYyy), response.Text);
+                PhraseBookMock.Verify(x => x.IDontKnowXxxNamedYyy("nån pott", potName), Times.Once);
             }
         }
     }

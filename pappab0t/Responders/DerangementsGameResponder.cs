@@ -38,7 +38,7 @@ namespace pappab0t.Responders
             var userInv = _invMan.GetUserInventory();
 
             if (userInv.BEK < GameCost)
-                return new BotMessage { Text = PhraseBook.InsufficientFundsFormat().With(GameCost) };
+                return new BotMessage { Text = PhraseBook.PlayInsufficientFunds(GameCost) };
 
             userInv.BEK -= GameCost;
             _invMan.Save(userInv);
@@ -76,7 +76,7 @@ namespace pappab0t.Responders
                 {
                     session.Store(pot);
                     session.SaveChanges();
-                    return new BotMessage { Text = $"{game.Outcome}\n{PhraseBook.DidntMakeHighScoreFormat().With(score)}\n{debugOutput}" };
+                    return new BotMessage { Text = $"{game.Outcome}\n{PhraseBook.PlayDidntMakeHighScore(score)}\n{debugOutput}" };
                 }
 
 
@@ -95,12 +95,12 @@ namespace pappab0t.Responders
             SecondaryMessageResponder.Message = new BotMessage
             {
                 ChatHub = new SlackChatHub { ID = channelNames.First(x => x.Value == "general").Key },
-                Text = PhraseBook.NewHighscoreFormat().With(GameKey, context.UserNameCache[context.Message.User.ID], outcome)
+                Text = PhraseBook.NewHighscore(GameKey, context.UserNameCache[context.Message.User.ID], outcome)
             };
 
             return new BotMessage
             {
-                Text = $"{game.Outcome}\n{PhraseBook.PotPayoutFormat().With(score, outcome, payout)} {PhraseBook.Exclamation()}\n{debugOutput}"
+                Text = $"{game.Outcome}\n{PhraseBook.PotPayout(score, outcome, payout, 1)} {PhraseBook.Exclamation()}\n{debugOutput}" //todo turns
             };
         }
 

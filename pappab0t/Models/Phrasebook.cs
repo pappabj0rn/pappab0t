@@ -15,18 +15,21 @@ namespace pappab0t.Models
 
         public string Affirmation()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "ok",
                 "råger",
                 "roger",
+                "roger (moore)",
+                "roger (pontare)",
+                "roger (federer)",
                 "jag hör dig.",
                 "absolut"
-            }.Random();
+            });
         }
 
         public string ThankYou()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Tack!",
                 "Tack.",
                 "tanks.",
@@ -34,13 +37,14 @@ namespace pappab0t.Models
                 "man tackar, man tackar!",
                 "ty.",
                 ":thumbsup:",
-                "tank you!"
-            }.Random();
+                "tank you!",
+                "T.Hanks"
+            });
         }
 
         public string Exclamation()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Fuck YEAH!",
                 "Whooo!",
                 "whoppi do!",
@@ -53,12 +57,12 @@ namespace pappab0t.Models
                 ":parrot:",
                 ":pbjt:",
                 ":tinfoil:"
-            }.Random();
+            });
         }
 
         public string MutedExclamation()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Kul.",
                 "Jora, så atte...",
                 "Inte illa.",
@@ -67,12 +71,12 @@ namespace pappab0t.Models
                 "grattis.",
                 ":clap:",
                 ":smiley:"
-            }.Random();
+            });
         }
 
         public string AttentionResponse(string input)
         {
-            var text = (input??"").Replace(" pb0t", "").Replace("pappab0t", "").Trim();
+            var text = (input ?? "").Replace(" pb0t", "").Replace("pappab0t", "").Trim();
 
             var response = new List<string>();
 
@@ -144,62 +148,53 @@ namespace pappab0t.Models
                     break;
             }
 
-            return response.Random();
+            return _random.SelectOne(response);
         }
 
         public string ScoreboardHype()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Ok, så här ser det ut ATM.",
                 "Ställningen är som följer:",
                 "Ok, en liten uppdatering om ställningarna då.",
-            }.Random();
+            });
         }
 
         public string YoureWelcome()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "np",
                 "lugnt",
                 "esch då",
                 "^^",
                 "Det var så lite så."
-            }.Random();
+            });
         }
 
         public string OpenAppology()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "sry, men",
                 "ursäkta mig, men",
                 "Du får ursäkta mig, men",
                 "du får ursäkta mig, men",
                 "hmm,",
                 "Hmm,"
-            }.Random();
-        }
-
-        public string IDontKnowXxxNamedYyyFormat()
-        {
-            return new[]{
-                "jag känner inte till {0} som heter {1}",
-                "jag har inte koll på {0} som heter {1}",
-                "mina böcker nämner inte {0} vid namn {1}"
-            }.Random();
+            });
         }
 
         public string IDontKnowXxxNamedYyy(string xxx, string yyy)
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 $"jag känner inte till {xxx} som heter {yyy}",
                 $"jag har inte koll på {xxx} som heter {yyy}",
                 $"mina böcker nämner inte {xxx} vid namn {yyy}"
-            }.Random();
+            });
         }
 
         public string IDidntUnderstand()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Det fär förstod jag inte",
                 "va?",
                 "huh?",
@@ -210,18 +205,7 @@ namespace pappab0t.Models
                 "Oh, Child!",
                 "FRAGRANT SYSTEM ERROR",
                 "Monkey, hush."
-            }.Random();
-        }
-
-        public string InsufficientFundsFormat()
-        {
-            return new[]{
-                "För lite pengar i plånkan, Du behöver {0}kr.",
-                "Det kostart {0}kr att göra det där, vilket du inte har.",
-                "Återkom när du har minst {0}kr.",
-                "{0}kr först, sen kan vi prata.",
-                "Inga rabatter, {0}kr kostar det."
-            }.Random();
+            });
         }
 
         public string PlayInsufficientFunds(decimal reqMoney)
@@ -229,45 +213,37 @@ namespace pappab0t.Models
             return _random.SelectOne(
                 new[]
                 {
-                    $"För lite pengar i plånkan, Du behöver {reqMoney}kr.",
-                    $"Det kostart {reqMoney}kr att göra det där, vilket du inte har.",
-                    $"Återkom när du har minst {reqMoney}kr.",
-                    $"{reqMoney}kr först, sen kan vi prata.",
-                    $"Inga rabatter, {reqMoney}kr kostar det."
+                    $"För lite pengar i plånkan, Du behöver {reqMoney:C}.",
+                    $"Det kostart {reqMoney:C} att göra det där, vilket du inte har.",
+                    $"Återkom när du har minst {reqMoney:C}.",
+                    $"{reqMoney:C} först, sen kan vi prata.",
+                    $"Inga rabatter, {reqMoney:C} kostar det."
                 });
-        }
-
-        public string DidntMakeHighScoreFormat()
-        {
-            return new[]{
-                "Du fick {0}p, vilket tyvärr inte tar dig in på highscore-listan :(",
-                "{0}p! Tyvärr räcker det inte.",
-                "{0}p, bättre lycka nästa gång!"
-            }.Random();
         }
 
         public string PlayDidntMakeHighScore(int points)
         {
-            throw new NotImplementedException();
-        }
-
-        public string DidntMakeHighScoreInCountFormat()
-        {
-            return new[]{
-                "Du fick som mest {0}p över {1} spel, vilket tyvärr inte tar dig in på highscore-listan :(",
-                "{0}p ({1} spel)! Tyvärr räcker det inte.",
-                "{0}p över {1} spel, bättre lycka nästa gång!"
-            }.Random();
+            return _random.SelectOne(new[]
+            {
+                $"Du fick {points}p, vilket tyvärr inte tar dig in på highscore-listan :(",
+                $"{points}p! Tyvärr räcker det inte.",
+                $"{points}p, bättre lycka nästa gång!"
+            });
         }
 
         public string DidntMakeHighScoreInCount(int points, int turns)
         {
-            throw new NotImplementedException();
+            return _random.SelectOne(new[]{
+                $"Du fick som mest {points}p över {turns} spel, vilket tyvärr inte tar dig in på highscore-listan :(",
+                $"{points}p ({turns} spel)! Tyvärr räcker det inte.",
+                $"{points}p över {turns} spel, bättre lycka nästa gång!",
+                $"Asså, det är ju inte dåligt att få {points}p på {turns} spel, det är det inte, men det räcker inte till nån highscore - om en så säg."
+            });
         }
 
         public string MoneyTransfered(decimal amount)
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 $"{amount:C} överlämnade.",
                 $"{amount:C} tadda o gädda.",
                 $"{amount:C} transfererade.",
@@ -275,23 +251,23 @@ namespace pappab0t.Models
                 $"Du har blivit {amount:C} fattigare.",
                 $"Du är nu {amount:C} fattigare.",
                 $"Minns du de där {amount:C} du hade? Inte jag heller."
-            }.Random();
+            });
         }
 
         public string MoneyTransferInsufficientFunds()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Du har inte så mycket pengar.",
                 "Du måste ha så mycket pengar för att kunna ge bort dem.",
                 "du kan'te ge mer än du har, robin.",
                 "det funkar inte så.",
                 "det är mer än du har..."
-            }.Random();
+            });
         }
 
         public string ItemDescription(string typeName, string description)
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 $"Sak: {typeName.ToLower()}. \r\n\"Beskrivning: {description}\"",
                 $"{typeName.ToLower()}; \r\n\"{description}\"",
                 $"{description} (typ: {typeName.ToLower()})",
@@ -302,45 +278,45 @@ namespace pappab0t.Models
                 $"{description}",
                 $"{description}",
                 $"{description}"
-            }.Random();
+            });
         }
 
         public string ItemTransfered(string item)
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 $"{item} överlämnad.",
                 $"{item} har bytt ägare.",
                 $"{item} är inte längre i din ägo.",
                 "Din väska blev just lättare.",
                 "Din börda blev just lättare.",
                 "Visst är det skönt att göra sig av med saker?"
-            }.Random();
+            });
         }
 
         public string ItemCreated(string item)
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 $"{item} skapad.",
                 $"{item} skapades.",
                 $"{item} frammanad.",
                 $"{item} framtrixad."
-            }.Random();
+            });
         }
 
         public string ItemTransferToFewItems()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "du har inte så många grejer",
                 "Tips: du kan kolla vad för saker du har med i-kommandot.",
                 "Du kan inte ge bort saker du inte har.",
                 "Jag skulle verkligen vilja hjälpa dig, men att flytta nåt du inte har klarar jag inte.",
                 "Vad har vi här? Ett litet OutOfRangeException? Hur kommer det sig, tror du?"
-            }.Random();
+            });
         }
 
         public string Impossible()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Så kan man inte göra.",
                 "Så kan man inte göra, fast det visste du säkert.",
                 "Nej",
@@ -353,117 +329,97 @@ namespace pappab0t.Models
                 "jo tjena",
                 "du vet att man inte kan göra så.",
                 "Trodde du att det skulle gå?"
-            }.Random();
+            });
         }
 
         public string CantMoveSoulboundItems()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Överföring av själabundna saker låter sig ikke göras!",
                 "Nej, den är din för evigt.",
                 "Nej, den är din för evigt. Ja, om det nu inte går att koppla loss den från din själv på nå sätt, men jag vet inte ja'.",
                 "Nej, den är en del av dig.",
                 "Själabunden."
-            }.Random();
+            });
         }
 
-        public string PotPayoutFormat()
+        public string PotPayout(int points, int position, decimal money, int turns)
         {
-            return new[]{
-                "Ny highscore! {0}p tar dig till plats {1} och ger dig {2}kr :D ({3} spel)",
-                "Vinnare! {0}p => plats {1} => {2}kr. ({3} spel)",
-                "{2}kr utdelning! {0}p (pos. {1}) ({3} spel)"
-            }.Random();
-        }
-
-        public string PotPayout(decimal money)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string NewHighscoreFormat()
-        {
-            return new[]{
-                "Ny higscore i {0}! {1} tog plats {2} :D",
-                "{1} knep just plats {2} på {0}-listan!",
-                "Plats {2} på {0}-listan tillhör nu {1}"
-            }.Random();
+            return _random.SelectOne(new[]{
+                $"Ny highscore! {points}p tar dig till plats {position} och ger dig {money:C} :D ({turns} spel)",
+                $"Vinnare! {points}p => plats {position} => {money:C}. ({turns} spel)",
+                $"{money:C} utdelning! {points}p (pos. {position}) ({turns} spel)"
+            });
         }
 
         public string NewHighscore(string hsName, string player, int position)
         {
-            throw new NotImplementedException();
+            return _random.SelectOne(new[]{
+                $"Ny higscore i {hsName}! {player} tog plats {position} :D",
+                $"{player} knep just plats {position} på {hsName}-listan!",
+                $"Plats {position} på {hsName}-listan tillhör nu {player}"
+            });
         }
 
         public string NoPoints()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Tyvärr, inga poäng denna gång :(",
                 "Det här var inte din gång :/",
                 "Prova igen!",
                 "Rackarns! Inga poäng.",
                 "zéro point",
                 "pas des point",
-            }.Random();
+            });
         }
 
         public string Noted()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Noterat.",
                 "Antecknat.",
                 "Sparat.",
                 "Ok"
-            }.Random();
+            });
         }
 
         public string TauntOld()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "OÄZ!",
                 "oäz!",
                 "old!",
                 "OÄZ.",
                 "oäz.",
                 "Gammal potatis.",
-            }.Random();
-        }
-
-        public string CreditUserBecauseFormat()
-        {
-            return new[]{
-                "All hail, <@{0}>, {1}!",
-                "cred till <@{0}>, {1}.",
-                "<@{0}>, {1}.",
-                "{1}, <@{0}>."
-            }.Random();
+            });
         }
 
         public string CreditUserBecause(string userUuid, string reason)
         {
-            return new[]{
-                "All hail, <@{0}>, {1}!",
-                "cred till <@{0}>, {1}.",
-                "<@{0}>, {1}.",
-                "{1}, <@{0}>."
-            }.Random();
+            return _random.SelectOne(new[]{
+                $"All hail, <@{userUuid}>, {reason}!",
+                $"cred till <@{userUuid}>, {reason}.",
+                $"<@{userUuid}>, {reason}.",
+                $"{reason}, <@{userUuid}>."
+            });
         }
 
-        public string DesribeItemToFewItems()
+        public string DescribeItemToFewItems()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Du har inte så många grejer",
                 "Tips: du kan kolla vad för saker du har med i-kommandot.",
                 "Jag kan bara föreställa mig vad det skulle kunna vara.",
                 "Ptja, det skulle kunna vara en fisk.",
                 "Det är ett s.k. Out of range exception.",
                 "Vad har vi här? Ett litet OutOfRangeException? Hur kommer det sig, tror du?"
-            }.Random();
+            });
         }
 
         public string DescribeUser()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Jag vet inte var jag ska börja.",
                 "Det är en användare.",
                 "Det är en användare av bästa sort.",
@@ -471,12 +427,12 @@ namespace pappab0t.Models
                 "Hen är väl kul.",
                 "Jag har inget ont att säga om den personen.",
                 "Hen är helt ok."
-            }.Random();
+            });
         }
 
         public string QuestionAction()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Så, vad var det som fick dig att säga så?",
                 "Varför säger du det till mig?",
                 "Pratar du med mig?",
@@ -485,28 +441,28 @@ namespace pappab0t.Models
                 "vad förväntar du dig av mig?",
                 "jag vet inte vad du vill riktigt",
                 "What's this, I don't even.. wha?"
-            }.Random();
+            });
         }
 
         public string NoDataFound()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Hittade inget.",
                 "Inget sånt i arkivet.",
                 "Där var det tomt.",
                 "Ingen utdelning.",
-            }.Random();
+            });
         }
 
         public string QuestionSimilarUrl()
         {
-            return new[]{
+            return _random.SelectOne(new[]{
                 "Har redan en väldigt lik url sparad, men kan inte avgöra om din är unik",
                 "Snudd på samma url som redan finns reggad.",
                 "Som två tvillingurlar separerade vid födseln.",
                 "Urlsch!",
                 "Urlaberla"
-            }.Random();
+            });
         }
 
         public string TimedBombExpired()

@@ -241,10 +241,6 @@ namespace pappab0t.Tests.Responders
                         .Setup(x => x.TauntOld())
                         .Returns("oäz!");
 
-                    _phrasebookMock
-                        .Setup(x => x.CreditUserBecauseFormat())
-                        .Returns("{0}, {1}.");
-
                     UseDefaultContext();
                     TriggerResponder();
 
@@ -303,12 +299,8 @@ namespace pappab0t.Tests.Responders
 
                     TriggerResponder();
 
-                    Assert.EndsWith(
-                        _phrasebookMock
-                            .Object
-                            .CreditUserBecauseFormat()
-                            .With(opUuid, "OP"), 
-                        Response.Text);
+                    Assert.EndsWith(nameof(IPhrasebook.CreditUserBecause), Response.Text);
+                    PhraseBookMock.Verify(x=>x.CreditUserBecause(opUuid,"OP"), Times.Once);
                 }
             }
 
