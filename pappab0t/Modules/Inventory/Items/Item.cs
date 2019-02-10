@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 
@@ -16,12 +15,13 @@ namespace pappab0t.Modules.Inventory.Items
 
         [JsonRequired]
         public virtual string Name { get; set; }
+
         public virtual string Type { get; set; }
-        public bool SoulBound { get; set; }
 
         public List<Modifier> Modifiers { get; set; }
 
         public abstract string GetFriendlyTypeName();
+
         public abstract string GetDescription();
     }
 }

@@ -8,6 +8,7 @@ using pappab0t.Abstractions;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
 using pappab0t.Modules.Inventory.Items;
+using pappab0t.Modules.Inventory.Items.Modifiers;
 
 namespace pappab0t.Responders
 {
@@ -124,7 +125,7 @@ namespace pappab0t.Responders
                         break;
                     }
 
-                    if (userInventory.Items[itemIndex].SoulBound)
+                    if (userInventory.Items[itemIndex].Modifiers.Any(x=>x is Soulbound))
                     {
                         _returnMsg = new BotMessage { Text = _phrasebook.CantMoveSoulboundItems() };
                         break;

@@ -4,6 +4,7 @@ using MargieBot;
 using Moq;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items.Modifiers;
 using pappab0t.Modules.Inventory.Items.Tokens;
 using pappab0t.Responders;
 using Xunit;
@@ -267,7 +268,8 @@ namespace pappab0t.Tests.Responders
             [Fact]
             public void Should_not_transfer_souldbound_items()
             {
-                var testItem = new Note { Name = "test", SoulBound = true };
+                var testItem = new Note { Name = "test"};
+                testItem.Modifiers.Add(new Soulbound());
                 PappaBj0rnInvetory.Items.Add(testItem);
                 
                 var expectedPhrasebookCall = nameof(IPhrasebook.CantMoveSoulboundItems);
@@ -294,7 +296,8 @@ namespace pappab0t.Tests.Responders
                 var pbCall1 = "call 1";
                 var pbCall2 = "call 2";
 
-                var testItem = new Note { Name = "test", SoulBound = true };
+                var testItem = new Note { Name = "test"};
+                testItem.Modifiers.Add(new Soulbound());
                 PappaBj0rnInvetory.Items.Add(testItem);
                 
                 PhraseBookMock
