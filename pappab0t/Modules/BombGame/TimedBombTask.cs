@@ -6,6 +6,7 @@ using pappab0t.Models;
 using pappab0t.Modules.BombGame.Items;
 using pappab0t.Modules.Highscore;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 
 namespace pappab0t.Modules.BombGame
@@ -43,7 +44,7 @@ namespace pappab0t.Modules.BombGame
 
             foreach (var inventory in inventories)
             {
-                foreach (var tb in inventory.Items.OfType<TimedBomb>())
+                foreach (var tb in inventory.Items.Where(x=>x.Type is TimedBombType))
                 {
                     if (!tb.Modifiers.Any(x => x is Expires e && e.DateTime < SystemTime.Now()))
                         continue;
@@ -90,7 +91,7 @@ namespace pappab0t.Modules.BombGame
 
     internal class ExpiredTbData
     {
-        public TimedBomb Tb { get; set; }
+        public Item Tb { get; set; }
         public Inventory.Inventory Inv { get; set; }
     }
 }

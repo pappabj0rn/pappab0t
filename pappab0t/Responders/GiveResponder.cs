@@ -1,13 +1,9 @@
-using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using MargieBot;
-using Newtonsoft.Json;
 using pappab0t.Abstractions;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
-using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 
 namespace pappab0t.Responders
@@ -18,7 +14,6 @@ namespace pappab0t.Responders
         private readonly IPhrasebook _phrasebook;
         private const string MoneyParamKey = "p";
         private const string ItemParamKey = "s";
-        private const string CreateItemParamKey = "c";
 
         private GiveMode _mode = GiveMode.NotSet;
         private BotMessage _returnMsg;
@@ -56,10 +51,6 @@ namespace pappab0t.Responders
                 sb.AppendLine("Parametrar:");
                 sb.AppendLine("p: [decimal], ");
                 sb.AppendLine("s: [sak nr], för att se vad du har för saker att ge, använd kommando i.");
-
-                if (CommandData.Params.ContainsKey("a"))
-                    sb.AppendLine("c: [typ] {json-data}");
-
                 sb.AppendLine("?: Hjälp (denna text)");
 
                 return new BotMessage
@@ -136,20 +127,7 @@ namespace pappab0t.Responders
                     saveInventories = SaveMode.None;
                     _returnMsg = new BotMessage { Text = _phrasebook.ItemTransfered(itemName) };//todo should look at events instad as move could be canceled in the future
                     break;
-                case GiveMode.CreateItem:
-                    var item = CreateItem();
-
-                    if (item is null)
-                    {
-                        CreateIdidntUnderstandMessage();
-                        break;
-                    }
-
-                    targetInventory.Items.Add(item);
-                    saveInventories = SaveMode.Target;
-                    _returnMsg = new BotMessage { Text = _phrasebook.ItemCreated(item.Name) };
-                    break;
-                case GiveMode.NotSet:
+                default:
                     CreateIdidntUnderstandMessage();
                     break;
             }
@@ -168,35 +146,6 @@ namespace pappab0t.Responders
             }
 
             return _returnMsg;
-        }
-
-        private Item CreateItem()
-        {
-            var itemData = CommandData
-                .Params[CreateItemParamKey]
-                .Split(new[]{' '}, 2);
-
-            if (itemData.Length != 2)
-                return null;
-
-            var type = typeof(GiveResponder)
-                .GetTypeInfo()
-                .Assembly
-                .GetTypes()
-                .FirstOrDefault(x => x.Name == itemData[0]);
-
-            if (type is null)
-                return null;
-
-            try
-            {
-                return JsonConvert.DeserializeObject(itemData[1], type) as Item;
-            }
-            catch (Exception)
-            {
-                //todo craete exception viewer/log
-                return null;
-            }
         }
 
         private int GetItemIndex()
@@ -265,9 +214,6 @@ namespace pappab0t.Responders
                     || CommandData.Params.ContainsKey(Keys.CommandParser.UnnamedParam)
                     && CommandData.Params[Keys.CommandParser.UnnamedParam].Contains("sak "))
                 _mode = GiveMode.GiveItem;
-
-            else if (CommandData.Params.ContainsKey(CreateItemParamKey))
-                _mode = GiveMode.CreateItem;
         }
         public ExposedInformation Info => new ExposedInformation
         {
@@ -279,8 +225,7 @@ namespace pappab0t.Responders
         {
             NotSet,
             GiveMoney,
-            GiveItem,
-            CreateItem
+            GiveItem
         }
 
         enum SaveMode

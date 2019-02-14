@@ -2,11 +2,8 @@
 using System.Linq;
 using MargieBot;
 using Moq;
-using pappab0t.Extensions;
 using pappab0t.Models;
 using pappab0t.Responders;
-using Raven.Client;
-using Raven.Client.Embedded;
 using Xunit;
 
 namespace pappab0t.Tests.Responders
@@ -241,6 +238,10 @@ namespace pappab0t.Tests.Responders
                         .Setup(x => x.TauntOld())
                         .Returns("oäz!");
 
+                    _phrasebookMock
+                        .Setup(x => x.CreditUserBecause(It.IsAny<string>(),It.IsAny<string>()))
+                        .Returns("op");
+
                     UseDefaultContext();
                     TriggerResponder();
 
@@ -299,8 +300,7 @@ namespace pappab0t.Tests.Responders
 
                     TriggerResponder();
 
-                    Assert.EndsWith(nameof(IPhrasebook.CreditUserBecause), Response.Text);
-                    PhraseBookMock.Verify(x=>x.CreditUserBecause(opUuid,"OP"), Times.Once);
+                    Assert.EndsWith(_phrasebookMock.Object.CreditUserBecause(opUuid,"OP"), Response.Text);
                 }
             }
 

@@ -59,7 +59,7 @@ namespace pappab0t.Tests.Modules.BombGame
                 Assert.Equal(nameof(IPhrasebook.PlayInsufficientFunds), response.Text);
 
                 PhrasebookMock
-                    .Verify(x => x.PlayInsufficientFunds(TimedBombCommand.Cost),
+                    .Verify(x => x.PlayInsufficientFunds(TimedBombCommand.Cost), 
                         Times.Once);
             }
 
@@ -68,19 +68,16 @@ namespace pappab0t.Tests.Modules.BombGame
             {
                 var response = _cmd.GetResponse();
 
-                string tbFriendlyName = new TimedBomb().GetFriendlyTypeName();
-                string tbTypeName = "TimedBomb";
                 var tb = Pappabj0rnInvetory.Items.First();
 
                 //todo item creation moves to some factory that creates items from config
                 //also enables random items och given class
                 Assert.Equal(0M, Pappabj0rnInvetory.BEK);
-                Assert.Equal(tbFriendlyName, tb.GetFriendlyTypeName());
-                Assert.Equal(tbTypeName, tb.Type);
+                Assert.True(tb.Type is TimedBombType);
                 Assert.Equal(nameof(IPhrasebook.ItemCreated), response.Text);
 
                 PhrasebookMock
-                    .Verify(x => x.ItemCreated(tbFriendlyName),
+                    .Verify(x => x.ItemCreated(tb.Type.Name), 
                         Times.Once);
             }
 
@@ -97,8 +94,10 @@ namespace pappab0t.Tests.Modules.BombGame
 
                 _cmd.GetResponse();
 
-                var bomb = Pappabj0rnInvetory.Items.OfType<TimedBomb>().First();
-                Assert.Equal(time.AddDays(TimedBombCommand.BaseExpiration).AddMinutes(randomMinutes), bomb.Modifiers.OfType<Expires>().First().DateTime);
+                var bomb = Pappabj0rnInvetory.Items.First(x=>x.Type is TimedBombType);
+                Assert.Equal(
+                    time.AddDays(TimedBombCommand.BaseExpiration).AddMinutes(randomMinutes), 
+                    bomb.Modifiers.OfType<Expires>().First().DateTime);
             }
 
             [Fact]
@@ -106,7 +105,7 @@ namespace pappab0t.Tests.Modules.BombGame
             {
                 _cmd.GetResponse();
 
-                var bomb = Pappabj0rnInvetory.Items.OfType<TimedBomb>().First();
+                var bomb = Pappabj0rnInvetory.Items.First(x => x.Type is TimedBombType);
                 Assert.NotEmpty(bomb.Modifiers.OfType<IHandlerLog>());
             }
         }

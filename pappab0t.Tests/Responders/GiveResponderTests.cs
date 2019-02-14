@@ -4,6 +4,7 @@ using MargieBot;
 using Moq;
 using pappab0t.Models;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 using pappab0t.Modules.Inventory.Items.Tokens;
 using pappab0t.Responders;
@@ -75,28 +76,6 @@ namespace pappab0t.Tests.Responders
             }
 
             [Theory]
-            [InlineData("pbot ge -?a", true)]
-            [InlineData("pbot ge -?", false)]
-            [InlineData("ge -?a", true, SlackChatHubType.DM)]
-            [InlineData("ge -?", false, SlackChatHubType.DM)]
-            public void Should_toggle_explenation_of_admin_params_when_param_a_is_present(
-                string msg,
-                bool includesAdminParams,
-                SlackChatHubType hubType = SlackChatHubType.Channel)
-            {
-                var context = CreateContext(msg, hubType);
-
-                var response = Responder.GetResponse(context);
-
-                var createItemExplenation = "\r\nc: [typ] {json-data}\r\n";
-
-                if (includesAdminParams)
-                    Assert.Contains(createItemExplenation, response.Text);
-                else
-                    Assert.DoesNotContain(createItemExplenation, response.Text);
-            }
-
-            [Theory]
             [InlineData("pbot ge eriska 10kr", 10.0)]
             [InlineData("pbot ge <@U06BH8WTT> 10kr", 10.0)]
             [InlineData("pbot ge <@U06BH8WTT> 8,5kr", 8.5)]
@@ -141,7 +120,7 @@ namespace pappab0t.Tests.Responders
                 string msg,
                 SlackChatHubType hubType = SlackChatHubType.Channel)
             {
-                var testItem = new Note {Name = "test"};
+                var testItem = new Item(new Token(), new NoteType()) { Name = "test"};
                 PappaBj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg, hubType);
@@ -160,10 +139,9 @@ namespace pappab0t.Tests.Responders
                 Assert.Contains(testItem, EriskaInvetory.Items);
             }
 
-            [Theory]
+            [Theory(Skip = "move to create command if it should exist")]
             [InlineData("pbot ge eriska -c \"Note {'Name':'test'}\"")]
             [InlineData("pbot ge <@U06BH8WTT> -c \"Note {'Name':'test'}\"")]
-
             [InlineData("ge <@U06BH8WTT> -c \"Note {'Name':'test'}\"", SlackChatHubType.DM)]
             [InlineData("ge eriska -c \"Note {'Name':'test'}\"", SlackChatHubType.DM)]
             public void Should_create_specified_item_for_specified_user(
@@ -183,11 +161,12 @@ namespace pappab0t.Tests.Responders
                 Assert.Empty(PappaBj0rnInvetory.Items);
                 Assert.NotEmpty(EriskaInvetory.Items);
 
-                Assert.Equal(typeof(Note), EriskaInvetory.Items[0].GetType());
+                Assert.Equal(typeof(Token), EriskaInvetory.Items[0].Class.GetType());
+                Assert.Equal(typeof(NoteType), EriskaInvetory.Items[0].Type.GetType());
                 Assert.Equal("test", EriskaInvetory.Items[0].Name);
             }
 
-            [Theory]
+            [Theory(Skip = "move to create command if it should exist")]
             [InlineData("ge pappabj0rn -c \"Note {Name:'test'}\"")]
             [InlineData("ge <@U06BHPNJG> -c \"Note {Name:'test'}\"")]
             public void Should_allow_creating_items_to_self(
@@ -202,7 +181,7 @@ namespace pappab0t.Tests.Responders
                 InventoryManagerMock.Verify(x => x.Save(It.IsAny<IEnumerable<Inventory>>()), Times.Never);
 
                 Assert.NotEmpty(PappaBj0rnInvetory.Items);
-                Assert.Equal(typeof(Note), PappaBj0rnInvetory.Items[0].GetType());
+                Assert.Equal(typeof(NoteType), PappaBj0rnInvetory.Items[0].Type.GetType());
                 Assert.Equal("test", PappaBj0rnInvetory.Items[0].Name);
             }
 
@@ -233,23 +212,23 @@ namespace pappab0t.Tests.Responders
             [InlineData("pbot ge eriska 10", nameof(IPhrasebook.IDidntUnderstand))]
             [InlineData("pbot ge eriska xkr", nameof(IPhrasebook.IDidntUnderstand))]
             [InlineData("pbot ge eriska -p x", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"Note {'Name':'Test'}\"", nameof(IPhrasebook.ItemCreated), "Test")]
-            [InlineData("pbot ge eriska -c \"Note {Name:'Test'}\"", nameof(IPhrasebook.ItemCreated), "Test")]
-            [InlineData("pbot ge eriska -c \"Note {'Name':true}\"", nameof(IPhrasebook.ItemCreated), "true")]
-            [InlineData("pbot ge eriska -c \"Note {'FooBar':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"FooBar {'Name':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"Note 'Name':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"Note {'Name''Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"Note {'Name:'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c \"Note {'Name':Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
-            [InlineData("pbot ge eriska -c Note {'Name':'Test'}", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"Note {'Name':'Test'}\"", nameof(IPhrasebook.ItemCreated), "Test")]
+            //[InlineData("pbot ge eriska -c \"Note {Name:'Test'}\"", nameof(IPhrasebook.ItemCreated), "Test")]
+            //[InlineData("pbot ge eriska -c \"Note {'Name':true}\"", nameof(IPhrasebook.ItemCreated), "true")]
+            //[InlineData("pbot ge eriska -c \"Note {'FooBar':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"FooBar {'Name':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"Note 'Name':'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"Note {'Name''Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"Note {'Name:'Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c \"Note {'Name':Test'}\"", nameof(IPhrasebook.IDidntUnderstand))]
+            //[InlineData("pbot ge eriska -c Note {'Name':'Test'}", nameof(IPhrasebook.IDidntUnderstand))]
             public void Should_respond_with_correct_message(
                 string msg,
                 string expectedMetodCall,
                 string expectedPhParam1 = null,
                 string expectedPhParam2 = null)
             {
-                var testItem = new Note {Name = "Test"};
+                var testItem = new Item(new Token(), new NoteType()) { Name = "Test"};
                 PappaBj0rnInvetory.Items.Add(testItem);
 
                 var context = CreateContext(msg);
@@ -268,7 +247,7 @@ namespace pappab0t.Tests.Responders
             [Fact]
             public void Should_not_transfer_souldbound_items()
             {
-                var testItem = new Note { Name = "test"};
+                var testItem = new Item(new Token(), new NoteType()) { Name = "test"};
                 testItem.Modifiers.Add(new Soulbound());
                 PappaBj0rnInvetory.Items.Add(testItem);
                 
@@ -296,7 +275,7 @@ namespace pappab0t.Tests.Responders
                 var pbCall1 = "call 1";
                 var pbCall2 = "call 2";
 
-                var testItem = new Note { Name = "test"};
+                var testItem = new Item(new Token(), new NoteType()) { Name = "test"};
                 testItem.Modifiers.Add(new Soulbound());
                 PappaBj0rnInvetory.Items.Add(testItem);
                 

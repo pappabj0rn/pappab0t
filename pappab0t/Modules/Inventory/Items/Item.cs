@@ -4,24 +4,24 @@ using pappab0t.Modules.Inventory.Items.Modifiers;
 
 namespace pappab0t.Modules.Inventory.Items
 {
-    public abstract class Item : IDescribable
+    public sealed class Item
     {
-        protected Item()
+        public Item(ItemClass @class, ItemType type)
         {
+            Class = @class;
+            Type = type;
             Modifiers = new List<Modifier>();
         }
 
         public string Id { get; set; }
 
         [JsonRequired]
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
-        public virtual string Type { get; set; }
+        public ItemClass Class { get; set; }
+
+        public ItemType Type { get; set; }
 
         public List<Modifier> Modifiers { get; set; }
-
-        public abstract string GetFriendlyTypeName();
-
-        public abstract string GetDescription();
     }
 }

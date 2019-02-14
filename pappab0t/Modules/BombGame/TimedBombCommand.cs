@@ -5,7 +5,9 @@ using pappab0t.Abstractions;
 using pappab0t.Models;
 using pappab0t.Modules.BombGame.Items;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
+using pappab0t.Modules.Inventory.Items.Tokens;
 
 namespace pappab0t.Modules.BombGame
 {
@@ -37,7 +39,7 @@ namespace pappab0t.Modules.BombGame
                 return new BotMessage{Text = _phrasebook.PlayInsufficientFunds(Cost)};
 
             inv.BEK -= Cost;
-            var tb = new TimedBomb();//todo item factory
+            var tb = new Item(new Novelty(), new TimedBombType());//todo item factory
             tb.Modifiers.Add(new Expires
             {
                 DateTime = SystemTime
@@ -52,7 +54,7 @@ namespace pappab0t.Modules.BombGame
 
             _inventoryManager.Save(inv);
 
-            return new BotMessage{Text = _phrasebook.ItemCreated(tb.GetFriendlyTypeName())};
+            return new BotMessage{Text = _phrasebook.ItemCreated(tb.Type.Name)};
         }
 
         public override bool RespondsTo(string cmd)

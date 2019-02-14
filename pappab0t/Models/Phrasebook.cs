@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using pappab0t.Extensions;
+using pappab0t.Modules.Inventory.Items;
 
 namespace pappab0t.Models
 {
@@ -265,19 +266,11 @@ namespace pappab0t.Models
             });
         }
 
-        public string ItemDescription(string typeName, string description)
+        public string ItemDescription(ItemType type)
         {
             return _random.SelectOne(new[]{
-                $"Sak: {typeName.ToLower()}. \r\n\"Beskrivning: {description}\"",
-                $"{typeName.ToLower()}; \r\n\"{description}\"",
-                $"{description} (typ: {typeName.ToLower()})",
-                $"Låt mig beskriva saken ({typeName.ToLower()}) så här:\r\n{description}",
-                $"{description}",
-                $"{description}",
-                $"{description}",
-                $"{description}",
-                $"{description}",
-                $"{description}"
+                $"{type.IndefiniteAricle} {type.Name.ToLower()}",
+                $"{type.Name.ToLower()}"
             });
         }
 

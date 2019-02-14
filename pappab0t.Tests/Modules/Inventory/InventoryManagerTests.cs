@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Tokens;
 using pappab0t.Tests.Responders;
 using Xunit;
@@ -22,7 +23,7 @@ namespace pappab0t.Tests.Modules.Inventory
 
             var ei = InventoryManager.GetUserInventory(EriskaUserId);
             var pbi = InventoryManager.GetUserInventory(PappaBj0rnUserId);
-            pbi.Items.Add(new Note{Name = TestlappName });
+            pbi.Items.Add(new Item(new Token(), new NoteType()) {Name = TestlappName});
             InventoryManager.Save(new []{ei,pbi});
         }
 

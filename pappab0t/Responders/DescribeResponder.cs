@@ -88,9 +88,7 @@ namespace pappab0t.Responders
 
             return new BotMessage
             {
-                Text = _phrasebook.ItemDescription(
-                    item.GetFriendlyTypeName(), 
-                    item.GetDescription())
+                Text = _phrasebook.ItemDescription(item.Type)
             };
         }
 

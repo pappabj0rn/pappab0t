@@ -181,7 +181,7 @@ namespace pappab0t.Tests.Modules.PingPong
                 Console.WriteLine("end");
             }
 
-            [Fact]
+            [Fact]//todo observed to fail: 1
             public void Should_not_try_to_ping_or_reconnect_when_bot_is_offline()
             {
                 Console.WriteLine("Should_not_try_to_ping_or_reconnect_when_bot_is_offline");

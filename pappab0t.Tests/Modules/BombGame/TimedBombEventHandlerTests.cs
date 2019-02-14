@@ -2,6 +2,7 @@
 using pappab0t.Modules.BombGame;
 using pappab0t.Modules.BombGame.Items;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace pappab0t.Tests.Modules.BombGame
             {
                 evtHandler.Initialize();
 
-                var tb = new TimedBomb();
+                var tb = new Item(new Novelty(), new TimedBombType());
                 var log = new HandlerLog();
                 log.Add(PappaBj0rnUserId);
 
@@ -46,7 +47,7 @@ namespace pappab0t.Tests.Modules.BombGame
                 evtHandler.Initialize();
                 evtHandler.Initialize();
 
-                var tb = new TimedBomb();
+                var tb = new Item(new Novelty(), new TimedBombType());
                 var log = new HandlerLog();
                 log.Add(PappaBj0rnUserId);
 

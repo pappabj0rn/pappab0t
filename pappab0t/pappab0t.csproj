@@ -257,6 +257,8 @@
     <Compile Include="Modules\Derangements\Game.cs" />
     <Compile Include="Modules\Highscore\HighScoreManager.cs" />
     <Compile Include="Modules\Highscore\IHighScoreManager.cs" />
+    <Compile Include="Modules\Inventory\Items\ItemClass.cs" />
+    <Compile Include="Modules\Inventory\Items\ItemType.cs" />
     <Compile Include="RavenDbManager.cs" />
     <Compile Include="Modules\Inventory\ItemMoveMessage.cs" />
     <Compile Include="Modules\Inventory\Items\Modifiers\Expires.cs" />
@@ -271,7 +273,6 @@
     <Compile Include="Modules\Inventory\IInventoryManager.cs" />
     <Compile Include="Modules\Inventory\Inventory.cs" />
     <Compile Include="Modules\Inventory\InventoryManager.cs" />
-    <Compile Include="Modules\Inventory\Items\IDescribable.cs" />
     <Compile Include="Modules\Inventory\Items\Item.cs" />
     <Compile Include="Models\Phrasebook.cs" />
     <Compile Include="Models\Scorebook.cs" />

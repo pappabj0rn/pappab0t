@@ -1,4 +1,6 @@
-﻿namespace pappab0t.Models
+﻿using pappab0t.Modules.Inventory.Items;
+
+namespace pappab0t.Models
 {
     public interface IPhrasebook
     {
@@ -26,7 +28,7 @@
 
         string ItemCreated(string item);
 
-        string ItemDescription(string typeName, string description);
+        string ItemDescription(ItemType type);
 
         string ItemTransfered(string item);
 

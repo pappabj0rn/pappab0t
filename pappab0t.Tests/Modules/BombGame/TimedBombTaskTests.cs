@@ -4,6 +4,7 @@ using Moq;
 using pappab0t.Models;
 using pappab0t.Modules.BombGame;
 using pappab0t.Modules.BombGame.Items;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace pappab0t.Tests.Modules.BombGame
                 HightscoreManagerMock.Object, 
                 PhrasebookMock.Object);
 
-            var tb1 = new TimedBomb();
+            var tb1 = new Item(new Novelty(), new TimedBombType());
             var tbHandlerLog = new HandlerLog();
 
             tb1.Modifiers.Add(tbHandlerLog);
@@ -41,7 +42,7 @@ namespace pappab0t.Tests.Modules.BombGame
             Pappabj0rnInvetory.Items.Add(tb1);
 
 
-            var tb2 = new TimedBomb();
+            var tb2 = new Item(new Novelty(), new TimedBombType());
             var tb2HandlerLog = new HandlerLog();
 
             tb2.Modifiers.Add(tbHandlerLog);

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 using pappab0t.Modules.Inventory.Items.Tokens;
 using pappab0t.Tests.Responders;
@@ -22,7 +20,7 @@ namespace pappab0t.Tests.Modules.Inventory.Items
             [Fact]
             public void Should_be_storable_and_retreivable()
             {
-                var item = new Note();
+                var item = new Item(new Token(), new NoteType());
                 var log = new HandlerLog();
                 log.Add("testUserId");
                 item.Modifiers.Add(log);
@@ -36,7 +34,7 @@ namespace pappab0t.Tests.Modules.Inventory.Items
                 using (var session = Store.OpenSession())
                 {
                     var notes = session
-                        .Query<Note>()
+                        .Query<Item>()
                         .Customize(x => x.WaitForNonStaleResults())
                         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                         .ToList();
@@ -51,7 +49,7 @@ namespace pappab0t.Tests.Modules.Inventory.Items
             [Fact]
             public void Should_be_storable_and_retreivable()
             {
-                var item = new Note();
+                var item = new Item(new Token(), new NoteType());
                 var exp = new Expires{DateTime = new DateTime(2019,2,8,1,52,17)};;
                 item.Modifiers.Add(exp);
 
@@ -65,7 +63,7 @@ namespace pappab0t.Tests.Modules.Inventory.Items
                 {
 
                     var notes = session
-                        .Query<Note>()
+                        .Query<Item>()
                         .Customize(x => x.WaitForNonStaleResults())
                         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                         .ToList();
