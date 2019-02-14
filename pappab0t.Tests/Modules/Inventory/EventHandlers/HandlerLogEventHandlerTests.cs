@@ -1,23 +1,23 @@
 ﻿using System.Linq;
-using pappab0t.Modules.BombGame;
-using pappab0t.Modules.BombGame.Items;
 using pappab0t.Modules.Inventory;
+using pappab0t.Modules.Inventory.EventHandlers;
 using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
+using pappab0t.Modules.Inventory.Items.Tokens;
 using Xunit;
 
-namespace pappab0t.Tests.Modules.BombGame
+namespace pappab0t.Tests.Modules.Inventory.EventHandlers
 {
-    public class TimedBombEventHandlerTests : TestContext
+    public class HandlerLogEventHandlerTests : TestContext
     {
         [Fact]
         public void Should_add_target_user_to_handler_log_when_a_timed_bomb_is_moved()
         {
-            using (var evtHandler = new TimedBombEventHandler())
+            using (var evtHandler = new HandlerLogEventHandler())
             {
                 evtHandler.Initialize();
 
-                var tb = new Item(new Novelty(), new TimedBombType());
+                var tb = new Item(new Novelty(), new NoteType());
                 var log = new HandlerLog();
                 log.Add(PappaBj0rnUserId);
 
@@ -42,12 +42,12 @@ namespace pappab0t.Tests.Modules.BombGame
         [Fact]
         public void Initialize_should_not_resubscribe_to_events()
         {
-            using (var evtHandler = new TimedBombEventHandler())
+            using (var evtHandler = new HandlerLogEventHandler())
             {
                 evtHandler.Initialize();
                 evtHandler.Initialize();
 
-                var tb = new Item(new Novelty(), new TimedBombType());
+                var tb = new Item(new Novelty(), new NoteType());
                 var log = new HandlerLog();
                 log.Add(PappaBj0rnUserId);
 

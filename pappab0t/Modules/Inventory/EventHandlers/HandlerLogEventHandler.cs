@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using pappab0t.Abstractions;
-using pappab0t.Modules.Inventory;
 using pappab0t.Modules.Inventory.Items.Modifiers;
 
-namespace pappab0t.Modules.BombGame
+namespace pappab0t.Modules.Inventory.EventHandlers
 {
-    public class TimedBombEventHandler : IEventHandler, IDisposable
+    public class HandlerLogEventHandler : IEventHandler, IDisposable
     {
         private bool _initialized;
         public void Initialize()

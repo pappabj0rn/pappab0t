@@ -238,7 +238,7 @@
     <Compile Include="Keys.cs" />
     <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
-    <Compile Include="Modules\BombGame\TimedBombEventHandler.cs" />
+    <Compile Include="Modules\Inventory\EventHandlers\HandlerLogEventHandler.cs" />
     <Compile Include="Modules\BombGame\TimedBombTask.cs" />
     <Compile Include="Modules\BombGame\Items\TimedBomb.cs" />
     <Compile Include="Modules\BombGame\TimedBombCommand.cs" />
