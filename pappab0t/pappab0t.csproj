@@ -239,7 +239,7 @@
     <Compile Include="MessageHandler\IMessageHandler.cs" />
     <Compile Include="Models\ExposedInformation.cs" />
     <Compile Include="Modules\Inventory\EventHandlers\HandlerLogEventHandler.cs" />
-    <Compile Include="Modules\BombGame\TimedBombTask.cs" />
+    <Compile Include="Modules\BombGame\TimedBombExpirationEventHandler.cs" />
     <Compile Include="Modules\BombGame\Items\TimedBomb.cs" />
     <Compile Include="Modules\BombGame\TimedBombCommand.cs" />
     <Compile Include="Modules\FeatureRequest\Models\FeatureRequest.cs" />
@@ -257,8 +257,12 @@
     <Compile Include="Modules\Derangements\Game.cs" />
     <Compile Include="Modules\Highscore\HighScoreManager.cs" />
     <Compile Include="Modules\Highscore\IHighScoreManager.cs" />
+    <Compile Include="Modules\Inventory\ItemExpiredMessage.cs" />
+    <Compile Include="Modules\Inventory\Items\IModifiable.cs" />
     <Compile Include="Modules\Inventory\Items\ItemClass.cs" />
     <Compile Include="Modules\Inventory\Items\ItemType.cs" />
+    <Compile Include="Modules\Inventory\ModifierExpiredMessage.cs" />
+    <Compile Include="Modules\Inventory\Tasks\ExpirationTask.cs" />
     <Compile Include="RavenDbManager.cs" />
     <Compile Include="Modules\Inventory\ItemMoveMessage.cs" />
     <Compile Include="Modules\Inventory\Items\Modifiers\Expires.cs" />

@@ -4,7 +4,7 @@ using pappab0t.Modules.Inventory.Items.Modifiers;
 
 namespace pappab0t.Modules.Inventory.Items
 {
-    public sealed class Item
+    public sealed class Item : IModifiable
     {
         public Item(ItemClass @class, ItemType type)
         {

@@ -1,6 +1,8 @@
-﻿namespace pappab0t.Abstractions
+﻿using System;
+
+namespace pappab0t.Abstractions
 {
-    public interface IEventHandler
+    public interface IEventHandler : IDisposable
     {
         void Initialize();
     }

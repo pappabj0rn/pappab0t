@@ -2,7 +2,7 @@
 
 namespace pappab0t.Modules.Inventory.Items.Modifiers
 {
-    public abstract class Modifier
+    public abstract class Modifier : IModifiable
     {
         protected Modifier()
         {
