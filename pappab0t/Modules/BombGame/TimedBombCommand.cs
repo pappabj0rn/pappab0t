@@ -7,7 +7,6 @@ using pappab0t.Modules.BombGame.Items;
 using pappab0t.Modules.Inventory;
 using pappab0t.Modules.Inventory.Items;
 using pappab0t.Modules.Inventory.Items.Modifiers;
-using pappab0t.Modules.Inventory.Items.Tokens;
 
 namespace pappab0t.Modules.BombGame
 {
