@@ -287,6 +287,7 @@
     <Compile Include="MessageHandler\RavenDbLoggerMessageHandler.cs" />
     <Compile Include="Responders\CommandDataParser.cs" />
     <Compile Include="Responders\CommandResponder.cs" />
+    <Compile Include="Responders\DebugResponder.cs" />
     <Compile Include="Responders\DerangementsGameResponder.cs" />
     <Compile Include="Responders\DescribeResponder.cs" />
     <Compile Include="Responders\DikaGameResponder.cs" />
